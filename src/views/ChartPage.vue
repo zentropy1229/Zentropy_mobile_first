@@ -1,9 +1,7 @@
 <template>
-  <div class="container">
-    <div class="chart-container">
-      <div id="lineChart" style="height:500px"></div>
-      <div id="lineChartTwo" style="height:500px"></div>
-    </div>
+  <div class="chart-container">
+    <div id="lineChart" style="height:500px"></div>
+    <div id="lineChartTwo" style="height:500px"></div>
   </div>
 </template>
 

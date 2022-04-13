@@ -1,14 +1,14 @@
 <template>
   <div>
-    <div class="home-main" ref="main">
-      <div class="home-images">
+    <div class="main-container" ref="main">
+      <div class="image-container">
         <transition grop name="fade" mode="in-out">
-          <img src="https://picsum.photos/id/1075/3240/2160" v-if="!active" :class="{'sticky-image': !active}">
-          <img src="https://picsum.photos/id/1076/3240/2160" v-else :class="{'sticky-image': active}">
+          <img src="https://picsum.photos/id/1075/3240/2160" class="images" :class="{'sticky-image': !active}" v-if="!active">
+          <img src="https://picsum.photos/id/1076/3240/2160" class="images" :class="{'sticky-image': active}" v-else>
         </transition>
       </div>
       <div class="home-title-container">
-        <div class="show-title-ani" :class="showAnimationClass" key="awdwa">
+        <div :class="showAnimationClass">
           <span>Zentropy</span>
         </div>
         <transition name="flip">
@@ -22,21 +22,18 @@
       </div>
       <div :class="{'hidden-block': !active}"></div>
     </div>
-    <div class="main-block-one">
-      <ShowCharts />
+    <div class="main-block">
+      <BlockSlider />
     </div>
-    <div class="main-block-two">
-      <MainBlockTwo />
+    <div class="main-block bg-gray-100">
+      <BlockTutorial />
     </div>
-    <!-- <div class="main-block-three">
-      <MainBlockThree />
-    </div> -->
   </div>
 </template>
 
 <script setup>
-import MainBlockTwo from '@/components/MainBlockTwo'
-import ShowCharts from '@/components/ShowCharts'
+import BlockTutorial from '@/components/BlockTutorial'
+import BlockSlider from '@/components/BlockSlider'
 import { onMounted, onUnmounted, ref } from 'vue'
 const main = ref()
 const active = ref(false)
@@ -74,89 +71,51 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
+<style lang="postcss" scoped>
   /* ------------------------- Main Title ------------------------- */
   ::-webkit-scrollbar {
     width: 0px;
   }
-  .home-main {
-    --offset-height: 64px;
-    font-size: 16px;
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    top: calc(var(--offset-height) * -1);
-    margin-bottom: calc(var(--offset-height) * -1);
-    overflow-y: scroll;
+  .main-container {
+    @apply relative -top-[64px] -mb-[64px] h-screen overflow-y-scroll;
     scrollbar-width: none;
   }
-  .home-images {
-    height: 100%;
+  .image-container {
+    @apply h-full;
   }
-  .home-images img {
-    position: static;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .images {
+    @apply static w-full h-full object-cover;
   }
-  .home-main .sticky-image {
-    position: absolute;
-    top: 0;
-    left: 0;
+  .sticky-image {
+    @apply absolute top-0 left-0 !important;
   }
   .home-title-container {
-    position: absolute;
-    top: 38%;
-    left: 15%;
-    color: var(--text-color-white);
-    font-size: 5em;
-    font-weight: 700;
+    @apply absolute top-[30%] left-[10%] text-[5rem] text-white font-bold;
   }
+  /* show-animation */
   .show-text-down {
-    --move: 100px;
+    --move: 150px;
     transform: translateY(var(--move));
     transition: .5s;
   }
-  /* 這行要在下面喔 */
   .show-text-up {
-    --move: 20px;
+    --move: 30px;
   }
   .hidden-text {
-    display: flex;
-    flex-direction: column;
-    width: fit-content;
-    margin-top: .5rem;
+    @apply flex flex-col w-fit mt-2;
   }
   .free-btn {
-    border: 0;
-    border-radius: 3em;
-    padding: 0.5em 1em;
-    margin-top: 1rem;
-    background-color: rgba(255, 255, 255, 0.8);
-    color: var(--text-color-black);
-    font-size: 1.5rem;
-    font-weight: 500;
+    @apply rounded-[5rem] px-4 py-4 mt-4 font-medium text-3xl bg-p text-white uppercase tracking-wider;
   }
   .free-btn:hover {
-    color: var(--text-color-white);
-    background: var(--primary-color);
+    @apply bg-white text-black;
   }
   .hidden-block {
-    display: block;
-    min-height: 20px;
-    width: 100%;
+    @apply block min-h-[50px];
   }
   /* ------------------------- Main Content ------------------------- */
-  .main-block-one, .main-block-two {
-    position: relative;
-    margin: 0 auto;
-    max-width: 2560px;
-  }
-  .main-block-one {
-    margin-top: 2em;
-  }
-  .main-block-two {
-    background: rgb(243, 243, 243);
+  .main-block {
+    @apply max-w-[2560px] mx-auto py-12;
   }
   /* ------------------------- Animation For Vue ------------------------- */
   .fade-enter-active,

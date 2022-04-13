@@ -1,23 +1,20 @@
 <template>
   <div class="show-chart">
-    <div class="container">
-      <div class="title-container">
-        <a class="title-text" href="#">
-          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-activity" viewBox="0 0 16 16">
-          <path fill-rule="evenodd" d="M6 2a.5.5 0 0 1 .47.33L10 12.036l1.53-4.208A.5.5 0 0 1 12 7.5h3.5a.5.5 0 0 1 0 1h-3.15l-1.88 5.17a.5.5 0 0 1-.94 0L6 3.964 4.47 8.171A.5.5 0 0 1 4 8.5H.5a.5.5 0 0 1 0-1h3.15l1.88-5.17A.5.5 0 0 1 6 2Z"/>
-          </svg>
+    <div class="title-container">
+      <div class="text-title">
+        <a class="flex-center text-4xl text-black font-bold hover:text-gray-600" href="#">
           <p>Market Show市場趨勢</p>
         </a>
-        <div><span>這裡可以放一些我們整理好的圖片，如果要用canvas畫也可以喔</span></div>
+        <div class="text-gray-300"><span>這裡可以放一些我們整理好的圖片，如果要用canvas畫也可以喔</span></div>
       </div>
-      <div class="show-block">
-        <ShowBlock />
+      <div class="ml-auto mr-4">
+        <SmallCards />
       </div>
     </div>
-    <div class="total-container" @mouseenter="Show()" @mouseleave="noShow()">
+    <div class="slider-container" @mouseenter="Show()" @mouseleave="noShow()">
       <div class="chart-container" :style="{'--place': move, '--time': time}">
-        <div v-for="chart in newChartList" :key="chart.id" class="chart-item" :class="{'scale': now === chart.id}">
-          <img :src="chart.src" alt="chart.content">
+        <div class="chart-item" v-for="chart in newChartList" :key="chart.id" :class="{'scale': now === chart.id}">
+          <img class="chart-images" :src="chart.src" alt="chart.content">
         </div>
       </div>
       <div class="tools-group">
@@ -33,7 +30,7 @@
         </button>
         <div class="radio-btn">
           <label v-for="dots in chartImageList" :key="dots.id">
-            <input type="radio" name="dots" class="input-dots" :checked="nowRealStep === dots.id" @click="change(dots.id)">
+            <input type="radio" name="dots" class="input-dots hidden" :checked="nowRealStep === dots.id" @click="change(dots.id)">
             <span class="dots"></span>
           </label>
         </div>
@@ -45,7 +42,7 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import ShowBlock from './smallComponents/ShowBlock'
+import SmallCards from './smallComponents/SmallCards'
 const now = ref(0)
 const time = ref('')
 const move = ref('')
@@ -138,7 +135,7 @@ const Show = () => {
   document.querySelector('.next-btn').style.setProperty('display', 'block')
 }
 const initialPosition = () => {
-  const tempWidth = document.querySelector('.total-container').offsetWidth
+  const tempWidth = document.querySelector('.slider-container').offsetWidth
   console.log(tempWidth)
   document.querySelectorAll('.chart-item img').forEach(item => {
     item.style.setProperty('width', ((tempWidth) / 2) + 'px')
@@ -155,119 +152,61 @@ onMounted(() => {
   })
 })
 </script>
-<!-- style -->
-<style scoped>
-  .show-chart {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
+
+<style scoped lang="postcss">
+  .flex-center {
+    @apply flex items-center justify-center;
   }
-  .container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .show-chart {
+    @apply flex flex-col relative w-full h-full;
   }
   .title-container {
-    width: fit-content;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: .2em;
-    margin-left: 2em;
-    color: rgba(155, 155, 155, 0.8)
+    @apply flex-center;
   }
-  .title-text {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: .2em;
-    font-size: 2em;
-    font-weight: 500;
-    color: var(--text-color-black);
-    text-decoration: none;
+  .text-title {
+    @apply flex flex-col items-start gap-2 ml-4;
   }
-  .title-text:hover {
-    color: var(--primary-color);
-  }
-  .show-block {
-    margin-left: auto;
-    margin-right: 1em;
-  }
-  .total-container {
-    position: relative;
-    padding: 2em;
-    overflow: hidden;
-    height: 600px;
+  .slider-container {
+    @apply relative p-8 py-16 overflow-hidden h-max;
   }
   .chart-container {
     --time: 0ms;
     --place: 0px;
-    position: relative;
-    display: flex;
-    flex-wrap: nowrap;
-    width: 100%;
+    @apply relative flex flex-nowrap mb-4;
     transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
     transition-duration: var(--time);
     transform: translate3d(var(--place), 0px, 0px);
   }
   .chart-item {
     --scale: 1;
-    display: block;
-    flex-basis: 100%;
+    @apply block basis-full p-8;
     transform: scale(var(--scale));
     transition: var(--time);
-    padding: 2em;
   }
   .chart-item.scale {
     --scale: 1.05;
   }
-  .chart-item img {
-    width: calc(2560px / 3 - 2em);
-    height: 400px;
-    object-fit: contain;
-    box-shadow: rgba(155, 155, 155, 0.295)
-    0 1px 15px;
+  .chart-images {
+    @apply shadow-xl border border-slate-100 object-contain max-w-[2560px] h-[400px];
   }
+  /* tools */
   .next-btn, .prev-btn {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translate(0, -50%);
-    border: 0;
-    background: transparent;
-    color: var(--button-color-blue);
-    cursor: pointer;
+    @apply absolute top-2/4 left-0 bg-transparent cursor-pointer text-pbtn -translate-y-2/4;
   }
   .next-btn {
-    left: 100%;
-    transform: translate(-100%, -50%);
+    @apply left-full -translate-x-full -translate-y-2/4;
   }
   .next-btn:hover, .prev-btn:hover {
-    color: rgba(54, 140, 253, 0.808);
+    @apply text-phover;
   }
   .radio-btn {
-    display: flex;
-    position: absolute;
-    gap: .8em;
-    top: 85%;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  .input-dots {
-    display: none;
+    @apply flex-center gap-3;
   }
   .input-dots:hover ~ .dots,
   .input-dots:checked ~ .dots {
-    background:rgba(54, 140, 253, 0.808);
+    @apply bg-phover
   }
   .dots {
-    display: block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--button-color-blue);
-    cursor: pointer;
+    @apply block w-3 h-3 rounded-full cursor-pointer bg-pbtn;
   }
 </style>

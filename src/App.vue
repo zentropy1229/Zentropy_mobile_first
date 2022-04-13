@@ -1,5 +1,5 @@
 <template>
-  <div class="initial">
+  <div class="min-h-screen">
     <router-view name="Header"></router-view>
     <router-view></router-view>
   </div>
@@ -21,16 +21,6 @@ const ScrollToTop = ScrollTop
   font-family: 'Noto Sans TC', sans-serif;
 }
 body, #app {
-  min-height: 100vh;
-}
-:root {
-  --primary-color: rgb(64, 124, 255);
-  --text-color-white: rgb(255, 255, 255);
-  --text-color-black: rgb(1, 1, 1);
-  --button-color-blue: rgba(203, 238, 255, 0.8);
-  --nav-height: 64px;
-}
-.initial {
   min-height: 100vh;
 }
 </style>

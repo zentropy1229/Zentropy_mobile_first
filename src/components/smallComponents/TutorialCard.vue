@@ -1,11 +1,11 @@
 <template>
-  <div class="container">
-    <div class="card-container" v-for="list of tutorialList" :key="list.step">
+  <div class="cards-container lg: max-w-[800px]">
+    <div class="cards" v-for="list of tutorialList" :key="list.step">
     <div class="title-container">
       <div class="card-title">{{list.step}}</div>
       <div class="line"></div>
     </div>
-    <div class="content">
+    <div class="card-content">
       <span>{{ list.content }}</span>
     </div>
     <button class="next-btn">
@@ -36,40 +36,17 @@ const tutorialList = ref([
 ])
 </script>
 
-<style scoped>
-  .container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0 40px;
-    margin: 0 auto;
-    max-width: 1100px;
+<style lang="postcss" scoped>
+  .cards-container {
+    @apply flex flex-wrap justify-between max-w-container mx-auto px-4;
   }
-  .card-container {
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-direction: column;
-    margin-bottom: 2em;
-    padding: 1.5em 0.5em;
-    gap: 1.5em;
-    border-radius: 1em;
-    flex-basis: calc((100% - 100px) / 3);
-    box-shadow: rgba(54, 65, 82, 0.226)
-    0px 1px 10px;
-    background: white;
+  .cards {
+    @apply relative overflow-hidden flex flex-col items-center justify-between h-96 p-4;
+    @apply rounded-lg shadow-xl bg-white;
+    flex-basis: calc((100% - 15%) / 3);
   }
-  .card-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 10px;
-    background: var(--primary-color);
+  .cards::after {
+    @apply content-[""] absolute top-0 left-0 w-full h-2 bg-p;
   }
   .title-container {
     display: flex;
@@ -86,7 +63,7 @@ const tutorialList = ref([
     height: 1px;
     background-color: rgba(54, 65, 82, 0.226);
   }
-  .content {
+  .card-content {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -120,22 +97,22 @@ const tutorialList = ref([
     }
   }
   @media (max-width: 1076px) {
-    .card-container {
-    display: flex;
-    flex-basis: calc((100% - 60px) / 2);
-    }
-    .container {
+    .cards-container {
     max-width: 800px;
+    }
+    .cards {
+    display: flex;
+    flex-basis: calc((100% - 15%) / 2);
     }
   }
   @media (max-width: 768px) {
-    .card-container {
-    display: flex;
-    flex-basis: calc((100% - 60px) / 1);
-    }
-    .container {
+    .cards-container {
     max-width: 500px;
     justify-content: center;
+    }
+    .cards {
+    display: flex;
+    flex-basis: calc((100% - 15%) / 1);
     }
   }
 </style>

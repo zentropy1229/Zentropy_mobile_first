@@ -1,11 +1,11 @@
 <template>
-  <header class="header-container" :class="{'show-back': active}">
+  <header class="header-container" :class="{'bg-p': active}">
     <div class="logo">
       <router-link :to="{name: 'home'}" class="header-nav">this is logo</router-link>
       </div>
       <ul class="header-navbar">
-        <li v-for="nav, i in navList" :key="nav.linkName" class="header-navs">
-          <router-link :to="{name: nav.linkName}" class="header-nav" :ref='el => navItem[i] = el'>{{ nav.content }}</router-link>
+        <li v-for="nav in navList" :key="nav.linkName" class="header-navs">
+          <router-link :to="{name: nav.linkName}" class="header-nav rounded-[5em] hover:bg-white/40">{{ nav.content }}</router-link>
         </li>
     </ul>
 
@@ -15,7 +15,6 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-const navItem = ref([])
 const active = ref(false)
 const navList = [
   {
@@ -54,47 +53,23 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style lang="postcss" scoped>
   .header-container {
-    position: sticky;
-    top: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: var(--nav-height);
-    z-index: 99;
+    @apply sticky flex items-center justify-center top-0 h-nav z-50;
   }
   .logo {
-    width: 150px;
-    height: var(--nav-height);
-    line-height: var(--nav-height);
+    @apply w-max h-nav leading-nav;
   }
   .header-navbar {
-    display: flex;
-    flex: 1 0 0;
-    list-style: none;
-    line-height: var(--height);
+    @apply flex flex-1 leading-nav;
   }
   .header-navs:nth-child(1), .header-navs:last-child {
-    margin-left: auto;
+    @apply ml-auto;
   }
   .header-nav {
-    font-weight: 300;
-    text-decoration: none;
-    padding: .5em 1em;
-    margin: 1em;
-    color: var(--text-color-white);
-  }
-  .header-nav:hover {
-    background-color: rgba(255, 255, 255, 0.205);
-    border-radius: 5em;
+    @apply font-light px-4 py-2 m-4 text-white;
   }
   .header-container .router-link-exact-active {
-    font-weight: 500;
-    background-color: rgba(230, 230, 230, 0.5);
-    border-radius: 5em;
-  }
-  .show-back {
-    background: var(--primary-color);
+    @apply font-medium bg-white/40 rounded-[5em];
   }
 </style>

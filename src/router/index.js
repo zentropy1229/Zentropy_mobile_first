@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomePage from '../views/HomePage.vue'
-import AboutPage from '../views/AboutPage.vue'
-import ContactPage from '../views/ContactPage.vue'
-import TeamIntroPage from '../views/TeamIntroPage.vue'
-import ToolIntroPage from '../views/ToolIntroPage.vue'
-import LoginPage from '../views/LoginPage.vue'
-import Header from '../components/HeaderUI.vue'
-import Footer from '@/views/FooterPage'
-import ChartPage from '@/components/ChartPage'
+import Header from '@/components/HeaderUI.vue'
+import Footer from '@/components/FooterUI.vue'
+import HomePage from '@/views/HomePage.vue'
+import AboutPage from '@/views/AboutPage.vue'
+import ContactPage from '@/views/ContactPage.vue'
+import TeamIntroPage from '@/views/TeamIntroPage.vue'
+import ToolIntroPage from '@/views/ToolIntroPage.vue'
+import LoginPage from '@/views/LoginPage.vue'
+import ChartPage from '@/views/ChartPage'
 
 const routes = [
   {
