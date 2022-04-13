@@ -10,7 +10,7 @@
 <script>
 import * as echarts from 'echarts'
 import { markRaw } from 'vue'
-import data from './chartdata/candlestickdata' // 图表数据
+import data from '@/assets/chartdata/candlestickdata' // 图表数据
 export default {
   name: 'candlestickChart',
   data () {

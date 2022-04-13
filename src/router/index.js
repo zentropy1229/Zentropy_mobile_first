@@ -6,6 +6,8 @@ import TeamIntroPage from '../views/TeamIntroPage.vue'
 import ToolIntroPage from '../views/ToolIntroPage.vue'
 import LoginPage from '../views/LoginPage.vue'
 import Header from '../components/HeaderUI.vue'
+import Footer from '@/views/FooterPage'
+import ChartPage from '@/components/ChartPage'
 
 const routes = [
   {
@@ -13,7 +15,8 @@ const routes = [
     name: 'home',
     components: {
       default: HomePage,
-      Header: Header
+      Header: Header,
+      Footer: Footer
     }
   },
   {
@@ -21,7 +24,8 @@ const routes = [
     name: 'about',
     components: {
       default: AboutPage,
-      Header: Header
+      Header: Header,
+      Footer: Footer
     }
   },
   {
@@ -29,7 +33,8 @@ const routes = [
     name: 'toolintro',
     components: {
       default: ToolIntroPage,
-      Header: Header
+      Header: Header,
+      Footer: Footer
     }
   },
   {
@@ -37,7 +42,8 @@ const routes = [
     name: 'contact',
     components: {
       default: ContactPage,
-      Header: Header
+      Header: Header,
+      Footer: Footer
     }
   },
   {
@@ -45,7 +51,8 @@ const routes = [
     name: 'teamintro',
     components: {
       default: TeamIntroPage,
-      Header: Header
+      Header: Header,
+      Footer: Footer
     }
   },
   {
@@ -53,6 +60,13 @@ const routes = [
     name: 'login',
     components: {
       default: LoginPage
+    }
+  },
+  {
+    path: '/chart-tools',
+    name: 'charttools',
+    components: {
+      default: ChartPage
     }
   }
 ]
