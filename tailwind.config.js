@@ -39,8 +39,8 @@ module.exports = {
           'padding-left': '.5rem',
           'padding-right': '.5rem',
           '@screen lg': {
-            'padding-left': '1.5rem',
-            'padding-right': '1.5rem'
+            'padding-left': '3rem',
+            'padding-right': '3rem'
           }
         }
       })

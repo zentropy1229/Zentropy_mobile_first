@@ -1,7 +1,7 @@
 <template>
   <div
     ref="guage"
-    class="relative h-[4.5rem] basis-full rounded-md md:basis-[calc(33%)]"
+    class="relative h-[4.5rem] basis-full rounded-md md:basis-[calc(30%)]"
   ></div>
 </template>
 
