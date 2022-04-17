@@ -254,7 +254,7 @@ onUnmounted(() => {
 
 <style lang="postcss" scoped>
 .desktop-nav-link {
-  @apply px-[.3rem] py-[.2rem] text-[.16rem] relative overflow-hidden block;
+  @apply px-[.3rem] py-[.2rem] text-[.16rem] font-light relative overflow-hidden block;
 }
 .desktop-nav-link::after {
   @apply content-[''] absolute rounded-full w-[.2rem] h-[.05rem] -left-1 -translate-x-1/2 bg-current bottom-px opacity-0;
@@ -282,7 +282,7 @@ onUnmounted(() => {
   @apply font-medium text-p;
 }
 .mobile-icon {
-  @apply w-[0.38rem] h-[0.38rem;]
+  @apply w-[0.4rem] h-[0.4rem;]
 }
 .mobile-member-btn {
   @apply block rounded-sm text-center text-[.3rem] py-1;

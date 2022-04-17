@@ -42,6 +42,7 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 const list = ref()
 const active = ref(false)
+let showCards
 const priceList = ref([
   {
     name: '台指數',
@@ -63,15 +64,15 @@ const priceList = ref([
   }
 ])
 onMounted(() => {
-  const listScrollHeight = list.value.scrollHeight
-  window.addEventListener('scroll', () => {
-    if (document.documentElement.scrollTop > listScrollHeight - 24) {
+  showCards = () => {
+    if (document.documentElement.scrollTop > list.value.offsetTop) {
       active.value = true
     } else active.value = false
-  })
+  }
+  window.addEventListener('scroll', showCards)
 })
 onUnmounted(() => {
-  window.removeEventListener('scroll', () => {})
+  window.removeEventListener('scroll', showCards)
 })
 </script>
 

@@ -1,17 +1,15 @@
 <template>
   <div class="relative flex flex-col">
-    <div class="flex-center container mb-2 flex-col">
+    <div class="flex-center container mb-2.5 flex-col">
       <div class="flex-center mb-2 flex-col">
-        <a class="title-text text-black hover:text-gray-600" href="#">
+        <a class="title-text mb-1 text-black hover:text-gray-600" href="#">
           <span>Market Show市場趨勢</span>
         </a>
-        <div class="subtitle-text mt-1 text-gray-300">
+        <div class="subtitle-text text-gray-300">
           <span>這裡可以放一些我們整理好的圖片，如果要用canvas畫也可以喔</span>
         </div>
       </div>
-      <div>
-        <SmallCards />
-      </div>
+      <SmallCards />
     </div>
     <div
       class="slider-container relative hidden h-max overflow-hidden lg:block"
@@ -19,11 +17,11 @@
       @mouseleave="noShow()"
     >
       <div
-        class="chart-container relative my-1 flex flex-nowrap"
+        class="chart-container relative mb-1.5 flex flex-nowrap"
         :style="{ '--place': move, '--time': time }"
       >
         <div
-          class="chart-image-container block basis-full px-[.5rem] py-[.4rem]"
+          class="chart-image-container block basis-full px-[.5rem] py-[.2rem]"
           v-for="chart in newChartList"
           :key="chart.id"
           :class="{ scale: now === chart.id }"
@@ -60,7 +58,7 @@
             />
           </svg>
         </button>
-        <div class="flex-center gap-1">
+        <div class="flex-center gap-[0.15rem]">
           <label v-for="dots in chartImageList" :key="dots.id">
             <input
               type="radio"
@@ -104,24 +102,6 @@ const chartImageList = ref([
   },
   {
     id: 2,
-    src: 'https://image-charts.com/chart?chbr=8&chd=t%3A10%2C15%2C25%2C30%2C40%2C80&chf=b0%2Clg%2C90%2C05B142%2C1%2C0CE858%2C0.2&chl=%7C%7C%7C%7C%2033%25%20!%7Cx2%20&chma=0%2C0%2C10%2C10&chs=700x450&cht=bvs&chtt=Revenue%20per%20month&chxl=0%3A%7CJan%7CFev%7CMar%7CAvr%7CMay&chxs=1N*cUSD0sz*%2C000000%2C14&chxt=x%2Cy&iclocale=en&icretina=1&icac=documentation&ichm=0b5aa5aee9abf7d2bc22a7ff1cffcd9ea7c72762a2673ed360da933ff54a330b',
-    content: '',
-    to: '#'
-  },
-  {
-    id: 3,
-    src: 'https://image-charts.com/chart.js/2.8.0?bkg=white&icac=documentation&c=ewogICJ0eXBlIjogImJhciIsCiAgImRhdGEiOiB7CiAgICAibGFiZWxzIjogWwogICAgICAiSmFudWFyeSIsCiAgICAgICJGZWJydWFyeSIsCiAgICAgICJNYXJjaCIsCiAgICAgICJBcHJpbCIsCiAgICAgICJNYXkiLAogICAgICAiSnVuZSIsCiAgICAgICJKdWx5IgogICAgXSwKICAgICJkYXRhc2V0cyI6IFsKICAgICAgewogICAgICAgICJsYWJlbCI6ICJEYXRhc2V0IDEiLAogICAgICAgICJiYWNrZ3JvdW5kQ29sb3IiOiBbCiAgICAgICAgICAicmdiKDI1NSwgOTksIDEzMikiLAogICAgICAgICAgInJnYigyNTUsIDE1OSwgNjQpIiwKICAgICAgICAgICJyZ2IoMjU1LCAyMDUsIDg2KSIsCiAgICAgICAgICAicmdiKDc1LCAxOTIsIDE5MikiLAogICAgICAgICAgInJnYig1NCwgMTYyLCAyMzUpIiwKICAgICAgICAgICJyZ2IoMTUzLCAxMDIsIDI1NSkiLAogICAgICAgICAgInJnYigyNTUsIDk5LCAxMzIpIgogICAgICAgIF0sCiAgICAgICAgInlBeGlzSUQiOiAieSIsCiAgICAgICAgImRhdGEiOiBbCiAgICAgICAgICAyMjYsCiAgICAgICAgICAxNiwKICAgICAgICAgIC00NCwKICAgICAgICAgIDg0LAogICAgICAgICAgLTExLAogICAgICAgICAgLTE0LAogICAgICAgICAgMjUKICAgICAgICBdCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAibGFiZWwiOiAiRGF0YXNldCAyIiwKICAgICAgICAiYmFja2dyb3VuZENvbG9yIjogInJnYigyMDEsIDIwMywgMjA3KSIsCiAgICAgICAgInlBeGlzSUQiOiAieTEiLAogICAgICAgICJkYXRhIjogWwogICAgICAgICAgLTYxLAogICAgICAgICAgMjEsCiAgICAgICAgICAtNjgsCiAgICAgICAgICAtNTAsCiAgICAgICAgICAtNTYsCiAgICAgICAgICA4OSwKICAgICAgICAgIC05NQogICAgICAgIF0KICAgICAgfQogICAgXQogIH0sCiAgIm9wdGlvbnMiOiB7CiAgICAidGl0bGUiOiB7CiAgICAgICJkaXNwbGF5IjogdHJ1ZSwKICAgICAgInRleHQiOiAiQ2hhcnQuanMgQmFyIENoYXJ0IC0gTXVsdGkgQXhpcyIKICAgIH0sCiAgICAidG9vbHRpcHMiOiB7CiAgICAgICJtb2RlIjogImluZGV4IiwKICAgICAgImludGVyc2VjdCI6IHRydWUKICAgIH0sCiAgICAic2NhbGVzIjogewogICAgICAieUF4ZXMiOiBbCiAgICAgICAgewogICAgICAgICAgImlkIjogInkiLAogICAgICAgICAgInR5cGUiOiAibGluZWFyIiwKICAgICAgICAgICJkaXNwbGF5IjogdHJ1ZSwKICAgICAgICAgICJwb3NpdGlvbiI6ICJsZWZ0IgogICAgICAgIH0sCiAgICAgICAgewogICAgICAgICAgImlkIjogInkxIiwKICAgICAgICAgICJ0eXBlIjogImxpbmVhciIsCiAgICAgICAgICAiZGlzcGxheSI6IHRydWUsCiAgICAgICAgICAicG9zaXRpb24iOiAicmlnaHQiLAogICAgICAgICAgImdyaWRMaW5lcyI6IHsKICAgICAgICAgICAgImRyYXdPbkNoYXJ0QXJlYSI6IGZhbHNlCiAgICAgICAgICB9CiAgICAgICAgfQogICAgICBdCiAgICB9CiAgfQp9&encoding=base64&ichm=7997509fe74b92a1098f26d164bf3cc208bd89be3e615fe62f1fa40b19712370',
-    content: '',
-    to: '#'
-  },
-  {
-    id: 4,
-    src: 'https://image-charts.com/chart.js/2.8.0?bkg=white&icac=documentation&c=ewogIHR5cGU6ICdiYXInLAogIGRhdGE6IHsKICAgIGxhYmVsczogWydKYW51YXJ5JywgJ0ZlYnJ1YXJ5JywgJ01hcmNoJywgJ0FwcmlsJywgJ01heScsICdKdW5lJywgJ0p1bHknXSwKICAgIGRhdGFzZXRzOiBbCiAgICAgIHsKICAgICAgICBsYWJlbDogJ0RhdGFzZXQgMScsCiAgICAgICAgYmFja2dyb3VuZENvbG9yOiAncmdiKDI1NSwgOTksIDEzMiknLAogICAgICAgIGRhdGE6IFs1MiwgLTkzLCAtMjUsIC02NywgNTEsIC05NywgOV0sCiAgICAgIH0sCiAgICAgIHsKICAgICAgICBsYWJlbDogJ0RhdGFzZXQgMicsCiAgICAgICAgYmFja2dyb3VuZENvbG9yOiAncmdiKDU0LCAxNjIsIDIzNSknLAogICAgICAgIGRhdGE6IFsxNywgMTMsIC0zOCwgODksIC0xMCwgNzUsIC01Ml0sCiAgICAgIH0sCiAgICAgIHsKICAgICAgICBsYWJlbDogJ0RhdGFzZXQgMycsCiAgICAgICAgYmFja2dyb3VuZENvbG9yOiAncmdiKDc1LCAxOTIsIDE5MiknLAogICAgICAgIGRhdGE6IFstODQsIDMzLCA4MCwgNzUsIC04MywgLTM0LCAtNTBdLAogICAgICB9LAogICAgXSwKICB9LAogIG9wdGlvbnM6IHsKICAgIHRpdGxlOiB7CiAgICAgIGRpc3BsYXk6IHRydWUsCiAgICAgIHRleHQ6ICdDaGFydC5qcyBCYXIgQ2hhcnQgLSBTdGFja2VkJywKICAgIH0sCiAgICBzY2FsZXM6IHsKICAgICAgeEF4ZXM6IFsKICAgICAgICB7CiAgICAgICAgICBzdGFja2VkOiB0cnVlLAogICAgICAgIH0sCiAgICAgIF0sCiAgICAgIHlBeGVzOiBbCiAgICAgICAgewogICAgICAgICAgc3RhY2tlZDogdHJ1ZSwKICAgICAgICB9LAogICAgICBdLAogICAgfSwKICB9LAp9Cg%3D%3D&encoding=base64&ichm=203f6426d1f74cf129d145097970b1c8f6ca9144b8ad4134229df8fbb80ad3af',
-    content: '',
-    to: '#'
-  },
-  {
-    id: 5,
     src: 'https://image-charts.com/chart?chbr=8&chd=t%3A10%2C15%2C25%2C30%2C40%2C80&chf=b0%2Clg%2C90%2C05B142%2C1%2C0CE858%2C0.2&chl=%7C%7C%7C%7C%2033%25%20!%7Cx2%20&chma=0%2C0%2C10%2C10&chs=700x450&cht=bvs&chtt=Revenue%20per%20month&chxl=0%3A%7CJan%7CFev%7CMar%7CAvr%7CMay&chxs=1N*cUSD0sz*%2C000000%2C14&chxt=x%2Cy&iclocale=en&icretina=1&icac=documentation&ichm=0b5aa5aee9abf7d2bc22a7ff1cffcd9ea7c72762a2673ed360da933ff54a330b',
     content: '',
     to: '#'

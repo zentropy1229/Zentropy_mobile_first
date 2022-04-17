@@ -6,10 +6,8 @@
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width=".2rem"
-        height=".2rem"
+        class="h-[.2rem] w-[.2rem]"
         fill="currentColor"
-        class="inline"
         viewBox="0 0 16 16"
       >
         <path

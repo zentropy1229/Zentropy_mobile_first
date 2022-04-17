@@ -1,7 +1,7 @@
 <template>
   <div class="flex-center container relative flex-col">
     <div
-      class="shadow-set sticky top-[1.5rem] mb-2 rounded-md lg:flex"
+      class="shadow-set sticky top-[1.8rem] mb-2 rounded-md lg:flex"
       v-for="num of 3"
       :key="num"
     >

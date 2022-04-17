@@ -1,6 +1,12 @@
 <template>
-  <div class="container">
-    <div class="mb-[.8rem]" v-for="num of 3" :key="num">
+  <div class="container" ref="feature">
+    <div
+      class="mb-[.8rem] opacity-0"
+      v-for="(num, index) of 3"
+      :key="num"
+      :class="{ animation: active }"
+      :style="{ '--delay-time': index / 5 + 's' }"
+    >
       <div
         class="title-container relative mb-1 w-max pl-1 text-[.25rem] font-bold"
       >
@@ -14,10 +20,42 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { onMounted, onUnmounted, ref } from 'vue'
+const feature = ref()
+const active = ref(false)
+let showFeature
+onMounted(() => {
+  showFeature = () => {
+    const startPoint =
+      feature.value.offsetTop - feature.value.offsetHeight * 1.5
+    if (document.documentElement.scrollTop > startPoint) {
+      active.value = true
+    } else active.value = false
+  }
+  window.addEventListener('scroll', showFeature)
+})
+onUnmounted(() => {
+  window.removeEventListener('scroll', showFeature)
+})
+</script>
 
 <style lang="postcss" scoped>
 .title-container::after {
   @apply absolute top-0 left-0 h-full w-[.1rem] bg-p content-[''];
+}
+.animation {
+  --delay-time: 0s;
+  animation: showFeature 2000ms ease-in-out forwards;
+  animation-delay: var(--delay-time);
+}
+@keyframes showFeature {
+  0% {
+    transform: translateX(-200px);
+  }
+  100% {
+    transform: translateX(0px);
+    opacity: 1;
+  }
 }
 </style>

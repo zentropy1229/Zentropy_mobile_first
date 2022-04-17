@@ -1,7 +1,7 @@
 <template>
   <div
     ref="guage"
-    class="relative h-[4.5rem] basis-full rounded-md md:basis-[calc(30%)]"
+    class="relative h-[5rem] basis-full rounded-md lg:basis-[calc(45%)]"
   ></div>
 </template>
 
@@ -55,17 +55,18 @@ let resizeHandler
 // ----------------------------------------------lifecycle----------------------------------------------
 onMounted(() => {
   const myChart = echarts.init(guage.value)
+  myChart.setOption(option)
   const startAnimationPoint =
     guage.value.offsetTop - guage.value.offsetHeight * 1.5
   startAnimation = () => {
-    if (window.innerWidth < 768) return option && myChart.setOption(option)
-    if (document.documentElement.scrollTop > startAnimationPoint) {
-      option && myChart.setOption(option)
-    } else if (
-      document.documentElement.scrollTop <
-      startAnimationPoint - window.innerHeight
+    const nowScroll = document.documentElement.scrollTop
+    console.log(nowScroll)
+    if (
+      nowScroll > startAnimationPoint &&
+      nowScroll < startAnimationPoint + 40
     ) {
       myChart.clear()
+      myChart.setOption(option)
     }
   }
   resizeHandler = () => {

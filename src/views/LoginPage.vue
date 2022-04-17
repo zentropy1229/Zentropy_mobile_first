@@ -52,7 +52,7 @@
         </form>
       </div>
       <div class="my-1 h-px w-full bg-slate-200"></div>
-      <div class="flex-center flex-col text-[.15rem]">
+      <div class="flex-center flex-col text-[.2rem]">
         <div class="flex-center mb-1">
           <span>還沒有帳號?</span>
           <router-link
