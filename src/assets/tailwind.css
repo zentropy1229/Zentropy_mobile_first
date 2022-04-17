@@ -3,3 +3,41 @@
 @tailwind components;
 
 @tailwind utilities;
+
+@layer base {
+  html {
+    @apply text-[18.7vw] md:text-[10.7vw] lg:text-[min(8.7vw,6.5em)];
+  }
+  a {
+    @apply m-0 p-0 leading-none;
+  }
+  :root {
+    --navbar-height: 0.9rem;
+  }
+}
+
+@layer components {
+  .main-block {
+    @apply mx-auto py-3;
+  }
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+  .x-center {
+    @apply left-1/2 -translate-x-1/2;
+  }
+  .y-center {
+    @apply top-1/2 -translate-y-1/2;
+  }
+  .title-text {
+    @apply text-[.4rem] font-bold;
+  }
+  .subtitle-text {
+    @apply text-[.2rem];
+  }
+  .shadow-set {
+    @apply bg-gray-50;
+    box-shadow: inset rgb(255, 255, 255) 1px 1px 0 0.4px,
+      0 20px 30px -5px rgb(0 0 0 / 0.1), 0 8px 15px -6px rgb(0 0 0 / 0.1);
+  }
+}

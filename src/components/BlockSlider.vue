@@ -1,47 +1,86 @@
 <template>
-  <div class="show-chart">
-    <div class="title-container">
-      <div class="text-title">
-        <a class="flex-center text-4xl text-black font-bold hover:text-gray-600" href="#">
-          <p>Market Show市場趨勢</p>
+  <div class="relative flex flex-col">
+    <div class="flex-center container mb-2 flex-col">
+      <div class="flex-center mb-2 flex-col">
+        <a class="title-text text-black hover:text-gray-600" href="#">
+          <span>Market Show市場趨勢</span>
         </a>
-        <div class="text-gray-300"><span>這裡可以放一些我們整理好的圖片，如果要用canvas畫也可以喔</span></div>
+        <div class="subtitle-text mt-1 text-gray-300">
+          <span>這裡可以放一些我們整理好的圖片，如果要用canvas畫也可以喔</span>
+        </div>
       </div>
-      <div class="ml-auto mr-4">
+      <div>
         <SmallCards />
       </div>
     </div>
-    <div class="slider-container" @mouseenter="Show()" @mouseleave="noShow()">
-      <div class="chart-container" :style="{'--place': move, '--time': time}">
-        <div class="chart-item" v-for="chart in newChartList" :key="chart.id" :class="{'scale': now === chart.id}">
-          <img class="chart-images" :src="chart.src" alt="chart.content">
+    <div
+      class="slider-container relative hidden h-max overflow-hidden lg:block"
+      @mouseenter="Show()"
+      @mouseleave="noShow()"
+    >
+      <div
+        class="chart-container relative my-1 flex flex-nowrap"
+        :style="{ '--place': move, '--time': time }"
+      >
+        <div
+          class="chart-image-container block basis-full px-[.5rem] py-[.4rem]"
+          v-for="chart in newChartList"
+          :key="chart.id"
+          :class="{ scale: now === chart.id }"
+        >
+          <img
+            class="chart-image h-[25vw] min-w-[50vw] border border-slate-100 bg-white object-contain shadow-xl"
+            :src="chart.src"
+            alt="chart.content"
+          />
         </div>
       </div>
       <div class="tools-group">
         <button class="prev-btn" @click="change(now - 1)" :disabled="active">
-          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-          <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-3 w-3"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"
+            />
           </svg>
         </button>
         <button class="next-btn" @click="change(now + 1)" :disabled="active">
-          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-          <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-3 w-3"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"
+            />
           </svg>
         </button>
-        <div class="radio-btn">
+        <div class="flex-center gap-1">
           <label v-for="dots in chartImageList" :key="dots.id">
-            <input type="radio" name="dots" class="input-dots hidden" :checked="nowRealStep === dots.id" @click="change(dots.id)">
-            <span class="dots"></span>
+            <input
+              type="radio"
+              name="dots"
+              class="input-dots hidden"
+              :checked="nowRealStep === dots.id"
+              @click="change(dots.id)"
+            />
+            <span
+              class="dots block h-[.1rem] w-[.1rem] cursor-pointer rounded-full bg-pbtn"
+            ></span>
           </label>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import SmallCards from './smallComponents/SmallCards'
 const now = ref(0)
 const time = ref('')
@@ -89,10 +128,17 @@ const chartImageList = ref([
   }
 ])
 const newChartList = computed(() => {
-  return chartImageList.value.slice(-2).concat(chartImageList.value.slice(0)).concat(chartImageList.value.slice(0, 2))
+  return chartImageList.value
+    .slice(-2)
+    .concat(chartImageList.value.slice(0))
+    .concat(chartImageList.value.slice(0, 2))
 })
 const nowRealStep = computed(() => {
-  return now.value > chartImageList.value.length - 1 ? 0 : now.value < 0 ? chartImageList.value.length - 1 : now.value
+  return now.value > chartImageList.value.length - 1
+    ? 0
+    : now.value < 0
+      ? chartImageList.value.length - 1
+      : now.value
 })
 const change = (index) => {
   const limit = newChartList.value.length - 1
@@ -109,7 +155,7 @@ const change = (index) => {
     move.value = -1 * -1 * chartWidth.value + defaultWidth.value + 'px' // 但是接下來要去的位置是-1位置的那個
     setTimeout(() => {
       time.value = 0 + 'ms' // 然後再快速變換到正確的位置
-      move.value = -1 * (now.value) * chartWidth.value + defaultWidth.value + 'px'
+      move.value = -1 * now.value * chartWidth.value + defaultWidth.value + 'px'
     }, defaultTime)
     return
   }
@@ -119,13 +165,27 @@ const change = (index) => {
     move.value = -1 * (limit - 3) * chartWidth.value + defaultWidth.value + 'px' // 但是接下來要去的位置是到數第二位置的那個
     setTimeout(() => {
       time.value = 0 + 'ms' // 然後再快速變換到正確的位置
-      move.value = -1 * (now.value) * chartWidth.value + defaultWidth.value + 'px'
+      move.value = -1 * now.value * chartWidth.value + defaultWidth.value + 'px'
     }, defaultTime)
     return
   }
   time.value = defaultTime + 'ms'
-  move.value = -1 * (now.value) * chartWidth.value + defaultWidth.value + 'px'
+  move.value = -1 * now.value * chartWidth.value + defaultWidth.value + 'px'
 }
+const initialPosition = () => {
+  const imageContainerWidth = document.querySelector(
+    '.chart-image-container'
+  ).offsetWidth
+  const html = document.querySelector('html')
+  const htmlSize = document.defaultView.getComputedStyle(html, null)
+  defaultWidth.value =
+    -1 *
+    (1.5 * imageContainerWidth + parseInt(htmlSize.fontSize.split('px')[0])) // 初始化位置，移動1.5格
+  chartWidth.value = imageContainerWidth
+  // 接下來每一次需要增加的距離，因為前面把padding32扣掉了，所以這邊不用扣
+  move.value = -1 * now.value * chartWidth.value + defaultWidth.value + 'px' // 移動
+}
+// --------------------- button show ---------------------//
 const noShow = () => {
   document.querySelector('.prev-btn').style.setProperty('display', 'none')
   document.querySelector('.next-btn').style.setProperty('display', 'none')
@@ -134,79 +194,46 @@ const Show = () => {
   document.querySelector('.prev-btn').style.setProperty('display', 'block')
   document.querySelector('.next-btn').style.setProperty('display', 'block')
 }
-const initialPosition = () => {
-  const tempWidth = document.querySelector('.slider-container').offsetWidth
-  console.log(tempWidth)
-  document.querySelectorAll('.chart-item img').forEach(item => {
-    item.style.setProperty('width', ((tempWidth) / 2) + 'px')
-  })
-  defaultWidth.value = -1 * (1.5 * (document.querySelector('.chart-item').offsetWidth + 64)) // 初始化位置，移動1.5格
-  chartWidth.value = (document.querySelector('.chart-item').offsetWidth) // 接下來每一次需要增加的距離，因為前面把padding32扣掉了，所以這邊不用扣
-  move.value = -1 * (now.value) * chartWidth.value + defaultWidth.value + 'px' // 移動
-}
 // --------------------- life Cycle ---------------------//
 onMounted(() => {
   initialPosition()
-  window.addEventListener('resize', () => {
-    initialPosition()
-  })
+  window.addEventListener('resize', initialPosition)
+})
+onUnmounted(() => {
+  window.removeEventListener('resize', initialPosition)
 })
 </script>
 
 <style scoped lang="postcss">
-  .flex-center {
-    @apply flex items-center justify-center;
-  }
-  .show-chart {
-    @apply flex flex-col relative w-full h-full;
-  }
-  .title-container {
-    @apply flex-center;
-  }
-  .text-title {
-    @apply flex flex-col items-start gap-2 ml-4;
-  }
-  .slider-container {
-    @apply relative p-8 py-16 overflow-hidden h-max;
-  }
-  .chart-container {
-    --time: 0ms;
-    --place: 0px;
-    @apply relative flex flex-nowrap mb-4;
-    transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
-    transition-duration: var(--time);
-    transform: translate3d(var(--place), 0px, 0px);
-  }
-  .chart-item {
-    --scale: 1;
-    @apply block basis-full p-8;
-    transform: scale(var(--scale));
-    transition: var(--time);
-  }
-  .chart-item.scale {
-    --scale: 1.05;
-  }
-  .chart-images {
-    @apply shadow-xl border border-slate-100 object-contain max-w-[2560px] h-[400px];
-  }
-  /* tools */
-  .next-btn, .prev-btn {
-    @apply absolute top-2/4 left-0 bg-transparent cursor-pointer text-pbtn -translate-y-2/4;
-  }
-  .next-btn {
-    @apply left-full -translate-x-full -translate-y-2/4;
-  }
-  .next-btn:hover, .prev-btn:hover {
-    @apply text-phover;
-  }
-  .radio-btn {
-    @apply flex-center gap-3;
-  }
-  .input-dots:hover ~ .dots,
-  .input-dots:checked ~ .dots {
-    @apply bg-phover
-  }
-  .dots {
-    @apply block w-3 h-3 rounded-full cursor-pointer bg-pbtn;
-  }
+.chart-container {
+  --time: 0ms;
+  --place: 0px;
+  transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+  transition-duration: var(--time);
+  transform: translate3d(var(--place), 0px, 0px);
+}
+.chart-image-container {
+  --scale: 1;
+  transform: scale(var(--scale));
+  transition: var(--time);
+}
+.chart-image-container.scale {
+  --scale: 1.05;
+}
+/* tools */
+.next-btn,
+.prev-btn {
+  @apply absolute top-2/4 left-0 -translate-y-2/4 cursor-pointer bg-transparent text-pbtn;
+}
+.next-btn {
+  @apply left-full -translate-x-full -translate-y-2/4;
+}
+.next-btn:hover,
+.prev-btn:hover {
+  @apply text-phover;
+}
+.input-dots:hover ~ .dots,
+.input-dots:checked ~ .dots {
+  @apply bg-phover;
+}
 </style>

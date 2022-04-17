@@ -1,20 +1,40 @@
 <template>
-  <div class="show-block-list" :class="{animation: active}" ref="list">
-  <div class="container" v-for="list in priceList" :key="list.name">
-    <div class="both-container">
-      <div class="left-container">
-        <span>{{list.name}}</span>
-        <span class="price" :class="{'up-status': list.delta > 0}">{{ list.price }}</span>
+  <div
+    class="flex flex-col gap-2 md:flex-row"
+    :class="{ animation: active }"
+    ref="list"
+  >
+    <div
+      class="flex flex-col justify-between rounded-md border-2 bg-white p-1 text-[.2rem] shadow-lg"
+      v-for="list in priceList"
+      :key="list.name"
+    >
+      <div class="mb-1 flex justify-between">
+        <div class="flex flex-col font-bold">
+          <span>{{ list.name }}</span>
+          <span
+            :class="{
+              'text-red-500': list.delta > 0,
+              'text-green-500': list.delta < 0
+            }"
+            >{{ list.price }}</span
+          >
+        </div>
+        <div
+          class="flex-center ml-2 h-[.6rem] w-[.6rem] rounded-full text-[.18rem] text-white"
+          :class="{
+            'bg-red-500': list.delta > 0,
+            'bg-green-500': list.delta < 0
+          }"
+        >
+          <span>{{ list.delta }}%</span>
+        </div>
       </div>
-      <div class="right-container" :class="{'up-status': list.delta > 0}">
-        <span>{{list.delta}}%</span>
+      <div class="flex justify-between text-gray-400">
+        <span>成交量</span>
+        <span>{{ list.trade }}</span>
       </div>
     </div>
-    <div class="bottom">
-      <span>成交量</span>
-      <span>{{list.trade}}</span>
-    </div>
-  </div>
   </div>
 </template>
 
@@ -45,8 +65,9 @@ const priceList = ref([
 onMounted(() => {
   const listScrollHeight = list.value.scrollHeight
   window.addEventListener('scroll', () => {
-    if (document.documentElement.scrollTop > (listScrollHeight - 24)) active.value = true
-    else active.value = false
+    if (document.documentElement.scrollTop > listScrollHeight - 24) {
+      active.value = true
+    } else active.value = false
   })
 })
 onUnmounted(() => {
@@ -55,64 +76,15 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-  .show-block-list {
-    display: flex;
-    gap: 1em;
+.animation {
+  animation: initalShow 1s ease forwards;
+}
+@keyframes initalShow {
+  0% {
+    transform: translateY(100px);
   }
-  .show-block-list.animation {
-    animation: initalShow 1s ease forwards;
+  100% {
+    transform: translateY(0);
   }
-  .container {
-    --default-color: rgb(8, 83, 1);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border-radius: 1em;
-    border: 1px solid rgba(145, 145, 145, 0.363);
-    box-shadow: rgba(145, 145, 145, 0.363)
-    0px 1px 10px;
-    padding: 1em;
-    gap: .5em;
-  }
-  .both-container {
-    display: flex;
-    gap: 2em
-  }
-  .left-container {
-    display: flex;
-    flex-direction: column;
-    font-weight: 500;
-  }
-  .left-container .price {
-    color: var(--default-color);
-  }
-  .right-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--default-color);
-    color: white;
-    border-radius: 1em;
-    font-size: .9em;
-    padding: .5em;
-    width: 60px;
-    height: 50px;
-  }
-  .bottom {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    color: rgb(145, 145, 145)
-  }
-  .up-status {
-    --default-color: rgb(207, 31, 0);
-  }
-  @keyframes initalShow {
-    0% {
-      transform: translateY(100px);
-    }
-    100% {
-      transform: translateY(0);
-    }
-  }
+}
 </style>
