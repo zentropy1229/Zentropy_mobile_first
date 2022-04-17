@@ -1,12 +1,20 @@
 <template>
   <div
-    class="flex-center relative h-screen overflow-hidden bg-white bg-cover md:bg-loginPage"
+    class="lg:flex-center relative h-screen bg-white bg-cover lg:overflow-hidden lg:bg-loginPage"
   >
-    <div class="w-full rounded-md bg-white py-2 px-2 md:w-20">
-      <div class="mb-2 text-[2em] font-bold text-p">
+    <div class="w-full rounded-md bg-white py-2 px-2 lg:w-20">
+      <div class="mb-4 text-[2em] font-bold text-p xs:mb-2">
         <h1>Zentropy帳戶登入</h1>
       </div>
       <div>
+        <div
+          class="relative mb-2 pl-[1.5em] after:absolute after:inset-0 after:w-[.5em] after:bg-gray-600"
+        >
+          <span class="block text-[1.6em] text-gray-600">歡迎回來</span>
+          <span class="mb-1 block text-[1em] text-gray-400"
+            >登入開啟全新的一天 !</span
+          >
+        </div>
         <form class="flex-center flex-col gap-1.5" @submit.prevent="submitForm">
           <div class="field">
             <input
