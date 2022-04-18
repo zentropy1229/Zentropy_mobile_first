@@ -5,7 +5,7 @@
     ref="list"
   >
     <div
-      class="flex flex-col justify-between rounded-md border-2 bg-white p-1 text-[.2rem] shadow-lg"
+      class="span-text-lg flex flex-col justify-between rounded-md border-2 bg-white p-1 shadow-lg"
       v-for="list in priceList"
       :key="list.name"
     >
@@ -21,7 +21,7 @@
           >
         </div>
         <div
-          class="flex-center ml-2 h-[.6rem] w-[.6rem] rounded-full text-[.18rem] text-white"
+          class="flex-center ml-2 h-[.6rem] w-[.6rem] rounded-full text-white"
           :class="{
             'bg-red-500': list.delta > 0,
             'bg-green-500': list.delta < 0

@@ -2,16 +2,18 @@
   <div
     class="lg:flex-center relative h-screen bg-white bg-cover lg:overflow-hidden lg:bg-loginPage"
   >
-    <div class="w-full rounded-md bg-white py-2 px-2 lg:w-20">
-      <div class="mb-4 text-[2em] font-bold text-p xs:mb-2">
+    <div class="rounded-md bg-white p-2 lg:w-20">
+      <div class="slideLeft subtitle-text-lg mb-4 font-bold text-p xs:mb-2">
         <h1>Zentropy帳戶登入</h1>
       </div>
       <div>
         <div
-          class="relative mb-2 pl-[1.5em] after:absolute after:inset-0 after:w-[.5em] after:bg-gray-600"
+          class="relative mb-2 overflow-hidden pl-[.3rem] after:absolute after:inset-0 after:w-[.1rem] after:bg-gray-600"
         >
-          <span class="block text-[1.6em] text-gray-600">歡迎回來</span>
-          <span class="mb-1 block text-[1em] text-gray-400"
+          <span class="slideLeft subtitle-text-sm block text-gray-600"
+            >歡迎回來</span
+          >
+          <span class="slideLeft span-text block text-gray-400"
             >登入開啟全新的一天 !</span
           >
         </div>
@@ -53,14 +55,14 @@
             >
           </div>
           <button
-            class="w-full bg-slate-600 py-[.25rem] text-[.2rem] text-white hover:bg-blue-600"
+            class="span-text-lg w-full bg-slate-600 py-[.2rem] text-white hover:bg-blue-600"
           >
             <p>登入</p>
           </button>
         </form>
       </div>
       <div class="my-1 h-px w-full bg-slate-200"></div>
-      <div class="flex-center flex-col text-[.2rem]">
+      <div class="flex-center span-text flex-col">
         <div class="flex-center mb-1">
           <span>還沒有帳號?</span>
           <router-link
@@ -81,7 +83,7 @@
       ></div>
       <div class="circle-item top-10 left-8 h-4 w-4"></div>
       <div
-        class="circle-item left-4 top-24 h-8 w-4"
+        class="circle-item left-4 top-20 h-8 w-4"
         style="--circle-item-rotate: 30deg"
       ></div>
       <div
@@ -152,16 +154,16 @@ const passwordShrink = computed(() => {
 
 <style lang="postcss" scoped>
 .field {
-  @apply relative flex w-full flex-col text-[.22rem] text-slate-300;
+  @apply relative flex w-full flex-col text-[length:var(--input-holder-text)] text-slate-300;
 }
 .input-frame {
-  @apply border border-slate-200 bg-transparent p-[.18rem] text-[.25rem] text-slate-800 outline-none;
+  @apply border border-slate-200 bg-transparent p-[.16rem] text-[length:var(--input-text)] text-slate-800 outline-none;
 }
 .error-text {
   @apply mb-1 rounded-lg text-center text-rose-600;
 }
 .initial-placeholder {
-  @apply pointer-events-none absolute top-1/2 left-[.2rem] -translate-y-1/2 px-[.02rem] font-light transition-all duration-200 ease-in-out;
+  @apply pointer-events-none absolute top-1/2 left-[.2rem] -translate-y-1/2 font-light transition-all duration-200 ease-in-out;
 }
 .placeholder-focus {
   @apply top-0 left-[0.1rem] scale-[.85] bg-white;

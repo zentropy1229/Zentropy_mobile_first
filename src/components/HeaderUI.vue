@@ -132,7 +132,9 @@
               d="M2 1a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2ZM1 3a1 1 0 0 1 1-1h2v2H1V3Zm4 10V2h9a1 1 0 0 1 1 1v9c0 .285-.12.543-.31.725C14.15 11.494 12.822 10 10 10c-3.037 0-4.345 1.73-4.798 3H5Zm-4-2h3v2H2a1 1 0 0 1-1-1v-1Zm3-1H1V8h3v2Zm0-3H1V5h3v2Z"
             />
           </svg>
-          <span class="ml-1 text-[.2rem] text-p">會員中心</span>
+          <span class="ml-1 text-[length:var(--mobile-navlink-text)] text-p"
+            >會員中心</span
+          >
           <button class="mobile-cancel-btn" @click="showMobileMember">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -254,13 +256,13 @@ onUnmounted(() => {
 
 <style lang="postcss" scoped>
 .desktop-nav-link {
-  @apply px-[.3rem] py-[.2rem] text-[.16rem] font-light relative overflow-hidden block;
+  @apply relative block overflow-hidden px-[.3rem] py-[.2rem] text-[length:var(--navlink-text)] font-light;
 }
 .desktop-nav-link::after {
-  @apply content-[''] absolute rounded-full w-[.2rem] h-[.05rem] -left-1 -translate-x-1/2 bg-current bottom-px opacity-0;
+  @apply absolute -left-1 bottom-px h-[.05rem] w-[.2rem] -translate-x-1/2 rounded-full bg-current opacity-0 content-[''];
 }
-.desktop-nav-link:hover.desktop-nav-link::after{
-  @apply transition-all duration-500 ease-in-out left-1/2 opacity-100;
+.desktop-nav-link:hover.desktop-nav-link::after {
+  @apply left-1/2 opacity-100 transition-all duration-500 ease-in-out;
 }
 .mobile-nav {
   @apply fixed top-0 z-50 h-screen w-screen bg-white text-black lg:hidden;
@@ -273,7 +275,7 @@ onUnmounted(() => {
   @apply flex flex-col p-2;
 }
 .mobile-nav-link {
-  @apply flex items-center justify-between pb-1 text-[.2rem];
+  @apply flex items-center justify-between pb-1 text-[length:var(--mobile-navlink-text)];
 }
 .mobile-cancel-btn {
   @apply ml-auto h-fit;
@@ -282,9 +284,9 @@ onUnmounted(() => {
   @apply font-medium text-p;
 }
 .mobile-icon {
-  @apply w-[0.4rem] h-[0.4rem;]
+  @apply h-[0.4rem] w-[0.4rem];
 }
 .mobile-member-btn {
-  @apply block rounded-sm text-center text-[.3rem] py-1;
+  @apply block rounded-sm py-1 text-center text-[length:var(--mobile-navlink-text)];
 }
 </style>

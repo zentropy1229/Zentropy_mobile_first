@@ -7,13 +7,11 @@
       :class="{ animation: active }"
       :style="{ '--delay-time': index / 5 + 's' }"
     >
-      <div
-        class="title-container relative mb-1 w-max pl-1 text-[.25rem] font-bold"
-      >
+      <div class="title-container subtitle-text relative mb-1 w-max pl-1">
         <p>投資有預期</p>
         <p>禪能更放心</p>
       </div>
-      <p class="text-[.18rem] text-gray-400">
+      <p class="span-text-lg text-gray-400">
         醫重條就快了兒性雄東不業整基們酒現營書車相增！高不的，素合我來檢故，用戲星問水。我開看處助對品上去味水活整身到，此的好友，華次顯家。時長班那教全英隨導冷小毛系家從是縣民直不操在小著那，化反雜著月。
       </p>
     </div>

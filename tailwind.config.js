@@ -19,9 +19,6 @@ module.exports = {
         pbtn: 'rgba(203, 238, 255, 0.8)',
         phover: 'rgba(54, 140, 253, 0.808)'
       },
-      lineHeight: {
-        nav: '64px'
-      },
       backgroundImage: {
         loginPage: "url('@/assets/loginBackground.png')"
       }

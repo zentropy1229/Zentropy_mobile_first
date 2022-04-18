@@ -1,9 +1,9 @@
 <template>
   <div class="container">
     <div>
-      <h2 class="title-text text-center">數據化的呈現方式</h2>
-      <p class="subtitle-text text-center text-gray-300">
-        以最輕鬆的方式找到最適合的交易點
+      <h2 class="title-text text-center">數據化的呈現</h2>
+      <p class="subtitle-text-sm text-center text-gray-300">
+        以輕鬆的方式找到最適合的交易點
       </p>
     </div>
     <div class="flex-center flex-wrap">

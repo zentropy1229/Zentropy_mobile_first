@@ -9,23 +9,21 @@
         class="title-container content-width relative flex flex-col justify-between gap-4 p-2"
       >
         <div>
-          <h2 class="mb-1 text-[.3rem] font-bold">我們的介紹{{ num }}</h2>
-          <span class="block text-[.18rem] text-gray-400"
+          <h2 class="subtitle-text mb-1">我們的介紹{{ num }}</h2>
+          <span class="span-text-lg block text-gray-400"
             >目事離員根回接明超登實工三品特技們他而孩媽價事用職再年不了氣時真農信的，比心樣不輪些……展心度精個務生問才界時養試電存願和公前展他他，常奇了了子二廣我人子，了常界子青陽北的來我。</span
           >
         </div>
         <div>
           <a
-            class="text-[.2rem] underline decoration-dashed decoration-2 underline-offset-8 hover:text-p"
+            class="span-text underline decoration-dashed decoration-2 underline-offset-8 hover:text-p"
             href="javascript:void(0)"
             >查看更多</a
           >
         </div>
       </div>
       <div class="content-width p-2">
-        <div
-          class="h-[20vw] w-full rounded-md border-2 border-gray-100 bg-sky-200 shadow-lg"
-        ></div>
+        <div class="h-[20vw] w-full rounded-md bg-gray-200"></div>
       </div>
     </div>
   </div>

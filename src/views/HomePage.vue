@@ -20,21 +20,21 @@
       </transition>
     </div>
     <div
-      class="x-center absolute top-1/4 text-[.7rem] font-black lg:top-[30%] lg:left-[15%] lg:-translate-x-0 lg:font-bold"
+      class="x-center absolute top-1/4 text-[length:var(--home-slogan-text)] font-black lg:top-[30%] lg:left-[15%] lg:-translate-x-0 lg:font-bold"
     >
       <div :class="showAnimationClass">
-        <span class="primary-title">Zentropy</span>
+        <span class="slogan-title">Zentropy</span>
       </div>
       <transition name="flip">
         <div v-if="active" class="flex flex-col items-center">
           <span class="hidden text-p lg:block">交易好伙伴</span>
           <div class="flex flex-col items-center lg:hidden">
-            <p class="primary-title text-p">Predict</p>
-            <p class="primary-title text-white">Trading</p>
+            <p class="slogan-title text-p">Predict</p>
+            <p class="slogan-title text-white">Trading</p>
           </div>
           <transition name="flip">
             <button
-              class="flex-center mt-1 rounded-[.25rem] bg-p p-1 text-[.35em] font-medium text-white hover:bg-white hover:text-black lg:w-full"
+              class="flex-center mt-1 rounded bg-p p-1 text-[length:var(--home-btn-text)] font-medium text-white hover:bg-white hover:text-black lg:w-full"
               v-if="active"
             >
               <span>Start Free</span>
@@ -120,7 +120,7 @@ onUnmounted(() => {
 .main-container {
   scrollbar-width: none;
 }
-.primary-title {
+.slogan-title {
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 .images {

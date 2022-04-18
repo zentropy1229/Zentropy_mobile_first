@@ -2,10 +2,10 @@
   <div class="relative flex flex-col">
     <div class="flex-center container mb-2.5 flex-col">
       <div class="flex-center mb-2 flex-col">
-        <a class="title-text mb-1 text-black hover:text-gray-600" href="#">
-          <span>Market Show市場趨勢</span>
+        <a class="mb-1 hover:text-gray-600" href="#">
+          <span class="title-text">Market Show市場趨勢</span>
         </a>
-        <div class="subtitle-text text-gray-300">
+        <div class="subtitle-text-sm text-gray-300">
           <span>這裡可以放一些我們整理好的圖片，如果要用canvas畫也可以喔</span>
         </div>
       </div>
