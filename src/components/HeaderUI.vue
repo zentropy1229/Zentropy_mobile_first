@@ -1,7 +1,11 @@
 <template>
   <header
-    class="sticky top-0 z-50 text-white"
-    :class="{ 'overflow-hidden': !active }"
+    class="sticky top-0 z-50"
+    :class="{
+      'overflow-hidden': !active,
+      'text-white': isHomePage,
+      'text-gray-600': !isHomePage
+    }"
   >
     <div
       class="flex h-[var(--navbar-height)] items-center justify-between px-2 transition duration-500 ease-in-out lg:scale-105"
@@ -169,8 +173,11 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+const route = useRoute()
 const active = ref(false)
+const isHomePage = ref(false)
 const mobileNavActive = ref(false)
 const mobileMemberActive = ref(false)
 const navList = [
@@ -238,6 +245,11 @@ const showNavBar = () => {
     active.value = true
   } else active.value = false
 }
+watch(route, () => {
+  console.log(route.name)
+  isHomePage.value = route.name === 'home'
+})
+// ---------------------------------------- life-cycle ----------------------------------------
 onMounted(() => {
   window.addEventListener('scroll', () => {
     if (document.documentElement.scrollTop) {
@@ -246,6 +258,7 @@ onMounted(() => {
       active.value = false
     }
   })
+  isHomePage.value = route.name === 'home'
 })
 onUnmounted(() => {
   window.removeEventListener('scroll', () => {})
