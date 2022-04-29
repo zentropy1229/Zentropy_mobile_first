@@ -7,49 +7,89 @@
 
 <script setup>
 import * as echarts from 'echarts'
-import { onMounted, ref, defineProps, toRef, onUnmounted } from 'vue'
+import {
+  onMounted,
+  ref,
+  defineProps,
+  toRef,
+  onUnmounted,
+  watch,
+  reactive,
+  computed
+} from 'vue'
 const guage = ref()
 const props = defineProps({
   scoreValue: {
     type: Number,
-    default: 0
+    default: undefined
+  },
+  scoreStr: {
+    type: String,
+    default: undefined
   }
 })
 const scoreValue = toRef(props, 'scoreValue')
-const option = {
-  tooltip: {
-    formatter: '預測結果 <br/>{b} : {c}%'
-  },
+const scoreStr = toRef(props, 'scoreStr')
+const option = reactive({
+  tooltip: computed(() => {
+    return {
+      formatter: `預測結果 <br/>{b} : ${scoreStr.value}`
+    }
+  }),
   textStyle: {
     fontSize: '.2rem'
   },
   series: [
     {
+      axisLabel: {
+        show: false
+      },
+      axisTick: {
+        show: false
+      },
+      axisLine: {
+        lineStyle: {
+          color: [
+            [0.2, '#55FA9F'],
+            [0.4, '#A0FBC9'],
+            [0.6, '#e3e3e3'],
+            [0.8, '#FBB1AD'],
+            [1, '#FA6961']
+          ]
+        }
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#e3e3e3'
+        }
+      },
+      splitNumber: 4,
       name: 'Pressure',
       type: 'gauge',
       progress: {
-        show: true
+        show: false
       },
-      detail: {
-        valueAnimation: true,
-        formatter: '{value}',
-        fontSize: '.2rem'
-      },
-      data: [
-        {
-          value: scoreValue.value,
-          name: '預測結果'
+      detail: computed(() => {
+        return {
+          valueAnimation: true,
+          formatter: scoreStr.value,
+          fontSize: '.2rem'
         }
-      ],
+      }),
+      data: computed(() => {
+        return [
+          {
+            value: scoreValue.value,
+            name: '預測結果'
+          }
+        ]
+      }),
       title: {
         fontSize: '.15rem'
-      },
-      axisLabel: {
-        fontSize: '.13rem'
       }
     }
   ]
-}
+})
 let startAnimation
 let resizeHandler
 // ----------------------------------------------lifecycle----------------------------------------------
@@ -60,7 +100,6 @@ onMounted(() => {
     guage.value.offsetTop - guage.value.offsetHeight * 1.5
   startAnimation = () => {
     const nowScroll = document.documentElement.scrollTop
-    console.log(nowScroll)
     if (
       nowScroll > startAnimationPoint &&
       nowScroll < startAnimationPoint + 40
@@ -74,6 +113,9 @@ onMounted(() => {
   }
   window.addEventListener('scroll', startAnimation)
   window.addEventListener('resize', resizeHandler)
+  watch(scoreValue, () => {
+    myChart.setOption(option)
+  })
 })
 onUnmounted(() => {
   window.removeEventListener('scroll', startAnimation)

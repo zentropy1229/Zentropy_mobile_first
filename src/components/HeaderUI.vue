@@ -246,7 +246,6 @@ const showNavBar = () => {
   } else active.value = false
 }
 watch(route, () => {
-  console.log(route.name)
   isHomePage.value = route.name === 'home'
 })
 // ---------------------------------------- life-cycle ----------------------------------------
