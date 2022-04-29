@@ -8,6 +8,8 @@ import TeamIntroPage from '@/views/TeamIntroPage.vue'
 import ToolIntroPage from '@/views/ToolIntroPage.vue'
 import LoginPage from '@/views/LoginPage.vue'
 import ChartPage from '@/views/ChartPage'
+import store from '@/store'
+import axios from 'axios'
 
 const routes = [
   {
@@ -81,6 +83,20 @@ const router = createRouter({
     }
   },
   routes
+})
+
+router.beforeEach(async (to, from) => {
+  await store.dispatch('initialize')
+  if (to.matched.some(record => record.meta.requireAuth)) {
+    if (!store.state.access) {
+      return { name: 'login' }
+    } else {
+      axios.defaults.headers.common.Authorization = 'Bearer ' + store.state.access
+    }
+  }
+  if (to.matched[0].name === 'login' && store.state.access) {
+    return { name: 'myaccount' }
+  }
 })
 
 export default router
