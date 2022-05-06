@@ -1,16 +1,16 @@
 <template>
   <header
-    class="sticky top-0 z-50"
+    class="sticky top-0 z-50 text-white"
     :class="{
       'overflow-hidden': !active,
-      'text-white': isHomePage,
-      'text-gray-600': !isHomePage
+      'border-b border-gray-400 bg-gray-600': !isHomePage
     }"
   >
     <div
       class="flex h-[var(--navbar-height)] items-center justify-between px-2 transition duration-500 ease-in-out lg:scale-105"
       :class="{
-        'bg-gray-50 text-gray-600 shadow-xl lg:scale-100': active
+        'bg-gray-50 text-gray-600 shadow-xl lg:scale-100': active && isHomePage,
+        'lg:scale-100': !isHomePage
       }"
       @mouseenter="active = true"
       @mouseleave="showNavBar"
@@ -19,16 +19,52 @@
         <a href="/" class="logo desktop-nav-link">this is logo</a>
       </div>
       <ul class="hidden flex-1 lg:flex">
-        <li
-          v-for="nav in navList"
-          :key="nav.linkName"
-          class="first:ml-auto last:ml-auto"
-        >
+        <li v-for="nav in navList" :key="nav.linkName" class="first:ml-auto">
           <router-link
             :to="{ name: nav.linkName }"
             class="desktop-nav-link hover:text-p"
             >{{ nav.content }}</router-link
           >
+        </li>
+        <li
+          class="relative ml-auto"
+          @mouseenter="showMemberLink = true"
+          @mouseleave="showMemberLink = false"
+        >
+          <a href="javascript:" class="desktop-nav-link hover:text-p">會員</a>
+          <div
+            class="span-text shadow-set absolute top-2 -left-2.5 h-0 overflow-hidden rounded transition-all"
+            :class="{
+              'show-member-link': showMemberLink,
+              'text-gray-600': !isHomePage
+            }"
+          >
+            <a
+              href="/login"
+              class="desktop-member-link"
+              v-if="!store.state.access"
+              >登入</a
+            >
+            <router-link
+              :to="{ name: 'signup' }"
+              class="desktop-member-link"
+              v-if="!store.state.access"
+              >註冊</router-link
+            >
+            <a
+              href="javascript:"
+              class="desktop-member-link"
+              v-if="store.state.access"
+              >會員中心</a
+            >
+            <div
+              class="desktop-member-link cursor-pointer"
+              v-if="store.state.access"
+              @click="logOut()"
+            >
+              登出
+            </div>
+          </div>
         </li>
       </ul>
       <!--mobile display-->
@@ -88,7 +124,7 @@
         </div>
         <ul class="mobile-nav-list">
           <li
-            v-for="nav in navListMobile"
+            v-for="nav in navList"
             :key="nav.linkName"
             class="mb-1 border-b border-slate-100 last:border-none"
           >
@@ -174,10 +210,14 @@
 
 <script setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 const route = useRoute()
+const router = useRouter()
+const store = useStore()
 const active = ref(false)
 const isHomePage = ref(false)
+const showMemberLink = ref(false)
 const mobileNavActive = ref(false)
 const mobileMemberActive = ref(false)
 const navList = [
@@ -186,37 +226,7 @@ const navList = [
     linkName: 'charttools'
   },
   {
-    content: '關於我們',
-    linkName: 'about'
-  },
-  {
-    content: '聯絡我們',
-    linkName: 'contact'
-  },
-  {
-    content: '功能介紹',
-    linkName: 'toolintro'
-  },
-  {
-    content: '團隊介紹',
-    linkName: 'teamintro'
-  },
-  {
-    content: '會員',
-    linkName: 'login'
-  }
-]
-const navListMobile = [
-  {
-    content: '首頁',
-    linkName: 'home'
-  },
-  {
-    content: '圖表',
-    linkName: 'charttools'
-  },
-  {
-    content: '關於我們',
+    content: '股票預測',
     linkName: 'about'
   },
   {
@@ -244,6 +254,10 @@ const showNavBar = () => {
   if (document.documentElement.scrollTop) {
     active.value = true
   } else active.value = false
+}
+const logOut = () => {
+  store.dispatch('logOut')
+  router.push({ name: 'home' })
 }
 watch(route, () => {
   isHomePage.value = route.name === 'home'
@@ -275,6 +289,12 @@ onUnmounted(() => {
 }
 .desktop-nav-link:hover.desktop-nav-link::after {
   @apply left-1/2 opacity-100 transition-all duration-500 ease-in-out;
+}
+.desktop-member-link {
+  @apply block w-6 py-0.5 text-center hover:bg-slate-100;
+}
+.show-member-link {
+  height: 1rem;
 }
 .mobile-nav {
   @apply fixed top-0 z-50 h-screen w-screen bg-white text-black lg:hidden;

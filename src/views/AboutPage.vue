@@ -36,7 +36,7 @@
               v-for="stockDetail of showStockName"
               :key="stockDetail.stock"
               @click="
-                stockContent = stockDetail.stock + ' ' + stockDetail.stockName
+                stockContent = stockDetail.stock + '-' + stockDetail.stockName
               "
             >
               <span v-html="searchMark(stockDetail)"></span>
@@ -79,7 +79,7 @@ const stock = ref('尚未查詢')
 // const router = useRouter()
 // const store = useStore()
 const send = async () => {
-  const formData = { stock: stockContent.value.split(' ')[0] }
+  const formData = { stock: stockContent.value.split('-')[0] }
   stock.value = '查詢中...'
   await axios
     .post('/stock/', formData)
@@ -134,8 +134,11 @@ const searchMark = computed(() => {
 watch(stockContent, (nV, oV) => {
   if (nV) {
     axios
-      .get('stock_name/', {
-        params: { stock: stockContent.value }
+      .get('api/stock_name/search', {
+        headers: {
+          Authorization: ''
+        },
+        params: { search: stockContent.value }
       })
       .then((res) => {
         showStockName.value = res.data

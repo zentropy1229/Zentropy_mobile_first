@@ -33,7 +33,7 @@
                 'placeholder-focus': accountShrink,
                 'text-p': accountFocus
               }"
-              >請輸入帳號</label
+              >電子郵件Email</label
             >
           </div>
           <div class="field">
@@ -67,7 +67,7 @@
           <span>還沒有帳號?</span>
           <router-link
             class="ml-[.1rem] text-p hover:text-blue-400"
-            :to="{ name: 'home' }"
+            :to="{ name: 'signup' }"
             >註冊</router-link
           >
         </div>
@@ -76,6 +76,14 @@
         >
       </div>
     </div>
+    <div class="absolute bottom-4 right-4 hidden lg:block">
+      <router-link
+        :to="{ name: 'home' }"
+        class="subtitle-text-sm cursor-pointer text-white hover:text-p"
+        >回首頁</router-link
+      >
+    </div>
+    <!-- 背景 -->
     <div class="hidden lg:block">
       <div
         class="circle-item right-8 top-6 h-4 w-2.5"
@@ -96,7 +104,7 @@
 
 <script setup>
 import axios from 'axios'
-import { computed, inject, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 const router = useRouter()
@@ -106,7 +114,6 @@ const passwordFocus = ref(false)
 const errors = ref([])
 const email = ref('')
 const password = ref('')
-const toastDetail = inject('toastDetail')
 // ----------------------------------- methods -----------------------------------
 const submitForm = () => {
   errors.value = []
@@ -116,28 +123,24 @@ const submitForm = () => {
   if (password.value === '') errors.value.push('請輸入密碼')
   if (!errors.value.length) {
     const formData = {
-      username: email.value,
+      email: email.value,
       password: password.value
     }
     axios.defaults.headers.common.Authorization = ''
 
     axios
-      .post('/api/v1/jwt/create/', formData)
+      .post('/api/token/', formData)
       .then((res) => {
-        toastDetail.value.content = '登入成功！歡迎進入'
-        toastDetail.value.status = !toastDetail.value.status
-        setTimeout(() => {
-          toastDetail.value.status = !toastDetail.value.status
-        }, 3000)
         const access = res.data.access
         const refresh = res.data.refresh
         store.commit('setToken', { access, refresh })
-        localStorage.setItem('refreshToken', refresh)
         axios.defaults.headers.common.Authorization = 'Bearer ' + access
-        router.push('/dashboard/my-account')
+        alert('登入成功！')
+        router.push('/about')
       })
       .catch((err) => {
         if (err.response) {
+          alert('帳號密碼錯誤!')
           errors.value.push('帳號密碼錯誤!')
         }
       })

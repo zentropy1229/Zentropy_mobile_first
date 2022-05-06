@@ -108,7 +108,7 @@ const calculateMA = (dayCount, data) => {
     for (let j = 0; j < dayCount; j++) {
       sum += +data.values[i - j][1]
     }
-    result.push(sum / dayCount)
+    result.push(Math.round((sum / dayCount) * 100) / 100)
   }
   return result
 }

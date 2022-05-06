@@ -7,6 +7,7 @@ import ContactPage from '@/views/ContactPage.vue'
 import TeamIntroPage from '@/views/TeamIntroPage.vue'
 import ToolIntroPage from '@/views/ToolIntroPage.vue'
 import LoginPage from '@/views/LoginPage.vue'
+import SignUpPage from '@/views/SignUpPage.vue'
 import ChartPage from '@/views/ChartPage'
 import store from '@/store'
 import axios from 'axios'
@@ -28,6 +29,9 @@ const routes = [
       default: AboutPage,
       Header: Header,
       Footer: Footer
+    },
+    meta: {
+      requireAuth: true
     }
   },
   {
@@ -65,10 +69,22 @@ const routes = [
     }
   },
   {
+    path: '/signup',
+    name: 'signup',
+    components: {
+      default: SignUpPage,
+      Header: Header,
+      Footer: Footer
+    }
+  },
+  {
     path: '/chart-tools',
     name: 'charttools',
     components: {
       default: ChartPage
+    },
+    meta: {
+      requireAuth: true
     }
   }
 ]
@@ -89,13 +105,14 @@ router.beforeEach(async (to, from) => {
   await store.dispatch('initialize')
   if (to.matched.some(record => record.meta.requireAuth)) {
     if (!store.state.access) {
+      alert('請先登入')
       return { name: 'login' }
     } else {
       axios.defaults.headers.common.Authorization = 'Bearer ' + store.state.access
     }
   }
   if (to.matched[0].name === 'login' && store.state.access) {
-    return { name: 'myaccount' }
+    return { name: 'home' }
   }
 })
 

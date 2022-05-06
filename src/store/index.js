@@ -27,7 +27,7 @@ export default createStore({
       if (localStorage.getItem('refreshToken')) {
         const refresh = localStorage.getItem('refreshToken')
         try {
-          const res = await axios.post('/api/v1/jwt/refresh/', { refresh: refresh })
+          const res = await axios.post('/api/token/refresh/', { refresh: refresh })
           const access = res.data.access
           commit('setToken', { access, refresh })
           axios.defaults.headers.common.Authorization = 'Bearer ' + access
@@ -38,6 +38,10 @@ export default createStore({
       } else {
         commit('removeToken')
       }
+    },
+    logOut ({ commit }) {
+      commit('removeToken')
+      axios.defaults.headers.common.Authorization = ''
     }
   },
   modules: {
