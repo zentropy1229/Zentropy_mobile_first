@@ -1,6 +1,13 @@
 <template>
   <table class="flex-center bord span-text container mt-4">
     <tbody>
+      <div class="flex justify-center">
+        <button @click="getAll" class="border px-1 py-0.5">選取全部</button>
+        <button @click="cancelAll" class="ml-1 border px-1 py-0.5">
+          取消選取
+        </button>
+      </div>
+
       <tr v-for="index in Math.ceil(content.length / 5)" :key="index">
         <td
           v-for="catagory in content.slice((index - 1) * 5, index * 5)"
@@ -8,23 +15,29 @@
         >
           <label
             ><input
-              type="radio"
-              class="radio hidden"
-              name="stockFilter"
+              type="checkbox"
+              class="checkbox hidden"
+              @change="checked"
+              :checked="checkedList.includes(catagory.industry)"
               :value="catagory.industry"
-              @click="filter"
             />
             <div
               class="span-text flex-center origin-background h-2 w-6 cursor-pointer rounded-lg text-white"
               ref="label"
             >
               <span class="block">{{ catagory.industry }}</span>
-            </div>
-          </label>
+            </div></label
+          >
         </td>
       </tr>
     </tbody>
   </table>
+  <button
+    @click="filter"
+    class="mx-auto mb-2 block rounded-sm bg-rose-400 px-2 py-0.5 text-white"
+  >
+    submit
+  </button>
   <div class="flex-center span-text container mb-2 flex-col">
     <span
       >資料更新時間：{{
@@ -36,26 +49,12 @@
       }}</span
     >
     <span class="mb-2">資料總筆數：{{ result.length }}</span>
-    <div class="flex-center flex-col text-slate-200" v-if="isLoading">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="mb-0.5 h-1 w-1 animate-spin"
-        viewBox="0 0 512 512"
-        fill="currentColor"
-      >
-        <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
-        <path
-          d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM80.72 256H79.63c-9.078 0-16.4-8.011-15.56-17.34C72.36 146 146.5 72.06 239.3 64.06C248.3 63.28 256 70.75 256 80.09c0 8.35-6.215 15.28-14.27 15.99C164.7 102.9 103.1 164.3 96.15 241.4C95.4 249.6 88.77 256 80.72 256zM256 351.1c-53.02 0-96-43-96-95.1s42.98-96 96-96s96 43 96 96S309 351.1 256 351.1zM256 224C238.3 224 224 238.2 224 256s14.3 32 32 32c17.7 0 32-14.25 32-32S273.7 224 256 224z"
-        />
-      </svg>
-      <span class="span-text animate-pulse font-medium">Loading ...</span>
-    </div>
     <table class="result-list">
       <tbody>
         <tr v-show="result.length">
           <th class="pb-0.5">股票代號</th>
           <th class="pb-0.5">股票名稱</th>
-          <th class="pb-0.5">頁面連結</th>
+          <th class="pb-0.5">市場別</th>
         </tr>
         <tr
           v-for="list in result"
@@ -63,19 +62,11 @@
           class="mb-1 border-b text-center text-slate-600"
         >
           <td
-            v-for="item in Object.entries(list).slice(0, -2)"
+            v-for="item in Object.entries(list).slice(0, -1)"
             :key="item"
-            class="px-1 py-0.5"
+            class="px-1.5 py-0.5"
           >
             {{ item[1] }}
-          </td>
-          <td class="py-1 px-1">
-            <router-link
-              to="/"
-              class="span-text-sm cursor-pointer rounded-sm border bg-slate-50 px-0.5 py-0.5 font-medium hover:bg-slate-500 hover:text-white"
-            >
-              前往頁面
-            </router-link>
           </td>
         </tr>
       </tbody>
@@ -88,25 +79,39 @@ import { onMounted, ref } from 'vue'
 import axios from 'axios'
 const { DateTime } = require('luxon')
 const content = ref('')
-const checkedList = ref('')
+const checkedList = ref([])
 const result = ref([])
-const isLoading = ref(false)
-const filter = async (e) => {
-  checkedList.value = e.target.value
-  isLoading.value = true
-  try {
-    const res = await axios.get('http://127.0.0.1:8001/api/stock_name', {
-      params: { industry: checkedList.value, sort: 'industry' },
+const checked = (event) => {
+  if (event.target.checked) {
+    checkedList.value.push(event.target.value)
+  } else {
+    checkedList.value.splice(checkedList.value.indexOf(event.target.value), 1)
+  }
+}
+const getAll = () => {
+  checkedList.value = []
+  for (const item in content.value) {
+    checkedList.value.push(content.value[item].industry)
+  }
+}
+const cancelAll = () => {
+  checkedList.value = []
+}
+const filter = () => {
+  if (!checkedList.value.length) {
+    result.value = []
+    return
+  }
+  axios
+    .get('http://127.0.0.1:8001/api/stock_name', {
+      params: { industry: checkedList.value.join(','), sort: 'industry' },
       headers: {
         Authorization: ''
       }
     })
-    result.value = res.data
-    isLoading.value = false
-  } catch {
-    result.value = []
-    isLoading.value = false
-  }
+    .then((res) => {
+      result.value = res.data
+    })
 }
 onMounted(() => {
   axios
@@ -125,22 +130,22 @@ onMounted(() => {
 * {
   --bg: rgb(71 85 105);
 }
-
 .bord {
   border-collapse: separate;
   border-spacing: 0.5rem;
 }
-
 .origin-background {
   background: var(--bg);
 }
-
 .origin-background:hover {
   --bg: rgb(51 65 85);
 }
-
-.radio:checked + .origin-background {
+.checkbox:checked + .origin-background {
   --bg: rgb(203 213 225);
   font-weight: 400;
+}
+.result-list tr td:nth-child(3) {
+  @apply text-green-400;
+  font-weight: 500;
 }
 </style>

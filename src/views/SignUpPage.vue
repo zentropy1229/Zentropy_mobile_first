@@ -1,5 +1,5 @@
 <template>
-  <div class="align-center flex min-h-screen bg-gray-600 text-white">
+  <div class="align-center flex bg-gray-600 text-white">
     <div class="container mx-auto">
       <div class="mt-2 mb-1">
         <h2 class="subtitle-text text-center">註冊</h2>

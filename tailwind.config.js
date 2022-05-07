@@ -40,7 +40,7 @@ module.exports = {
             'padding-right': '1.2rem'
           },
           '@screen xl': {
-            'max-width': '14.4rem'
+            'max-width': '15.4rem'
           }
         }
       })
