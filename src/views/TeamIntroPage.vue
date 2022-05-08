@@ -11,13 +11,11 @@
             class="flex cursor-pointer p-[0.2rem]"
             @click="industryActive = !industryActive"
           >
-            <span class="text-gray-200"
-              >產業別：{{ industryName || '請選擇產業別' }}</span
-            >
+            <span class="text-gray-200">產業別：{{ industryName }}</span>
             <span class="ml-1">*</span>
           </div>
           <div
-            class="industry-filter absolute z-50 w-36 origin-top rounded-sm border border-gray-400 bg-gray-600 p-1 shadow-lg transition-all"
+            class="industry-filter absolute z-50 h-16 w-16 origin-top overflow-y-scroll rounded-sm border border-gray-400 bg-gray-600 p-1 shadow-lg transition-all lg:h-max lg:w-36 lg:overflow-y-hidden"
             :class="{
               'scale-y-1 opacity-1': industryActive,
               'scale-y-0 opacity-0': !industryActive
@@ -80,7 +78,7 @@
           </table>
         </div>
       </div>
-      <div class="ml-2 w-full lg:w-[30%]">
+      <div class="ml-0 w-full lg:ml-2 lg:w-[30%]">
         <div class="mb-1">
           <h2 class="subtitle-text mb-0.5">台股搜尋</h2>
           <form class="relative">
@@ -171,7 +169,7 @@ import axios from 'axios'
 let showTableScrollX
 const stockTable = ref()
 const catagoryContent = ref('')
-const industryName = ref('')
+const industryName = ref('半導體業')
 const stockTableContainer = ref()
 const industryActive = ref(false)
 const showOverflowX = ref(false)
@@ -204,6 +202,7 @@ onMounted(() => {
       ? (showOverflowX.value = true)
       : (showOverflowX.value = false)
   }
+  showTableScrollX()
   window.addEventListener('resize', showTableScrollX)
   axios
     .get('http://127.0.0.1:8001/api/stock_name/industry', {
@@ -222,7 +221,7 @@ onUnmounted(() => {
 
 <style lang="postcss" scoped>
 .catagory-stock-detail-tr {
-  @apply border-b;
+  @apply border-b-4 border-gray-500;
 }
 .catagory-stock-detail-td {
   @apply h-3 px-0.5 text-center;
@@ -235,5 +234,8 @@ onUnmounted(() => {
 }
 .catagory-stock-detail-td:nth-child(1) {
   text-align: start;
+}
+.catagory-stock-detail-tr:nth-last-child(1) {
+  @apply border-b-0;
 }
 </style>
