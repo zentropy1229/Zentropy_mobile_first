@@ -6,19 +6,33 @@
     <div class="span-text-sm container w-full text-white lg:flex">
       <div class="w-full lg:w-[70%]">
         <h2 class="subtitle-text mb-0.5">上市{{ industryName }}分類行情</h2>
-        <div class="relative mb-1 w-max rounded-sm bg-gray-600">
+        <div class="relative z-30 mb-0.5 w-max rounded-sm bg-gray-600">
           <div
             class="flex cursor-pointer p-[0.2rem]"
-            @click="industryActive = !industryActive"
+            id="industrySelector"
+            @click.stop.prevent="
+              industrySelectorActive = !industrySelectorActive
+            "
           >
             <span class="text-gray-200">產業別：{{ industryName }}</span>
-            <span class="ml-1">*</span>
+            <button class="ml-1">
+              <svg
+                class="block h-0.5 w-0.5"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 384 512"
+                fill="currentColor"
+              >
+                <path
+                  d="M192 384c-8.188 0-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L192 306.8l137.4-137.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-160 160C208.4 380.9 200.2 384 192 384z"
+                />
+              </svg>
+            </button>
           </div>
           <div
-            class="industry-filter absolute z-50 h-16 w-16 origin-top overflow-y-scroll rounded-sm border border-gray-400 bg-gray-600 p-1 shadow-lg transition-all lg:h-max lg:w-36 lg:overflow-y-hidden"
+            class="industry-filter absolute h-16 w-16 origin-top overflow-y-scroll rounded-sm border border-gray-400 bg-gray-600 p-1 shadow-lg transition-all lg:h-max lg:w-36 lg:overflow-y-hidden"
             :class="{
-              'scale-y-1 opacity-1': industryActive,
-              'scale-y-0 opacity-0': !industryActive
+              'scale-y-1 opacity-1': industrySelectorActive,
+              'scale-y-0 opacity-0': !industrySelectorActive
             }"
           >
             <ul class="flex h-max flex-wrap gap-[0.2rem]">
@@ -33,50 +47,15 @@
             </ul>
           </div>
         </div>
-        <div
-          class="rounded-sm bg-gray-600 xl:overflow-x-hidden"
-          :class="{ 'overflow-x-scroll': showOverflowX }"
-          ref="stockTableContainer"
-        >
-          <table class="w-full" ref="stockTable">
-            <thead>
-              <tr class="catagory-stock-detail-tr">
-                <th class="catagory-stock-detail-th">股票代號 / 名稱</th>
-                <th
-                  v-for="index in stockTitle"
-                  :key="index"
-                  class="catagory-stock-detail-th"
-                >
-                  {{ index }}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                @mouseenter="isHover"
-                @mouseleave="isHover"
-                v-for="index in 10"
-                :key="index"
-                class="catagory-stock-detail-tr"
-              >
-                <td class="catagory-stock-detail-td flex items-center">
-                  <a
-                    href="javascript:"
-                    class="span-text-sm rounded-sm bg-gray-800 px-[0.2rem] py-[0.08rem] font-medium hover:bg-orange-400"
-                    >1219</a
-                  ><span class="ml-0.5 block">福壽</span>
-                </td>
-                <td
-                  v-for="index in 9"
-                  :key="index"
-                  class="catagory-stock-detail-td"
-                >
-                  125.00
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="mb-1">
+          <p class="text-gray-400">資料更新時間：{{ updatedTime }}</p>
+          <p class="text-gray-400">每分鐘更新一次</p>
         </div>
+        <stock-table
+          :tableTitle="stockTitle"
+          :tableDetail="stockDetails"
+          :isLoading="isLoading"
+        />
       </div>
       <div class="ml-0 w-full lg:ml-2 lg:w-[30%]">
         <div class="mb-1">
@@ -165,14 +144,17 @@
 
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
+import StockTable from '@/components/StockTable'
 import axios from 'axios'
-let showTableScrollX
-const stockTable = ref()
+const { DateTime } = require('luxon')
+let industrySelectorBlur
+let realTimePrice
 const catagoryContent = ref('')
 const industryName = ref('半導體業')
-const stockTableContainer = ref()
-const industryActive = ref(false)
-const showOverflowX = ref(false)
+const updatedTime = ref('')
+const industrySelectorActive = ref(false)
+const isLoading = ref(false)
+const stockDetails = ref([])
 const stockTitle = ref([
   '股價',
   '漲跌',
@@ -181,29 +163,40 @@ const stockTitle = ref([
   '昨收',
   '最高',
   '最低',
-  '成交量(張)',
-  '時間'
+  '成交量(張)'
 ])
 // ================== Methods =====================
-const isHover = (e) => {
-  const _ = ['bg-gray-800', 'bg-orange-300']
-  e.target.classList.toggle('bg-gray-700')
-  _.map((el) => e.target.querySelector('td a').classList.toggle(el))
-}
 const startFilter = (value) => {
   industryName.value = value
-  industryActive.value = !industryActive.value
+  industrySelectorActive.value = false
+  isLoading.value = true
+  axios
+    .get('http://127.0.0.1:8001/api/stock_name', {
+      params: { industry: industryName.value },
+      headers: {
+        Authorization: ''
+      }
+    })
+    .then((res) => {
+      stockDetails.value = res.data
+      isLoading.value = false
+    })
+    .catch(() => {
+      stockDetails.value = []
+      isLoading.value = false
+    })
+}
+const realTimePriceAndTime = () => {
+  startFilter(industryName.value)
+  updatedTime.value = DateTime.now().toFormat('yyyy年MM月dd日 HH時mm分ss秒')
 }
 // ================== computed =====================
 // ================== lifecycle =====================
 onMounted(() => {
-  showTableScrollX = () => {
-    stockTableContainer.value.offsetWidth < stockTable.value.offsetWidth
-      ? (showOverflowX.value = true)
-      : (showOverflowX.value = false)
+  industrySelectorBlur = (e) => {
+    if (e.target.id !== 'industrySelector') industrySelectorActive.value = false
   }
-  showTableScrollX()
-  window.addEventListener('resize', showTableScrollX)
+  document.querySelector('body').addEventListener('click', industrySelectorBlur)
   axios
     .get('http://127.0.0.1:8001/api/stock_name/industry', {
       headers: {
@@ -213,29 +206,12 @@ onMounted(() => {
     .then((res) => {
       catagoryContent.value = res.data
     })
+  realTimePriceAndTime()
+  realTimePrice = setInterval(realTimePriceAndTime, 60000)
 })
 onUnmounted(() => {
-  window.removeEventListener('resize', showTableScrollX)
+  clearInterval(realTimePrice)
 })
 </script>
 
-<style lang="postcss" scoped>
-.catagory-stock-detail-tr {
-  @apply border-b-4 border-gray-500;
-}
-.catagory-stock-detail-td {
-  @apply h-3 px-0.5 text-center;
-}
-.catagory-stock-detail-th {
-  @apply h-3 px-0.5 text-center;
-}
-.catagory-stock-detail-th:nth-child(1) {
-  text-align: start;
-}
-.catagory-stock-detail-td:nth-child(1) {
-  text-align: start;
-}
-.catagory-stock-detail-tr:nth-last-child(1) {
-  @apply border-b-0;
-}
-</style>
+<style lang="postcss" scoped></style>
