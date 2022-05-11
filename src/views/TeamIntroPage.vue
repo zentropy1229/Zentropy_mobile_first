@@ -8,7 +8,7 @@
         <h2 class="subtitle-text mb-0.5">上市{{ industryName }}分類行情</h2>
         <div class="relative z-30 mb-0.5 w-max rounded-sm bg-gray-600">
           <div
-            class="flex cursor-pointer p-[0.2rem]"
+            class="flex cursor-pointer p-[0.125rem]"
             id="industrySelector"
             @click.stop.prevent="
               industrySelectorActive = !industrySelectorActive
