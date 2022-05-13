@@ -24,12 +24,9 @@
           >
             <ul class="flex h-max flex-wrap gap-[0.2rem]">
               <li v-for="catagory in catagoryContent" :key="catagory">
-                <a
-                  href="#"
-                  @click.prevent="startFilter(catagory.industry, false)"
-                  class="block rounded-sm bg-gray-200 px-1 py-0.5 text-center text-gray-900 hover:bg-orange-300"
-                  >{{ catagory.industry }}</a
-                >
+                <a href="#" @click.prevent="startFilter(catagory.industry, false)" class="block rounded-sm bg-gray-200 px-1 py-0.5 text-center text-gray-900 hover:bg-orange-300">{{
+                  catagory.industry
+                }}</a>
               </li>
             </ul>
           </div>
@@ -137,7 +134,7 @@ onMounted(() => {
     const st = document.documentElement.scrollTop
     const dh = document.documentElement.scrollHeight
     const wh = window.innerHeight
-    if (st + wh >= dh) {
+    if (st + wh >= dh - 1) {
       if (next !== null) {
         startFilter(industryName.value, true)
       }
