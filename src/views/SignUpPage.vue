@@ -1,5 +1,5 @@
 <template>
-  <div class="align-center flex bg-gray-600 text-white">
+  <div class="align-center flex min-h-screen bg-gray-600 text-white">
     <div class="container mx-auto">
       <div class="mt-2 mb-1">
         <h2 class="subtitle-text text-center">註冊</h2>
@@ -8,7 +8,7 @@
         <div class="input-container">
           <div class="label-container">
             <label class="input-label">電子郵件Email</label>
-            <span class="ml-0.5 block block text-[0.1rem] text-rose-400">{{
+            <span class="ml-0.5 block text-[0.1rem] text-rose-400">{{
               showError('email')
             }}</span>
           </div>
@@ -17,7 +17,7 @@
         <div class="input-container">
           <div class="label-container">
             <label class="input-label">使用者名稱</label>
-            <span class="ml-0.5 block block text-[0.1rem] text-rose-400">{{
+            <span class="ml-0.5 block text-[0.1rem] text-rose-400">{{
               showError('username')
             }}</span>
           </div>
