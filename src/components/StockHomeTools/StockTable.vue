@@ -1,10 +1,10 @@
 <template>
   <div class="relative">
-    <div class="relative rounded-sm bg-gray-600 xl:overflow-x-hidden" :class="{ 'overflow-x-scroll': showOverflowX }" ref="stockTableContainer">
+    <div class="relative rounded-sm bg-gray-800 xl:overflow-x-hidden" :class="{ 'overflow-x-scroll': showOverflowX }" ref="stockTableContainer">
       <table class="w-full" ref="stockTable">
         <thead>
           <!-- 表頭 -->
-          <tr class="relative border-b-4 border-gray-400 bg-gray-600">
+          <tr class="span-text-sm relative border-b-2 border-gray-400 bg-gray-600">
             <th class="catagory-stock-detail-th">股票代號 / 名稱</th>
             <th v-for="index in tableTitle" :key="index" class="catagory-stock-detail-th">
               {{ index }}
@@ -20,28 +20,20 @@
                   name: 'home',
                   query: { stock: stockList.stock }
                 }"
-                class="span-text block font-medium text-orange-300 hover:text-orange-600"
+                class="span-text block font-medium text-gray-300 hover:text-orange-600"
                 >{{ stockList.stockName }}</router-link
               >
-              <span class="rounded-sm text-gray-300">{{ stockList.stock }}.TW</span>
+              <span class="rounded-sm text-gray-500">{{ stockList.stock }}.TW</span>
             </td>
             <!-- 股票資訊 start -->
             <td class="catagory-stock-detail-td font-bold">
-              <span
-                class="updownlimit"
-                :class="comparePrice('price', showStockData(stockList.stockDetail[0], 'price'), showStockData(stockList.stockDetail[0], 'yesterday'))"
-                >{{ showStockData(stockList.stockDetail[0], 'price') }}</span
-              >
+              <span class="updownlimit" :class="comparePrice('price', showStockData(stockList.stockDetail[0], 'price'), showStockData(stockList.stockDetail[0], 'yesterday'))">{{
+                showStockData(stockList.stockDetail[0], 'price')
+              }}</span>
             </td>
             <td class="catagory-stock-detail-td font-bold" :class="comparePrice('ud', showStockData(stockList.stockDetail[0], 'ud'))">
               <div class="flex-center">
-                <svg
-                  class="h-0.5 w-0.5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 320 512"
-                  fill="currentColor"
-                  :class="rotateIcon(showStockData(stockList.stockDetail[0], 'ud'), 0)"
-                >
+                <svg class="h-0.5 w-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor" :class="rotateIcon(showStockData(stockList.stockDetail[0], 'ud'), 0)">
                   <path
                     d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"
                   />
@@ -51,13 +43,7 @@
             </td>
             <td class="catagory-stock-detail-td font-bold" :class="comparePrice('ud', showStockData(stockList.stockDetail[0], 'udpercent'))">
               <div class="flex-center">
-                <svg
-                  class="h-0.5 w-0.5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 320 512"
-                  fill="currentColor"
-                  :class="rotateIcon(showStockData(stockList.stockDetail[0], 'udpercent'), 0)"
-                >
+                <svg class="h-0.5 w-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor" :class="rotateIcon(showStockData(stockList.stockDetail[0], 'udpercent'), 0)">
                   <path
                     d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"
                   />

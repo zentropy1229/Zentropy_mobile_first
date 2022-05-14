@@ -1,46 +1,59 @@
 <template>
   <div class="flex flex-col bg-gray-800">
-    <div class="container w-full"><chart-show /></div>
-    <div class="span-text container w-full text-white lg:flex">
-      <div class="w-full lg:w-[70%]">
-        <h2 class="subtitle-text mb-0.5">上市{{ industryName }}分類行情</h2>
-        <div class="relative z-30 mb-0.5 w-max rounded-sm bg-gray-600">
-          <div class="flex-center flex h-2.5 cursor-pointer px-1" id="industrySelector" @click.stop.prevent="industrySelectorActive = !industrySelectorActive">
-            <span class="text-gray-200">產業別：{{ industryName }}</span>
-            <button class="ml-1">
-              <svg class="block h-0.5 w-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="currentColor">
-                <path
-                  d="M192 384c-8.188 0-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L192 306.8l137.4-137.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-160 160C208.4 380.9 200.2 384 192 384z"
-                />
-              </svg>
-            </button>
-          </div>
-          <div
-            class="industry-filter absolute h-16 w-16 origin-top overflow-y-scroll rounded-sm border border-gray-400 bg-gray-600 p-1 shadow-lg transition-all lg:h-max lg:w-36 lg:overflow-y-hidden"
-            :class="{
-              'scale-y-1 opacity-1': industrySelectorActive,
-              'scale-y-0 opacity-0': !industrySelectorActive
-            }"
-          >
-            <ul class="flex h-max flex-wrap gap-[0.2rem]">
-              <li v-for="catagory in catagoryContent" :key="catagory">
-                <a href="#" @click.prevent="startFilter(catagory.industry, false)" class="block rounded-sm bg-gray-200 px-1 py-0.5 text-center text-gray-900 hover:bg-orange-300">{{
-                  catagory.industry
-                }}</a>
-              </li>
-            </ul>
-          </div>
+    <div class="mt-1 text-white">
+      <div class="container">
+        <h2 class="subtitle-text ml-1 mb-1">熱門股票一覽</h2>
+        <div class="mb-1 flex rounded-sm bg-gray-900">
+          <daliy-hot-charts :searchStockNum="'1219'" class="w-full" />
+          <daliy-hot-charts :searchStockNum="'2330'" class="w-full" />
+          <daliy-hot-charts :searchStockNum="'6807'" class="w-full" />
+          <daliy-hot-charts :searchStockNum="'3025'" class="w-full" />
         </div>
-        <div class="mb-1 text-[0.12rem]">
-          <p class="text-gray-400">更新時間：每分鐘更新一次</p>
-          <p class="text-gray-400">資料更新時間：{{ updatedTime }}</p>
-        </div>
-        <stock-table :tableTitle="stockTitle" :tableDetail="stockDetails" :isLoading="isLoading" class="mb-4" />
       </div>
-      <div class="ml-0 w-full lg:ml-2 lg:w-[30%]">
-        <stock-search class="mb-1" ref="search" />
-        <my-stock class="mb-1" />
-        <hot-news class="mb-1" />
+      <div class="container mb-1">
+        <chart-show />
+      </div>
+      <div class="span-text container flex w-full flex-col lg:flex-row">
+        <div class="w-full lg:w-[30%]">
+          <stock-search class="mb-1" ref="search" />
+          <my-stock class="mb-1" />
+          <hot-news class="mb-1" />
+        </div>
+        <div class="ml-0 w-full lg:ml-2 lg:w-[70%]">
+          <h2 class="subtitle-text mb-0.5">上市{{ industryName }}分類行情</h2>
+          <div class="relative z-30 mb-0.5 w-max rounded-sm bg-gray-600">
+            <div class="flex-center flex h-2.5 cursor-pointer px-1" id="industrySelector" @click.stop.prevent="industrySelectorActive = !industrySelectorActive">
+              <span class="text-gray-200">產業別：{{ industryName }}</span>
+              <button class="ml-1">
+                <svg class="block h-0.5 w-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="currentColor">
+                  <path
+                    d="M192 384c-8.188 0-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L192 306.8l137.4-137.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-160 160C208.4 380.9 200.2 384 192 384z"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div
+              class="industry-filter absolute h-16 w-16 origin-top overflow-y-scroll rounded-sm border border-gray-400 bg-gray-600 p-1 shadow-lg transition-all lg:h-max lg:w-32 lg:overflow-y-hidden"
+              :class="{
+                'scale-y-1 opacity-1': industrySelectorActive,
+                'scale-y-0 opacity-0': !industrySelectorActive
+              }"
+            >
+              <ul class="flex h-max flex-wrap gap-[0.2rem]">
+                <li v-for="catagory in catagoryContent" :key="catagory">
+                  <a href="#" @click.prevent="startFilter(catagory.industry, false)" class="block rounded-sm bg-gray-200 px-1 py-0.5 text-center text-gray-900 hover:bg-orange-300">{{
+                    catagory.industry
+                  }}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="mb-1 text-[0.12rem]">
+            <p class="text-gray-400">更新時間：每分鐘更新一次</p>
+            <p class="text-gray-400">資料更新時間：{{ updatedTime }}</p>
+          </div>
+          <stock-table :tableTitle="stockTitle" :tableDetail="stockDetails" :isLoading="isLoading" class="mb-4" />
+        </div>
       </div>
     </div>
   </div>
@@ -53,6 +66,7 @@ import StockSearch from '@/components/StockHomeTools/StockSearch'
 import MyStock from '@/components/StockHomeTools/MyStock'
 import HotNews from '@/components/StockHomeTools/HotNews'
 import StockTable from '@/components/StockHomeTools/StockTable'
+import DaliyHotCharts from '@/components/StockHomeTools/DaliyHotCharts'
 import axios from 'axios'
 let industrySelectorBlur
 let realTimePrice
@@ -134,7 +148,7 @@ onMounted(() => {
     const st = document.documentElement.scrollTop
     const dh = document.documentElement.scrollHeight
     const wh = window.innerHeight
-    if (st + wh >= dh - 1) {
+    if (st + wh >= dh) {
       if (next !== null) {
         startFilter(industryName.value, true)
       }
