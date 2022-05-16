@@ -1,6 +1,7 @@
 <template>
   <div class="flex flex-col bg-gray-800">
     <div class="mt-1 text-white">
+      <!-- hot stocks -->
       <div class="container">
         <h2 class="subtitle-text ml-1 mb-1">熱門股票一覽</h2>
         <div class="mb-1 flex rounded-sm bg-gray-900">
@@ -10,14 +11,18 @@
           <daliy-hot-charts :searchStockNum="'3025'" class="w-full" />
         </div>
       </div>
+      <!-- big market -->
       <div class="container mb-1">
         <chart-show />
       </div>
+      <!-- stockTable & news -->
       <div class="span-text container flex w-full flex-col lg:flex-row">
         <div class="w-full lg:w-[30%]">
-          <stock-search class="mb-1" ref="search" />
+          <h2 class="subtitle-text mb-0.5">台股搜尋</h2>
+          <stock-search class="mb-1" :url="'api/stock_name/search'" />
           <my-stock class="mb-1" />
-          <hot-news class="mb-1" />
+          <h2 class="subtitle-text mb-0.5">熱門新聞</h2>
+          <hot-news class="mb-1 bg-gray-600" :showSeeAll="true" />
         </div>
         <div class="ml-0 w-full lg:ml-2 lg:w-[70%]">
           <h2 class="subtitle-text mb-0.5">上市{{ industryName }}分類行情</h2>
@@ -73,7 +78,6 @@ let realTimePrice
 let scrollLoding
 let next
 const { DateTime } = require('luxon')
-const search = ref()
 const updatedTime = ref('')
 const catagoryContent = ref('')
 const industryName = ref('其他電子業')

@@ -7,45 +7,79 @@
         </div>
       </div>
     </div>
-    <div class="flex-center w-full flex-wrap lg:w-full lg:flex-nowrap">
-      <div class="flex-center basis-1/4 flex-col">
+    <div class="flex-center w-full flex-wrap px-1 lg:flex-nowrap">
+      <div class="flex-center w-max flex-col">
         <div class="mb-1 w-full pb-0.5 text-center lg:text-left"><h2 class="subtitle-text">台股大盤行情</h2></div>
         <div class="mb-1 flex w-full items-end justify-between">
-          <div class="flex w-full flex-col">
-            <span class="subtitle-text-sm mb-0.5 text-gray-500">上市行情</span>
+          <div class="flex flex-col">
+            <span class="subtitle-text-sm mb-0.5 text-gray-500">{{ getStockValueDetail.stockName }}</span>
             <div class="flex items-end leading-none">
               <span class="subtitle-text-sm block leading-none text-gray-500">成交</span>
-              <span class="subtitle-text-sm ml-0.5 block font-bold leading-none">2255.69 億</span>
+              <span class="subtitle-text-sm ml-0.5 block font-bold leading-none">{{ getStockValueDetail.volumn }}</span>
             </div>
           </div>
           <div class="flex flex-col items-end">
-            <span class="mb-0.5 text-[0.3rem] font-bold leading-none text-rose-500">15832.54</span>
+            <span class="mb-0.5 text-[0.3rem] font-bold leading-none text-rose-500">{{ getStockValueDetail.price }}</span>
             <div class="flex items-center">
               <svg class="h-0.5 w-0.5 rotate-180 text-rose-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor">
                 <path
                   d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"
                 /></svg
-              ><span class="text-[0.13rem] font-medium leading-none text-rose-500">115.18 (1.59%)</span>
+              ><span class="text-[0.13rem] font-medium leading-none text-rose-500">{{ getStockValueDetail.upDown }} ({{ getStockValueDetail.upDownPercent }}%)</span>
             </div>
           </div>
         </div>
         <div class="flex">
-          <div v-for="i in 4" :key="i" class="trade-info border-gray-600">
+          <div class="trade-info border-gray-600">
             <span class="block border-b border-dashed border-gray-600 py-0.5 text-gray-600">開盤</span>
-            <span class="block py-0.5 text-gray-200">7233.34</span>
+            <span class="block py-0.5 text-gray-200">{{ getStockValueDetail.open }}</span>
+          </div>
+          <div class="trade-info border-gray-600">
+            <span class="block border-b border-dashed border-gray-600 py-0.5 text-gray-600">最高</span>
+            <span class="block py-0.5 text-gray-200">{{ getStockValueDetail.high }}</span>
+          </div>
+          <div class="trade-info border-gray-600">
+            <span class="block border-b border-dashed border-gray-600 py-0.5 text-gray-600">最低</span>
+            <span class="block py-0.5 text-gray-200">{{ getStockValueDetail.low }}</span>
+          </div>
+          <div class="trade-info border-gray-600">
+            <span class="block border-b border-dashed border-gray-600 py-0.5 text-gray-600">昨收</span>
+            <span class="block py-0.5 text-gray-200">{{ getStockValueDetail.yesterday }}</span>
           </div>
         </div>
       </div>
-      <div class="h-16 w-full lg:ml-1.5 lg:w-20" ref="chartDom"></div>
+      <div class="h-[4.7rem] w-full lg:ml-1.5 lg:w-24" ref="chartDom"></div>
     </div>
   </div>
 </template>
 
 <script setup>
 import * as echarts from 'echarts'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch, computed } from 'vue'
+import axios from 'axios'
+const { DateTime } = require('luxon')
+let updateData
 let resizeMyChart
 const chartDom = ref()
+const daliyStockValue = ref([])
+const getStockValueDetail = computed(() => {
+  if (daliyStockValue.value.length) {
+    const _data = daliyStockValue.value['0']['TWS:TSE01:INDEX']
+    return {
+      stockName: _data.quote['200009'],
+      price: _data.quote['6'],
+      open: _data.o.slice(-1)[0],
+      high: _data.quote['12'],
+      low: _data.quote['13'],
+      yesterday: _data.quote['21'],
+      upDown: _data.quote['220027'],
+      upDownPercent: _data.quote['56'],
+      volumn: _data.quote['800001'] / 100000000 + '億'
+    }
+  } else {
+    return '-'
+  }
+})
 const option = ref({
   color: 'white',
   tooltip: {
@@ -57,21 +91,57 @@ const option = ref({
   },
   axisPointer: {
     link: { xAxisIndex: 'all' },
+    snap: true,
     label: {
       backgroundColor: '#777'
     }
   },
   grid: [
     {
-      left: '10%'
+      left: '15%',
+      right: '1%'
     }
   ],
-  xAxis: [{ type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], boundaryGap: false }],
-  yAxis: [{ type: 'value' }],
+  xAxis: [
+    {
+      type: 'category',
+      data: computed(() => {
+        return daliyStockValue.value['0']['TWS:TSE01:INDEX'].t
+          .slice(0)
+          .reverse()
+          .map((items) => {
+            return DateTime.fromMillis(items * 1000).toFormat('HH:mm')
+          })
+      }),
+      boundaryGap: false
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      max: computed(() => {
+        return roundTwo(daliyStockValue.value['0']['TWS:TSE01:INDEX'].quote['12'])
+      }),
+      min: computed(() => {
+        return roundTwo(daliyStockValue.value['0']['TWS:TSE01:INDEX'].quote['13']) - 200
+      }),
+      axisLabel: {
+        formatter: function (value) {
+          return parseFloat(value).toFixed(2)
+        },
+        fontSize: '0.1rem'
+      },
+      scale: true,
+      splitNumber: 3
+    }
+  ],
   series: [
     {
-      data: [150, 230, 224, 218, 135, 147, 260],
+      data: computed(() => {
+        return daliyStockValue.value['0']['TWS:TSE01:INDEX'].c.slice(0).reverse()
+      }),
       type: 'line',
+      symbol: 'none',
       areaStyle: {
         color: {
           type: 'linear',
@@ -93,12 +163,60 @@ const option = ref({
         }
       },
       lineStyle: {
-        color: 'rgb(223, 223, 223)'
+        color: 'rgb(223, 223, 223)',
+        width: 1
+      },
+      markLine: {
+        symbol: 'none',
+        label: {
+          show: true,
+          position: 'start',
+          color: 'white',
+          fontSize: '0.12rem'
+        },
+        lineStyle: {
+          color: '#9CA3AF',
+          type: 'solid'
+        },
+        data: [
+          {
+            yAxis: computed(() => {
+              return daliyStockValue.value['0']['TWS:TSE01:INDEX'].quote['21']
+            })
+          }
+        ]
       }
     }
   ]
 })
-onMounted(() => {
+// ================ methods =====================
+const roundTwo = (num) => {
+  return +(Math.round(num + 'e-2') + 'e+2')
+}
+// ================ life cycle =====================
+onMounted(async () => {
+  updateData = setInterval(
+    await (async function getdaliyStockValue () {
+      try {
+        const res = await axios.get('https://ws.api.cnyes.com/ws/api/v1/charting/histories?resolution=1&symbols=TWS:TSE01:INDEX,TWS:OTC01:INDEX&quote=1', {
+          headers: {
+            Authorization: ''
+          }
+        })
+        daliyStockValue.value = res.data.data
+      } catch {
+        daliyStockValue.value = []
+      }
+      return getdaliyStockValue
+    })(),
+    60000
+  )
+  watch(option.value, (nV, oV) => {
+    if (nV && myChart) {
+      console.log('updated')
+      myChart.setOption(option.value)
+    }
+  })
   const myChart = echarts.init(chartDom.value)
   option.value && myChart.setOption(option.value)
   resizeMyChart = () => myChart.resize()
@@ -106,6 +224,7 @@ onMounted(() => {
 })
 onUnmounted(() => {
   window.removeEventListener('resize', resizeMyChart)
+  clearInterval(updateData)
 })
 </script>
 

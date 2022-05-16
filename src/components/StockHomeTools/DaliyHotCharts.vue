@@ -3,7 +3,7 @@
     <div class="ml-0.5 flex flex-col">
       <span class="span-text w-fit rounded-[.05rem] bg-gray-300 px-0.5 font-medium text-gray-800">{{ stockName }}</span>
       <div class="span-text-sm flex">
-        <span class="text-gray-400">{{ stock }}.TW</span>
+        <span class="text-gray-400">{{ stockNum }}.TW</span>
         <span class="ml-auto text-gray-400">{{ volumn }}張</span>
       </div>
     </div>
@@ -14,23 +14,24 @@
 <script setup>
 import * as echarts from 'echarts'
 import axios from 'axios'
-import { computed, onMounted, onUnmounted, ref, defineProps, toRef } from 'vue'
-let resizeMyChart
+import { computed, onMounted, onUnmounted, ref, defineProps, toRef, watch } from 'vue'
+const { DateTime } = require('luxon')
+// ... props ...
 const props = defineProps({
   searchStockNum: {
     type: String,
     default: undefined
   }
 })
-const chartDom = ref()
-const daliyStockValue = ref([])
 const searchStockNum = toRef(props, 'searchStockNum')
-const stock = ref('')
-const stockName = ref('')
+// ... variables ...
+let updateData
+let resizeMyChart
 const volumn = ref('')
-const roundTwo = (num) => {
-  return +(Math.round(num + 'e+2') + 'e-2')
-}
+const chartDom = ref()
+const stockNum = ref('')
+const stockName = ref('')
+const daliyStockValue = ref([])
 const option = ref({
   tooltip: {
     trigger: 'axis',
@@ -60,7 +61,7 @@ const option = ref({
           return daliyStockValue.value.quote['21']
         }),
         lte: computed(() => {
-          return daliyStockValue.value.quote['12']
+          return roundTwo(daliyStockValue.value.quote['21'] * 1.1)
         }),
         color: '#FD0100'
       },
@@ -81,7 +82,7 @@ const option = ref({
           .slice(0)
           .reverse()
           .map((items) => {
-            return `${new Date(items * 1000).getHours()}:${new Date(items * 1000).getMinutes()}`
+            return DateTime.fromMillis(items * 1000).toFormat('HH:mm')
           })
       }),
       boundaryGap: false,
@@ -124,6 +125,9 @@ const option = ref({
         return daliyStockValue.value.o.slice(0).reverse()
       }),
       type: 'line',
+      lineStyle: {
+        width: 1.5
+      },
       markLine: {
         silent: false,
         symbol: 'none',
@@ -131,7 +135,7 @@ const option = ref({
           show: false
         },
         lineStyle: {
-          color: '#D1D5DB',
+          color: '#9CA3AF',
           type: 'solid'
         },
         data: [
@@ -145,31 +149,49 @@ const option = ref({
     }
   ]
 })
-const getdaliyStockValue = async (stock) => {
-  try {
-    const res = await axios.get(`https://ws.api.cnyes.com/ws/api/v1/charting/history?resolution=1&symbol=TWS:${stock}:STOCK&quote=1`, {
-      headers: {
-        Authorization: ''
-      }
-    })
-    daliyStockValue.value = res.data.data
-  } catch {
-    daliyStockValue.value = []
-  }
+// ================ methods =====================
+const roundTwo = (num) => {
+  return +(Math.round(num + 'e+2') + 'e-2')
 }
+// ================ life cycle =====================
 onMounted(async () => {
-  await getdaliyStockValue(searchStockNum.value)
-  stock.value = daliyStockValue.value.quote['0'].split(':')[1]
-  stockName.value = daliyStockValue.value.quote['200009']
-  volumn.value = Math.round(daliyStockValue.value.quote['800001'])
+  // updated Data every 1 minutes
+  updateData = setInterval(
+    await (async function getdaliyStockValue () {
+      try {
+        const res = await axios.get(`https://ws.api.cnyes.com/ws/api/v1/charting/history?resolution=1&symbol=TWS:${searchStockNum.value}:STOCK&quote=1`, {
+          headers: {
+            Authorization: ''
+          }
+        })
+        daliyStockValue.value = res.data.data
+        stockNum.value = res.data.data.quote['0'].split(':')[1]
+        stockName.value = res.data.data.quote['200009']
+        volumn.value = Math.round(res.data.data.quote['800001'])
+      } catch {
+        daliyStockValue.value = []
+      }
+      return getdaliyStockValue
+    })(),
+    60000
+  )
+  watch(option.value, (nV, oV) => {
+    if (nV && myChart) {
+      console.log('updated')
+      myChart.setOption(option.value)
+    }
+  })
+  // echarts setup start...
   const myChart = echarts.init(chartDom.value)
   option.value && myChart.setOption(option.value)
   resizeMyChart = () => myChart.resize()
   setTimeout(resizeMyChart, 1000)
   window.addEventListener('resize', resizeMyChart)
+  // echarts setup end
 })
 onUnmounted(() => {
   window.removeEventListener('resize', resizeMyChart)
+  clearInterval(updateData)
 })
 </script>
 

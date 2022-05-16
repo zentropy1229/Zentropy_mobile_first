@@ -1,6 +1,5 @@
 <template>
   <div class="relative">
-    <h2 class="subtitle-text mb-0.5">台股搜尋</h2>
     <form @submit.prevent="send" class="relative">
       <input
         type="text"
@@ -48,11 +47,18 @@
   </div>
 </template>
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, defineProps, toRef } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 let stopSearching
+const props = defineProps({
+  url: {
+    type: String,
+    default: undefined
+  }
+})
 const router = useRouter()
+const url = toRef(props, 'url')
 const inputStockName = ref('')
 const getStockName = ref([])
 const showPreviewKeyWord = ref(false)
@@ -72,7 +78,7 @@ const searchMark = computed(() => {
 watch(inputStockName, (nV, oV) => {
   if (nV) {
     axios
-      .get('api/stock_name/search', {
+      .get(url.value, {
         headers: {
           Authorization: ''
         },
