@@ -1,6 +1,10 @@
 <template>
   <div class="relative">
-    <div class="relative rounded-sm bg-gray-800 xl:overflow-x-hidden" :class="{ 'overflow-x-scroll': showOverflowX }" ref="stockTableContainer">
+    <div
+      class="relative rounded-sm bg-gray-800 xl:overflow-x-hidden"
+      :class="{ 'overflow-x-scroll': showOverflowX }"
+      ref="stockTableContainer"
+    >
       <table class="w-full" ref="stockTable">
         <thead>
           <!-- 表頭 -->
@@ -12,13 +16,19 @@
           </tr>
         </thead>
         <tbody>
-          <tr @mouseenter="isHover" @mouseleave="isHover" v-for="stockList in tableDetail" :key="stockList" class="catagory-stock-detail-tr">
+          <tr
+            @mouseenter="isHover"
+            @mouseleave="isHover"
+            v-for="stockList in tableDetail"
+            :key="stockList"
+            class="catagory-stock-detail-tr"
+          >
             <!-- 股票名稱（第一欄） -->
             <td class="catagory-stock-detail-td">
               <router-link
                 :to="{
-                  name: 'home',
-                  query: { stock: stockList.stock }
+                  name: 'stock',
+                  params: { stockid: stockList.stock }
                 }"
                 class="span-text block font-medium text-gray-300 hover:text-orange-600"
                 >{{ stockList.stockName }}</router-link
@@ -27,13 +37,30 @@
             </td>
             <!-- 股票資訊 start -->
             <td class="catagory-stock-detail-td font-bold">
-              <span class="updownlimit" :class="comparePrice('price', showStockData(stockList.stockDetail[0], 'price'), showStockData(stockList.stockDetail[0], 'yesterday'))">{{
-                showStockData(stockList.stockDetail[0], 'price')
-              }}</span>
+              <span
+                class="updownlimit"
+                :class="
+                  comparePrice(
+                    'price',
+                    showStockData(stockList.stockDetail[0], 'price'),
+                    showStockData(stockList.stockDetail[0], 'yesterday')
+                  )
+                "
+                >{{ showStockData(stockList.stockDetail[0], 'price') }}</span
+              >
             </td>
-            <td class="catagory-stock-detail-td font-bold" :class="comparePrice('ud', showStockData(stockList.stockDetail[0], 'ud'))">
+            <td
+              class="catagory-stock-detail-td font-bold"
+              :class="comparePrice('ud', showStockData(stockList.stockDetail[0], 'ud'))"
+            >
               <div class="flex-center">
-                <svg class="h-0.5 w-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor" :class="rotateIcon(showStockData(stockList.stockDetail[0], 'ud'), 0)">
+                <svg
+                  class="h-0.5 w-0.5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 320 512"
+                  fill="currentColor"
+                  :class="rotateIcon(showStockData(stockList.stockDetail[0], 'ud'), 0)"
+                >
                   <path
                     d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"
                   />
@@ -41,9 +68,18 @@
                 {{ showStockData(stockList.stockDetail[0], 'ud') }}
               </div>
             </td>
-            <td class="catagory-stock-detail-td font-bold" :class="comparePrice('ud', showStockData(stockList.stockDetail[0], 'udpercent'))">
+            <td
+              class="catagory-stock-detail-td font-bold"
+              :class="comparePrice('ud', showStockData(stockList.stockDetail[0], 'udpercent'))"
+            >
               <div class="flex-center">
-                <svg class="h-0.5 w-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor" :class="rotateIcon(showStockData(stockList.stockDetail[0], 'udpercent'), 0)">
+                <svg
+                  class="h-0.5 w-0.5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 320 512"
+                  fill="currentColor"
+                  :class="rotateIcon(showStockData(stockList.stockDetail[0], 'udpercent'), 0)"
+                >
                   <path
                     d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"
                   />
@@ -151,7 +187,9 @@ watch(tableDetail, () => {
 // ================== lifeCycle =====================
 onMounted(() => {
   showTableScrollX = () => {
-    stockTableContainer.value.offsetWidth < stockTable.value.offsetWidth ? (showOverflowX.value = true) : (showOverflowX.value = false)
+    stockTableContainer.value.offsetWidth < stockTable.value.offsetWidth
+      ? (showOverflowX.value = true)
+      : (showOverflowX.value = false)
   }
   showTableScrollX()
   window.addEventListener('resize', showTableScrollX)

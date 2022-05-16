@@ -155,7 +155,7 @@ const mobileMemberActive = ref(false)
 const navList = [
   {
     content: '股票首頁',
-    linkName: 'stock'
+    linkName: 'stockHome'
   },
   {
     content: '新聞首頁',
@@ -166,12 +166,8 @@ const navList = [
     linkName: 'charttools'
   },
   {
-    content: '股票預測',
-    linkName: 'about'
-  },
-  {
-    content: '聯絡我們',
-    linkName: 'contact'
+    content: '關於我們',
+    linkName: 'aboutus'
   }
 ]
 const showMobileMember = () => {

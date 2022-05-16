@@ -2,12 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Header from '@/components/HeaderUI.vue'
 import Footer from '@/components/FooterUI.vue'
 import HomePage from '@/views/HomePage.vue'
-import AboutPage from '@/views/AboutPage.vue'
-import ContactPage from '@/views/ContactPage.vue'
-import stockHomePage from '@/views/stockHomePage.vue'
+import AboutUsPage from '@/views/AboutUsPage.vue'
+import StockPage from '@/views/StockPage.vue'
+import StockHomePage from '@/views/StockHomePage.vue'
 import NewsHomePage from '@/views/NewsHomePage.vue'
-import LoginPage from '@/views/LoginPage.vue'
-import SignUpPage from '@/views/SignUpPage.vue'
+import LoginPage from '@/views/MemberPage/LoginPage.vue'
+import SignUpPage from '@/views/MemberPage/SignUpPage.vue'
 import ChartPage from '@/views/ChartPage'
 import store from '@/store'
 import axios from 'axios'
@@ -23,18 +23,6 @@ const routes = [
     }
   },
   {
-    path: '/about',
-    name: 'about',
-    components: {
-      default: AboutPage,
-      Header: Header,
-      Footer: Footer
-    },
-    meta: {
-      requireAuth: true
-    }
-  },
-  {
     path: '/news',
     name: 'news',
     components: {
@@ -44,19 +32,28 @@ const routes = [
     }
   },
   {
-    path: '/contact',
-    name: 'contact',
+    path: '/aboutus',
+    name: 'aboutus',
     components: {
-      default: ContactPage,
+      default: AboutUsPage,
       Header: Header,
       Footer: Footer
     }
   },
   {
     path: '/stock',
+    name: 'stockHome',
+    components: {
+      default: StockHomePage,
+      Header: Header,
+      Footer: Footer
+    }
+  },
+  {
+    path: '/stock/:stockid([a-zA-z0-9]+)',
     name: 'stock',
     components: {
-      default: stockHomePage,
+      default: StockPage,
       Header: Header,
       Footer: Footer
     }
@@ -86,6 +83,11 @@ const routes = [
     meta: {
       requireAuth: true
     }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/',
+    hidden: true
   }
 ]
 

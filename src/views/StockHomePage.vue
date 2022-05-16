@@ -182,7 +182,7 @@ onMounted(() => {
   // scrolling detect to load more data
   // click to hide industry selector
   watchPostEffect((onInvalidate) => {
-    realTimePrice = setInterval(getRealPrice, 3000)
+    realTimePrice = setInterval(getRealPrice, 60000)
     window.addEventListener('scroll', scrollLoding)
     document.querySelector('body').addEventListener('click', industrySelectorBlur)
     onInvalidate(() => {

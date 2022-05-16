@@ -1,15 +1,15 @@
 <template>
   <div class="relative">
-    <form @submit.prevent="send" class="relative">
+    <form class="relative">
       <input
         type="text"
         v-model="inputStockName"
         @click.stop.prevent="showPreviewKeyWord = true"
         placeholder="搜尋台股代號/名稱"
-        class="span-text h-2.5 w-full rounded-sm border bg-gray-800 px-0.5 outline-none"
+        class="span-text h-2.5 w-full rounded-sm border bg-gray-800 px-2 outline-none"
       />
       <!-- search button -->
-      <button class="y-center absolute right-0.5" @click.prevent="goStockPage">
+      <div class="y-center absolute left-0.5">
         <svg
           class="h-[0.2rem] w-[0.2rem] text-gray-300"
           xmlns="http://www.w3.org/2000/svg"
@@ -20,12 +20,14 @@
             d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7C401.8 87.79 326.8 13.32 235.2 1.723C99.01-15.51-15.51 99.01 1.724 235.2c11.6 91.64 86.08 166.7 177.6 178.9c53.8 7.189 104.3-6.236 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 0C515.9 484.7 515.9 459.3 500.3 443.7zM79.1 208c0-70.58 57.42-128 128-128s128 57.42 128 128c0 70.58-57.42 128-128 128S79.1 278.6 79.1 208z"
           />
         </svg>
-      </button>
+      </div>
       <!-- delete button -->
       <button
-        class="y-center ounded-full absolute right-3 z-10"
+        class="y-center ounded-full absolute right-1 z-10"
         v-if="inputStockName"
+        ref="deleteButton"
         @click.prevent="inputStockName = ''"
+        tabindex="-1"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -46,10 +48,12 @@
     >
       <ul class="span-text text-gray-900">
         <li
-          class="search-items flex cursor-pointer items-center justify-between border-b border-gray-400 px-0.5 py-1 hover:bg-gray-400"
+          class="search-items flex cursor-pointer items-center justify-between border-b border-gray-400 px-0.5 py-1 hover:bg-gray-400 focus:bg-gray-400"
           v-for="stockDetail of getStockName"
           :key="stockDetail.stock"
-          @click.stop.prevent="router.push({ name: 'home', query: { stock: stockDetail.stock } })"
+          @keyup.enter="goStockPage(stockDetail.stock)"
+          tabindex="0"
+          @click.stop.prevent="goStockPage(stockDetail.stock)"
         >
           <!-- highlight your input text -->
           <div v-html="searchMark(stockDetail)"></div>
@@ -76,13 +80,14 @@ import { ref, computed, onMounted, watchEffect, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 let stopSearching
+let firstStock
 const router = useRouter()
-const inputStockName = ref('')
+const deleteButton = ref()
 const getStockName = ref([])
+const inputStockName = ref('')
 const showPreviewKeyWord = ref(false)
-const goStockPage = () => {
-  const inputValue = inputStockName.value
-  router.push({ name: 'home', query: { search: inputValue } })
+const goStockPage = (stockid) => {
+  router.push({ name: 'stock', params: { stockid: stockid } })
 }
 const searchMark = computed(() => {
   return function (stockList) {
@@ -105,12 +110,19 @@ const detectInput = () => {
     .then((res) => {
       getStockName.value = res.data
       showPreviewKeyWord.value = true
+      firstStock = res.data[0].stock
+      return res.data
     })
     .catch(() => {
       getStockName.value = []
     })
 }
 onMounted(() => {
+  document.querySelector('form').addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') {
+      goStockPage(firstStock)
+    }
+  })
   watch(inputStockName, (nV, oV) => {
     if (nV) {
       detectInput()
@@ -133,5 +145,8 @@ onMounted(() => {
 <style lang="postcss" scoped>
 .search-items:hover .search-items-icons {
   display: block;
+}
+.search-items:nth-child(1) {
+  @apply bg-gray-400;
 }
 </style>
