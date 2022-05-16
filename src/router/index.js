@@ -4,8 +4,8 @@ import Footer from '@/components/FooterUI.vue'
 import HomePage from '@/views/HomePage.vue'
 import AboutPage from '@/views/AboutPage.vue'
 import ContactPage from '@/views/ContactPage.vue'
-import TeamIntroPage from '@/views/TeamIntroPage.vue'
-import ToolIntroPage from '@/views/ToolIntroPage.vue'
+import stockHomePage from '@/views/stockHomePage.vue'
+import NewsHomePage from '@/views/NewsHomePage.vue'
 import LoginPage from '@/views/LoginPage.vue'
 import SignUpPage from '@/views/SignUpPage.vue'
 import ChartPage from '@/views/ChartPage'
@@ -35,10 +35,10 @@ const routes = [
     }
   },
   {
-    path: '/toolintro',
-    name: 'toolintro',
+    path: '/news',
+    name: 'news',
     components: {
-      default: ToolIntroPage,
+      default: NewsHomePage,
       Header: Header,
       Footer: Footer
     }
@@ -53,10 +53,10 @@ const routes = [
     }
   },
   {
-    path: '/teamintro',
-    name: 'teamintro',
+    path: '/stock',
+    name: 'stock',
     components: {
-      default: TeamIntroPage,
+      default: stockHomePage,
       Header: Header,
       Footer: Footer
     }

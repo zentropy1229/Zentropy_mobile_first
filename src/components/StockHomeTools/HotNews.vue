@@ -1,7 +1,11 @@
 <template>
   <div class="rounded-sm font-medium">
-    <ul class="px-0.5 py-1.5">
-      <li class="mb-1 flex items-center border-b border-gray-400 py-0.5 hover:rounded-sm hover:bg-gray-700" v-for="news in newsDetail" :key="news">
+    <ul>
+      <li
+        class="mb-1 flex items-center border-b border-gray-400 py-0.5 hover:rounded-sm hover:bg-gray-700"
+        v-for="news in newsDetail"
+        :key="news"
+      >
         <div class="mx-0.5">
           <a :href="news.url" class="span-text font-medium hover:text-orange-300" target="_blank">{{ news.title }}</a>
           <p class="span-text-sm font-light text-gray-300">
@@ -13,37 +17,49 @@
         <span>暫無資料</span>
       </div>
       <div class="span-text-sm text-right" v-if="newsDetail.length && showSeeAll">
-        <a class="hover:text-orange-300" href="javascript:">查看全部...</a>
+        <router-link :to="{ name: 'news' }" class="hover:text-orange-300">查看全部...</router-link>
       </div>
     </ul>
     <!-- LOADING -->
-    <loading-icon :isLoading="isLoading" />
+    <loading-icon :isLoading="isLoading" class="mt-1" />
   </div>
 </template>
 <script setup>
-import { onMounted, ref, defineProps, toRef } from 'vue'
+import { ref, defineProps, defineEmits, toRef, watchEffect } from 'vue'
 import LoadingIcon from '@/components/smallComponents/LoadingIcon'
 import axios from 'axios'
+const emit = defineEmits(['alreadyBottom'])
 const props = defineProps({
   keywords: {
     type: String,
-    default: undefined
+    default: '台股'
   },
   page: {
-    type: String,
-    default: undefined
+    type: Number,
+    default: 0
   },
   showSeeAll: {
     type: Boolean,
     default: false
+  },
+  isUpdate: {
+    type: Boolean,
+    default: true
   }
 })
 const newsDetail = ref([])
 const isLoading = ref(false)
+// 傳到後端的關鍵字
 const page = toRef(props, 'page')
 const keywords = toRef(props, 'keywords')
+const isUpdate = toRef(props, 'isUpdate')
+// 是否顯示查看全部
 const showSeeAll = toRef(props, 'showSeeAll')
-onMounted(() => {
+// 是否到底
+const alreadyBottom = (value) => {
+  emit('alreadyBottom', value)
+}
+const getNewsDetail = (value) => {
   isLoading.value = true
   axios
     .get('/api/news/', {
@@ -53,13 +69,22 @@ onMounted(() => {
       }
     })
     .then((res) => {
-      newsDetail.value = res.data
+      newsDetail.value = newsDetail.value.concat(res.data)
+      alreadyBottom(false)
       isLoading.value = false
+      return res.data
     })
     .catch(() => {
-      newsDetail.value = []
+      alreadyBottom(true)
       isLoading.value = false
+      return 'error happend!!'
     })
+}
+watchEffect(() => {
+  if (!isUpdate.value) {
+    newsDetail.value = []
+  }
+  getNewsDetail()
 })
 </script>
 

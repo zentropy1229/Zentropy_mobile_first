@@ -98,7 +98,6 @@ const option = ref({
       min: computed(() => {
         return roundTwo(daliyStockValue.value.quote['21'] * 0.9)
       }),
-      scale: true,
       interval: computed(() => {
         return roundTwo((daliyStockValue.value.quote['21'] * 0.2) / 8)
       }),
@@ -125,6 +124,16 @@ const option = ref({
         return daliyStockValue.value.o.slice(0).reverse()
       }),
       type: 'line',
+      showSymbol: false,
+      symbolSize: 8,
+      emphasis: {
+        itemStyle: {
+          scale: true,
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'white'
+        }
+      },
       lineStyle: {
         width: 1.5
       },
@@ -177,7 +186,6 @@ onMounted(async () => {
   )
   watch(option.value, (nV, oV) => {
     if (nV && myChart) {
-      console.log('updated')
       myChart.setOption(option.value)
     }
   })

@@ -3,7 +3,13 @@
     <div class="mb-1 w-full border-b border-gray-700">
       <div class="overflow-x-auto">
         <div class="inline-flex">
-          <button class="span-text h-2.5 w-max border-r-2 border-gray-700 px-1 font-medium hover:bg-orange-400" v-for="i in 4" :key="i">台股大盤</button>
+          <button
+            class="span-text h-2.5 w-max border-r-2 border-gray-700 px-1 font-medium hover:bg-orange-400"
+            v-for="i in 4"
+            :key="i"
+          >
+            台股大盤
+          </button>
         </div>
       </div>
     </div>
@@ -19,13 +25,22 @@
             </div>
           </div>
           <div class="flex flex-col items-end">
-            <span class="mb-0.5 text-[0.3rem] font-bold leading-none text-rose-500">{{ getStockValueDetail.price }}</span>
+            <span class="mb-0.5 text-[0.3rem] font-bold leading-none text-rose-500">{{
+              getStockValueDetail.price
+            }}</span>
             <div class="flex items-center">
-              <svg class="h-0.5 w-0.5 rotate-180 text-rose-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="currentColor">
+              <svg
+                class="h-0.5 w-0.5 rotate-180 text-rose-500"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 320 512"
+                fill="currentColor"
+              >
                 <path
                   d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"
                 /></svg
-              ><span class="text-[0.13rem] font-medium leading-none text-rose-500">{{ getStockValueDetail.upDown }} ({{ getStockValueDetail.upDownPercent }}%)</span>
+              ><span class="text-[0.13rem] font-medium leading-none text-rose-500"
+                >{{ getStockValueDetail.upDown }} ({{ getStockValueDetail.upDownPercent }}%)</span
+              >
             </div>
           </div>
         </div>
@@ -84,9 +99,6 @@ const option = ref({
   color: 'white',
   tooltip: {
     trigger: 'axis',
-    axisPointer: {
-      type: 'cross'
-    },
     backgroundColor: 'rgba(255, 255, 255, 0.8)'
   },
   axisPointer: {
@@ -98,7 +110,7 @@ const option = ref({
   },
   grid: [
     {
-      left: '15%',
+      left: '13%',
       right: '1%'
     }
   ],
@@ -113,23 +125,39 @@ const option = ref({
             return DateTime.fromMillis(items * 1000).toFormat('HH:mm')
           })
       }),
-      boundaryGap: false
+      boundaryGap: false,
+      axisLabel: {
+        interval: 240 / 4,
+        formatter: function (value, index) {
+          const h = +value.split(':')[0]
+          if (h === 9) return h
+          if (h === 10) return h
+          if (h === 11) return h
+          if (h === 12) return h
+          if (h === 13) return h
+        }
+      }
     }
   ],
   yAxis: [
     {
       type: 'value',
       max: computed(() => {
-        return roundTwo(daliyStockValue.value['0']['TWS:TSE01:INDEX'].quote['12'])
+        return roundTwo(daliyStockValue.value['0']['TWS:TSE01:INDEX'].quote['12'] * 1.002)
       }),
       min: computed(() => {
-        return roundTwo(daliyStockValue.value['0']['TWS:TSE01:INDEX'].quote['13']) - 200
+        return roundTwo(daliyStockValue.value['0']['TWS:TSE01:INDEX'].quote['13'] / 1.01)
       }),
       axisLabel: {
         formatter: function (value) {
           return parseFloat(value).toFixed(2)
         },
         fontSize: '0.1rem'
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#374151'
+        }
       },
       scale: true,
       splitNumber: 3
@@ -141,7 +169,17 @@ const option = ref({
         return daliyStockValue.value['0']['TWS:TSE01:INDEX'].c.slice(0).reverse()
       }),
       type: 'line',
-      symbol: 'none',
+      showSymbol: false,
+      symbolSize: 8,
+      emphasis: {
+        itemStyle: {
+          color: 'white',
+          scale: true,
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'white'
+        }
+      },
       areaStyle: {
         color: {
           type: 'linear',
@@ -163,8 +201,8 @@ const option = ref({
         }
       },
       lineStyle: {
-        color: 'rgb(223, 223, 223)',
-        width: 1
+        color: '#f3f4f6',
+        width: 2
       },
       markLine: {
         symbol: 'none',
@@ -198,11 +236,14 @@ onMounted(async () => {
   updateData = setInterval(
     await (async function getdaliyStockValue () {
       try {
-        const res = await axios.get('https://ws.api.cnyes.com/ws/api/v1/charting/histories?resolution=1&symbols=TWS:TSE01:INDEX,TWS:OTC01:INDEX&quote=1', {
-          headers: {
-            Authorization: ''
+        const res = await axios.get(
+          'https://ws.api.cnyes.com/ws/api/v1/charting/histories?resolution=1&symbols=TWS:TSE01:INDEX,TWS:OTC01:INDEX&quote=1',
+          {
+            headers: {
+              Authorization: ''
+            }
           }
-        })
+        )
         daliyStockValue.value = res.data.data
       } catch {
         daliyStockValue.value = []
@@ -213,7 +254,6 @@ onMounted(async () => {
   )
   watch(option.value, (nV, oV) => {
     if (nV && myChart) {
-      console.log('updated')
       myChart.setOption(option.value)
     }
   })
