@@ -94,7 +94,9 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   scrollBehavior (to, from, savedPosition) {
-    if (savedPosition) {
+    if (to.matched[0].name === 'stockHome') {
+      return { top: window.scrollY }
+    } else if (savedPosition) {
       return savedPosition
     } else {
       return { top: 0 }

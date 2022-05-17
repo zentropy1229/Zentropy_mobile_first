@@ -45,21 +45,21 @@
           </div>
         </div>
         <div class="flex">
-          <div class="trade-info border-gray-600">
-            <span class="block border-b border-dashed border-gray-600 py-0.5 text-gray-600">開盤</span>
-            <span class="block py-0.5 text-gray-200">{{ getStockValueDetail.open }}</span>
+          <div class="trade-info">
+            <span class="trade-info-index">開盤</span>
+            <span class="trade-info-text">{{ getStockValueDetail.open }}</span>
           </div>
-          <div class="trade-info border-gray-600">
-            <span class="block border-b border-dashed border-gray-600 py-0.5 text-gray-600">最高</span>
-            <span class="block py-0.5 text-gray-200">{{ getStockValueDetail.high }}</span>
+          <div class="trade-info">
+            <span class="trade-info-index">最高</span>
+            <span class="trade-info-text">{{ getStockValueDetail.high }}</span>
           </div>
-          <div class="trade-info border-gray-600">
-            <span class="block border-b border-dashed border-gray-600 py-0.5 text-gray-600">最低</span>
-            <span class="block py-0.5 text-gray-200">{{ getStockValueDetail.low }}</span>
+          <div class="trade-info">
+            <span class="trade-info-index">最低</span>
+            <span class="trade-info-text">{{ getStockValueDetail.low }}</span>
           </div>
-          <div class="trade-info border-gray-600">
-            <span class="block border-b border-dashed border-gray-600 py-0.5 text-gray-600">昨收</span>
-            <span class="block py-0.5 text-gray-200">{{ getStockValueDetail.yesterday }}</span>
+          <div class="trade-info">
+            <span class="trade-info-index">昨收</span>
+            <span class="trade-info-text">{{ getStockValueDetail.yesterday }}</span>
           </div>
         </div>
       </div>
@@ -70,11 +70,9 @@
 
 <script setup>
 import * as echarts from 'echarts'
-import { onMounted, onUnmounted, ref, watch, computed } from 'vue'
+import { onMounted, ref, computed, watchEffect } from 'vue'
 import axios from 'axios'
 const { DateTime } = require('luxon')
-let updateData
-let resizeMyChart
 const chartDom = ref()
 const daliyStockValue = ref([])
 const getStockValueDetail = computed(() => {
@@ -231,40 +229,50 @@ const option = ref({
 const roundTwo = (num) => {
   return +(Math.round(num + 'e-2') + 'e+2')
 }
-// ================ life cycle =====================
-onMounted(async () => {
-  updateData = setInterval(
-    await (async function getdaliyStockValue () {
-      try {
-        const res = await axios.get(
-          'https://ws.api.cnyes.com/ws/api/v1/charting/histories?resolution=1&symbols=TWS:TSE01:INDEX,TWS:OTC01:INDEX&quote=1',
-          {
-            headers: {
-              Authorization: ''
-            }
+const getdaliyStockValue = () => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(
+        'https://ws.api.cnyes.com/ws/api/v1/charting/histories?resolution=1&symbols=TWS:TSE01:INDEX,TWS:OTC01:INDEX&quote=1',
+        {
+          headers: {
+            Authorization: ''
           }
-        )
+        }
+      )
+      .then((res) => {
         daliyStockValue.value = res.data.data
-      } catch {
+        resolve(res.data.data)
+      })
+      .catch((err) => {
         daliyStockValue.value = []
-      }
-      return getdaliyStockValue
-    })(),
-    60000
-  )
-  watch(option.value, (nV, oV) => {
-    if (nV && myChart) {
-      myChart.setOption(option.value)
-    }
+        reject(err.data)
+      })
   })
-  const myChart = echarts.init(chartDom.value)
-  option.value && myChart.setOption(option.value)
-  resizeMyChart = () => myChart.resize()
-  window.addEventListener('resize', resizeMyChart)
-})
-onUnmounted(() => {
-  window.removeEventListener('resize', resizeMyChart)
-  clearInterval(updateData)
+}
+// ================ life cycle =====================
+onMounted(() => {
+  // initial data and echarts logic
+  getdaliyStockValue().then((res) => {
+    const myChart = echarts.init(chartDom.value)
+    const resizeMyChart = () => myChart.resize()
+    watchEffect((onInvalidate) => {
+      myChart.setOption(option.value)
+      window.addEventListener('resize', resizeMyChart)
+      onInvalidate(() => {
+        window.removeEventListener('resize', resizeMyChart)
+      })
+    })
+  })
+  // update data per mins
+  watchEffect((onInvalidate) => {
+    const updateData = setInterval(() => {
+      getdaliyStockValue()
+    }, 60000)
+    onInvalidate(() => {
+      clearInterval(updateData)
+    })
+  })
 })
 </script>
 
@@ -276,6 +284,12 @@ span {
   @apply span-text border-dashed border-gray-600 px-0.5 text-center;
 }
 .trade-info:nth-last-child(1) {
-  border-right: 0;
+  @apply border-r-0;
+}
+.trade-info-index {
+  @apply block border-b border-dashed border-gray-600 py-0.5 text-gray-600;
+}
+.trade-info-text {
+  @apply block py-0.5 text-gray-200;
 }
 </style>

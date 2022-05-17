@@ -11,12 +11,7 @@
           :class="{ 'sticky-image': !active }"
           v-if="!active"
         />
-        <img
-          src="https://picsum.photos/id/261/3240/2160"
-          class="images"
-          :class="{ 'sticky-image': active }"
-          v-else
-        />
+        <img src="https://picsum.photos/id/261/3240/2160" class="images" :class="{ 'sticky-image': active }" v-else />
       </transition>
     </div>
     <div

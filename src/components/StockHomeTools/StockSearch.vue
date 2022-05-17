@@ -50,17 +50,17 @@
         <li
           class="search-items flex cursor-pointer items-center justify-between border-b border-gray-400 px-0.5 py-1 hover:bg-gray-400 focus:bg-gray-400"
           v-for="stockDetail of getStockName"
-          :key="stockDetail.stock"
-          @keyup.enter="goStockPage(stockDetail.stock)"
+          :key="stockDetail"
+          @keyup.enter="goStockPage(stockDetail.stock.stock, stockDetail.stock.industry)"
           tabindex="0"
-          @click.stop.prevent="goStockPage(stockDetail.stock)"
+          @click.stop.prevent="goStockPage(stockDetail.stock.stock, stockDetail.stock.industry)"
         >
           <!-- highlight your input text -->
-          <div v-html="searchMark(stockDetail)"></div>
+          <div v-html="searchMark(stockDetail.stock)"></div>
           <span class="search-items-icons hidden">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-[.15rem] w-[.15rem] text-gray-400"
+              class="h-[.15rem] w-[.15rem] text-gray-900"
               fill="currentColor"
               viewBox="0 0 16 16"
             >
@@ -86,8 +86,8 @@ const deleteButton = ref()
 const getStockName = ref([])
 const inputStockName = ref('')
 const showPreviewKeyWord = ref(false)
-const goStockPage = (stockid) => {
-  router.push({ name: 'stock', params: { stockid: stockid } })
+const goStockPage = (stockid, industry) => {
+  router.push({ name: 'stock', params: { stockid: stockid }, query: { industry: industry } })
 }
 const searchMark = computed(() => {
   return function (stockList) {
@@ -110,7 +110,10 @@ const detectInput = () => {
     .then((res) => {
       getStockName.value = res.data
       showPreviewKeyWord.value = true
-      firstStock = res.data[0].stock
+      firstStock = {
+        stock: res.data[0].stock.stock,
+        industry: res.data[0].stock.industry
+      }
       return res.data
     })
     .catch(() => {
@@ -120,7 +123,7 @@ const detectInput = () => {
 onMounted(() => {
   document.querySelector('form').addEventListener('keyup', (e) => {
     if (e.key === 'Enter') {
-      goStockPage(firstStock)
+      goStockPage(firstStock.stock, firstStock.industry)
     }
   })
   watch(inputStockName, (nV, oV) => {
