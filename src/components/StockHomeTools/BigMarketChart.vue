@@ -141,7 +141,7 @@ const option = ref({
     {
       type: 'value',
       max: computed(() => {
-        return roundTwo(daliyStockValue.value['0']['TWS:TSE01:INDEX'].quote['12'] * 1.002)
+        return roundTwo(daliyStockValue.value['0']['TWS:TSE01:INDEX'].quote['12'] * 1.003)
       }),
       min: computed(() => {
         return roundTwo(daliyStockValue.value['0']['TWS:TSE01:INDEX'].quote['13'] / 1.01)

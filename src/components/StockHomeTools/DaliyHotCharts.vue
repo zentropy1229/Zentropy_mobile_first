@@ -1,7 +1,11 @@
 <template>
   <div class="flex flex-col p-1">
     <div class="ml-0.5 flex flex-col">
-      <span class="span-text w-fit rounded-[.05rem] bg-gray-300 px-0.5 font-medium text-gray-800">{{ stockName }}</span>
+      <router-link
+        :to="{ name: 'stock', params: { stockid: searchStockNum } }"
+        class="span-text w-fit rounded-[.05rem] bg-gray-300 px-0.5 font-medium text-gray-800 hover:bg-orange-400 hover:text-white"
+        >{{ stockName }}</router-link
+      >
       <div class="span-text-sm flex">
         <span class="text-gray-400">{{ stockNum }}.TW</span>
         <span class="ml-auto text-gray-400">{{ volumn }}張</span>
@@ -14,7 +18,7 @@
 <script setup>
 import * as echarts from 'echarts'
 import axios from 'axios'
-import { computed, onMounted, onUnmounted, ref, defineProps, toRef, watch } from 'vue'
+import { computed, onMounted, ref, defineProps, toRef, watchEffect } from 'vue'
 const { DateTime } = require('luxon')
 // ... props ...
 const props = defineProps({
@@ -25,12 +29,11 @@ const props = defineProps({
 })
 const searchStockNum = toRef(props, 'searchStockNum')
 // ... variables ...
-let updateData
-let resizeMyChart
 const volumn = ref('')
 const chartDom = ref()
 const stockNum = ref('')
 const stockName = ref('')
+const isLoading = ref(false)
 const daliyStockValue = ref([])
 const option = ref({
   tooltip: {
@@ -162,44 +165,51 @@ const option = ref({
 const roundTwo = (num) => {
   return +(Math.round(num + 'e+2') + 'e-2')
 }
-// ================ life cycle =====================
-onMounted(async () => {
-  // updated Data every 1 minutes
-  updateData = setInterval(
-    await (async function getdaliyStockValue () {
-      try {
-        const res = await axios.get(`https://ws.api.cnyes.com/ws/api/v1/charting/history?resolution=1&symbol=TWS:${searchStockNum.value}:STOCK&quote=1`, {
+const getdaliyStockValue = () => {
+  return new Promise((resolve, reject) => {
+    isLoading.value = true
+    axios
+      .get(
+        `https://ws.api.cnyes.com/ws/api/v1/charting/history?resolution=1&symbol=TWS:${searchStockNum.value}:STOCK&quote=1`,
+        {
           headers: {
             Authorization: ''
           }
-        })
+        }
+      )
+      .then((res) => {
         daliyStockValue.value = res.data.data
         stockNum.value = res.data.data.quote['0'].split(':')[1]
         stockName.value = res.data.data.quote['200009']
         volumn.value = Math.round(res.data.data.quote['800001'])
-      } catch {
+        resolve(res.data.data)
+      })
+      .catch(() => {
         daliyStockValue.value = []
-      }
-      return getdaliyStockValue
-    })(),
-    60000
-  )
-  watch(option.value, (nV, oV) => {
-    if (nV && myChart) {
-      myChart.setOption(option.value)
-    }
+      })
   })
-  // echarts setup start...
-  const myChart = echarts.init(chartDom.value)
-  option.value && myChart.setOption(option.value)
-  resizeMyChart = () => myChart.resize()
-  setTimeout(resizeMyChart, 1000)
-  window.addEventListener('resize', resizeMyChart)
-  // echarts setup end
-})
-onUnmounted(() => {
-  window.removeEventListener('resize', resizeMyChart)
-  clearInterval(updateData)
+}
+// ================ life cycle =====================
+onMounted(() => {
+  // updated Data every 1 minutes
+  getdaliyStockValue().then((res) => {
+    const myChart = echarts.init(chartDom.value)
+    option.value && myChart.setOption(option.value)
+    const resizeMyChart = () => myChart.resize()
+    // setTimeout(resizeMyChart, 100)
+    watchEffect((onInvalidate) => {
+      window.addEventListener('resize', resizeMyChart)
+      onInvalidate(() => {
+        window.removeEventListener('resize', resizeMyChart)
+      })
+    })
+  })
+  watchEffect((onInvalidate) => {
+    const updateData = setInterval(getdaliyStockValue, 60000)
+    onInvalidate(() => {
+      clearInterval(updateData)
+    })
+  })
 })
 </script>
 

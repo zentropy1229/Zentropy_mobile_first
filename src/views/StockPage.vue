@@ -10,7 +10,7 @@
                   <span class="title-text leading-none">{{ getStockDetail.stockName }}</span>
                   <div class="ml-0.5 flex flex-col items-start">
                     <span class="subtitle-text leading-none text-gray-400">{{ route.params.stockid }}.TW</span>
-                    <span class="span-text-sm leading-none text-gray-500">產業別：{{ route.query.industry }}</span>
+                    <span class="span-text-sm leading-none text-gray-500">產業別：{{ industry }}</span>
                   </div>
                 </div>
                 <div class="ml-1 flex items-end font-medium">
@@ -59,6 +59,7 @@
 <script setup>
 import axios from 'axios'
 import * as echarts from 'echarts'
+import getCatagories from '@/utils/getCatagories.js'
 import { useRouter, useRoute } from 'vue-router'
 import { ref, computed, onMounted, watchPostEffect } from 'vue'
 import StockPageNews from '@/components/StockTools/StockPageNews'
@@ -66,6 +67,7 @@ const { DateTime } = require('luxon')
 const chartDom = ref()
 const route = useRoute()
 const router = useRouter()
+const industry = ref('')
 const stockData = ref()
 const option = ref({
   color: 'white',
@@ -262,6 +264,9 @@ const upOrDown = computed(() => {
 })
 // ================ life cycle =====================
 onMounted(() => {
+  getCatagories(route.params.stockid).then((res) => {
+    industry.value = res[0]
+  })
   getStockData().then((res) => {
     const myChart = echarts.init(chartDom.value)
     const resizMyChart = () => myChart.resize()

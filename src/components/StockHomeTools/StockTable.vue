@@ -54,8 +54,7 @@
               <router-link
                 :to="{
                   name: 'stock',
-                  params: { stockid: stockList.stock.stock },
-                  query: { industry: stockList.stock.industry }
+                  params: { stockid: stockList.stock.stock }
                 }"
                 class="span-text block font-medium text-gray-300 hover:text-orange-600"
                 >{{ stockList.stock.stockName }}</router-link

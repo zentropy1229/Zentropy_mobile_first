@@ -5,10 +5,7 @@
       <div class="container">
         <h2 class="subtitle-text ml-1 mb-1">熱門股票一覽</h2>
         <div class="mb-1 flex rounded-sm bg-gray-900">
-          <daliy-hot-charts :searchStockNum="'1219'" class="w-full" />
-          <daliy-hot-charts :searchStockNum="'2330'" class="w-full" />
-          <daliy-hot-charts :searchStockNum="'6807'" class="w-full" />
-          <daliy-hot-charts :searchStockNum="'3025'" class="w-full" />
+          <daliy-hot-charts v-for="hotStock of hotStocks" :key="hotStock" :searchStockNum="hotStock" class="w-full" />
         </div>
       </div>
       <!-- big market -->
@@ -50,9 +47,9 @@
 
 <script setup>
 import axios from 'axios'
-import { DateTime } from 'luxon'
 import { useRoute } from 'vue-router'
 import { onMounted, ref, watchPostEffect, watch } from 'vue'
+import getCurrentTime from '@/utils/getCurrentTime.js'
 import BigMarketChart from '@/components/StockHomeTools/BigMarketChart'
 import StockSearch from '@/components/StockHomeTools/StockSearch'
 import MyStock from '@/components/StockHomeTools/MyStock'
@@ -70,6 +67,7 @@ const orderColumn = ref('')
 const reverseColumn = ref('')
 const updatedTime = ref('')
 const stockDetails = ref([])
+const hotStocks = ref([])
 const isLoading = ref(false)
 const industrySelectorActive = ref(false)
 const stockTitle = ref({
@@ -83,13 +81,32 @@ const stockTitle = ref({
   volumn: '成交量(張)'
 })
 // ================== Methods ========================
+/**
+ * @param {Number} limit 要取幾個熱門股票
+ */
+const getHotStocks = (limit) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(`/api/stock_name/orderData?col=volumn&offset=0&limit=${limit}&reverse=-`, {
+        headers: {
+          Authorization: ''
+        }
+      })
+      .then((res) => {
+        for (const stockSerise of res.data.results) {
+          hotStocks.value.push(stockSerise.stock.stock)
+        }
+        resolve()
+      })
+      .catch(() => {
+        window.location.href = '/404'
+      })
+  })
+}
 // order list
 const orderList = (index) => {
   orderColumn.value = index
   reverseColumn.value = reverseColumn.value === '-' ? '' : '-'
-}
-const setCurrentTime = () => {
-  updatedTime.value = DateTime.now().toFormat('yyyy年MM月dd日 HH時mm分ss秒')
 }
 // start filter stock by catagory
 const startFilter = (isUpdate) => {
@@ -102,12 +119,15 @@ const startFilter = (isUpdate) => {
   if (next.value) {
     axios
       .get(next.value, {
-        params: { col: orderColumn.value, industry: route.query.industry, reverse: reverseColumn.value }
+        params: { col: orderColumn.value, industry: route.query.industry, reverse: reverseColumn.value },
+        headers: {
+          Authorization: ''
+        }
       })
       .then((res) => {
         stockDetails.value = stockDetails.value.concat(res.data.results)
         next.value = res.data.next
-        setCurrentTime()
+        updatedTime.value = getCurrentTime()
         isLoading.value = false
       })
       .catch(() => {
@@ -141,7 +161,7 @@ const getRealPrice = async function () {
     updateValue = stockDetails.value
   }
   stockDetails.value = updateValue
-  setCurrentTime()
+  updatedTime.value = getCurrentTime()
   return getRealPrice
 }
 // scroll loading function
@@ -158,9 +178,7 @@ const scrollLoding = () => {
 // ================== lifecycle =====================
 onMounted(() => {
   // get initial data
-  // getRealPrice()
-  // after route change clear data and get new data
-  // startFilter(false)
+  getHotStocks(4)
   watch(
     [route, orderColumn, reverseColumn],
     () => {

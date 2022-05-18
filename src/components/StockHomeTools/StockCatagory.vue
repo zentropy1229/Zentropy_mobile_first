@@ -38,7 +38,7 @@
 <script setup>
 import { onMounted, ref, watchEffect, defineProps, defineEmits, toRef } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import axios from 'axios'
+import getCatagories from '@/utils/getCatagories.js'
 // ============= definprops and emits =============
 const emit = defineEmits(['changeSelectorState'])
 const props = defineProps({
@@ -55,6 +55,10 @@ const catagoryContent = ref('')
 const industryName = ref('')
 const industrySelectorActive = toRef(props, 'industrySelectorActive')
 // ============= methods ==========================
+/**
+ * @param {String} indsutry 產業別名稱
+ * @returns 不會回傳，但會轉網址
+ */
 const pushRouter = (industry) => {
   industryName.value = industry
   router.push({
@@ -72,18 +76,7 @@ const industrySelectorBlur = (e) => {
 // ============= life-cycle =======================
 // onMounted action
 onMounted(() => {
-  // get industry catagories from db and check route in initial
-  ;(function getIndustryCatagory () {
-    axios
-      .get('/api/stock_name/industry', {
-        headers: {
-          Authorization: ''
-        }
-      })
-      .then((res) => {
-        catagoryContent.value = res.data.industry
-      })
-  })()
+  getCatagories().then((res) => (catagoryContent.value = res))
   // watch route change and body click
   watchEffect((onInvalidate) => {
     industryName.value = route.query.industry ? route.query.industry : '全部'
