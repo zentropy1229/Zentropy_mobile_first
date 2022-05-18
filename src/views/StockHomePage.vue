@@ -52,7 +52,7 @@
 import axios from 'axios'
 import { DateTime } from 'luxon'
 import { useRoute } from 'vue-router'
-import { onMounted, ref, watchPostEffect } from 'vue'
+import { onMounted, ref, watchPostEffect, watch } from 'vue'
 import BigMarketChart from '@/components/StockHomeTools/BigMarketChart'
 import StockSearch from '@/components/StockHomeTools/StockSearch'
 import MyStock from '@/components/StockHomeTools/MyStock'
@@ -61,10 +61,11 @@ import StockTable from '@/components/StockHomeTools/StockTable'
 import DaliyHotCharts from '@/components/StockHomeTools/DaliyHotCharts'
 import StockCatagory from '@/components/StockHomeTools/StockCatagory'
 // ================== define let =====================
-let next
+
 // ================== define route ===================
 const route = useRoute()
 // ================== define ref =====================
+const next = ref('')
 const orderColumn = ref('')
 const reverseColumn = ref('')
 const updatedTime = ref('')
@@ -82,55 +83,66 @@ const stockTitle = ref({
   volumn: '成交量(張)'
 })
 // ================== Methods ========================
+// order list
+const orderList = (index) => {
+  orderColumn.value = index
+  reverseColumn.value = reverseColumn.value === '-' ? '' : '-'
+}
+const setCurrentTime = () => {
+  updatedTime.value = DateTime.now().toFormat('yyyy年MM月dd日 HH時mm分ss秒')
+}
 // start filter stock by catagory
 const startFilter = (isUpdate) => {
   // if not update clear stockDetail, else keep stockDetail
   if (!isUpdate) {
     stockDetails.value = []
-    next = '/api/stock_name/orderData?page=1'
+    next.value = '/api/stock_name/orderData?offset=0'
   }
   isLoading.value = true
-  if (next) {
+  if (next.value) {
     axios
-      .get(next, {
+      .get(next.value, {
         params: { col: orderColumn.value, industry: route.query.industry, reverse: reverseColumn.value }
       })
       .then((res) => {
         stockDetails.value = stockDetails.value.concat(res.data.results)
-        next = res.data.next
+        next.value = res.data.next
+        setCurrentTime()
         isLoading.value = false
       })
       .catch(() => {
         stockDetails.value = []
         isLoading.value = false
+        window.location.href = '/404'
       })
   }
-}
-// order list
-const orderList = (index) => {
-  orderColumn.value = index
-  reverseColumn.value = reverseColumn.value === '-' ? '' : '-'
 }
 // get real and now price
 const getRealPrice = async function () {
   let updateValue = []
   try {
     const iterateTimes = Math.ceil(stockDetails.value.length / 30) ? Math.ceil(stockDetails.value.length / 30) : 1
-    for (let i = 1; i <= iterateTimes; i++) {
+    for (let i = 0; i < iterateTimes; i++) {
       const res = await axios.get('/api/stock_name/orderData', {
-        params: { col: orderColumn.value, industry: route.query.industry, reverse: reverseColumn.value, page: i },
+        params: {
+          col: orderColumn.value,
+          industry: route.query.industry,
+          reverse: reverseColumn.value,
+          offset: i * 30
+        },
         headers: {
           Authorization: ''
         }
       })
       updateValue = updateValue.concat(res.data.results)
-      next = res.data.next
+      next.value = res.data.next
     }
   } catch {
     updateValue = stockDetails.value
   }
   stockDetails.value = updateValue
-  updatedTime.value = DateTime.now().toFormat('yyyy年MM月dd日 HH時mm分ss秒')
+  setCurrentTime()
+  return getRealPrice
 }
 // scroll loading function
 const scrollLoding = () => {
@@ -138,7 +150,7 @@ const scrollLoding = () => {
   const wh = document.documentElement.clientHeight
   const dh = document.documentElement.scrollHeight
   if (!Math.floor(dh - st - wh)) {
-    if (next !== null) {
+    if (next.value !== null) {
       startFilter(true)
     }
   }
@@ -146,16 +158,18 @@ const scrollLoding = () => {
 // ================== lifecycle =====================
 onMounted(() => {
   // get initial data
-  getRealPrice()
+  // getRealPrice()
   // after route change clear data and get new data
-  // watch(route, () => {
-  //   setTimeout(() => {
-  //     startFilter(false)
-  //   }, 100)
-  // })
+  // startFilter(false)
+  watch(
+    [route, orderColumn, reverseColumn],
+    () => {
+      startFilter(false)
+    },
+    { immediate: true }
+  )
   // click to hide industry selector
   watchPostEffect((onInvalidate) => {
-    startFilter(false)
     // get lastest updated price (per minutes)
     const realTimePrice = setInterval(getRealPrice, 60000)
     // scrolling detect to load more data

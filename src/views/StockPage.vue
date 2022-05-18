@@ -225,7 +225,8 @@ const getStockData = () => {
           stockData.value = res.data.data
           resolve(res.data.data)
         } else {
-          reject(new Error('StockID is not exist'))
+          router.replace({ name: '404' })
+          throw new Error('StockID is not exist')
         }
       })
   })
@@ -261,24 +262,19 @@ const upOrDown = computed(() => {
 })
 // ================ life cycle =====================
 onMounted(() => {
-  getStockData()
-    .then((res) => {
-      const myChart = echarts.init(chartDom.value)
-      const resizMyChart = () => myChart.resize()
-      watchPostEffect((onInvalidate) => {
-        myChart.setOption(option.value)
-        window.addEventListener('resize', resizMyChart)
-        onInvalidate(() => {
-          window.removeEventListener('resize', resizMyChart)
-        })
+  getStockData().then((res) => {
+    const myChart = echarts.init(chartDom.value)
+    const resizMyChart = () => myChart.resize()
+    watchPostEffect((onInvalidate) => {
+      myChart.setOption(option.value)
+      window.addEventListener('resize', resizMyChart)
+      onInvalidate(() => {
+        window.removeEventListener('resize', resizMyChart)
       })
     })
-    .catch((err) => {
-      alert(err)
-      router.replace({ name: 'stockHome' })
-    })
+  })
   watchPostEffect((onInvalidate) => {
-    const updateData = setInterval(getStockData, 3000)
+    const updateData = setInterval(getStockData, 60000)
     onInvalidate(() => {
       clearInterval(updateData)
     })

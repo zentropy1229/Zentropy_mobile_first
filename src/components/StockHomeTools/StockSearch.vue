@@ -150,6 +150,6 @@ onMounted(() => {
   display: block;
 }
 .search-items:nth-child(1) {
-  @apply bg-gray-400;
+  @apply bg-gray-300;
 }
 </style>

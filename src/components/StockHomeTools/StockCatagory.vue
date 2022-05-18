@@ -36,7 +36,7 @@
   </div>
 </template>
 <script setup>
-import { onMounted, ref, watchEffect, defineProps, defineEmits, toRef, watch } from 'vue'
+import { onMounted, ref, watchEffect, defineProps, defineEmits, toRef } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 // ============= definprops and emits =============
@@ -64,11 +64,6 @@ const pushRouter = (industry) => {
     }
   })
 }
-const checkRoute = () => {
-  if (!catagoryContent.value.includes(route.query.industry)) {
-    router.replace({ name: 'stockHome', query: { industry: '塑膠工業' } })
-  }
-}
 const industrySelectorBlur = (e) => {
   if (e.target.id !== 'industrySelector') {
     emit('changeSelectorState', false)
@@ -88,21 +83,10 @@ onMounted(() => {
       .then((res) => {
         catagoryContent.value = res.data.industry
       })
-      .then(() => {
-        watch(
-          route,
-          (nV, oV) => {
-            if (nV.name === 'stockHome') {
-              checkRoute()
-            }
-          },
-          { immediate: true }
-        )
-      })
   })()
   // watch route change and body click
   watchEffect((onInvalidate) => {
-    industryName.value = route.query.industry
+    industryName.value = route.query.industry ? route.query.industry : '全部'
     document.querySelector('body').addEventListener('click', industrySelectorBlur)
     onInvalidate(() => {
       document.querySelector('body').removeEventListener('click', industrySelectorBlur)

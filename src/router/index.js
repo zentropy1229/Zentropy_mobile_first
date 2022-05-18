@@ -9,6 +9,7 @@ import NewsHomePage from '@/views/NewsHomePage.vue'
 import LoginPage from '@/views/MemberPage/LoginPage.vue'
 import SignUpPage from '@/views/MemberPage/SignUpPage.vue'
 import ChartPage from '@/views/ChartPage'
+import NotFound404Page from '@/views/NotFound404Page'
 import store from '@/store'
 import axios from 'axios'
 
@@ -85,8 +86,15 @@ const routes = [
     }
   },
   {
+    path: '/404',
+    name: '404',
+    components: {
+      default: NotFound404Page
+    }
+  },
+  {
     path: '/:pathMatch(.*)*',
-    redirect: '/',
+    redirect: '/404',
     hidden: true
   }
 ]
