@@ -4,7 +4,18 @@
       <!-- hot stocks -->
       <div class="container">
         <h2 class="subtitle-text ml-1 mb-1">熱門股票一覽</h2>
-        <div class="mb-1 flex rounded-sm bg-gray-900">
+        <div class="relative mb-1 flex overflow-x-auto rounded-sm bg-gray-900" ref="daliyHotChartDom">
+          <svg
+            class="absolute bottom-1 right-1 z-10 h-2 w-2 animate-pulse text-white/20 lg:hidden"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 448 512"
+            v-if="!startScroll"
+          >
+            <path
+              d="M246.6 233.4l-160-160c-12.5-12.5-32.75-12.5-45.25 0s-12.5 32.75 0 45.25L178.8 256l-137.4 137.4c-12.5 12.5-12.5 32.75 0 45.25C47.63 444.9 55.81 448 64 448s16.38-3.125 22.62-9.375l160-160C259.1 266.1 259.1 245.9 246.6 233.4zM438.6 233.4l-160-160c-12.5-12.5-32.75-12.5-45.25 0s-12.5 32.75 0 45.25L370.8 256l-137.4 137.4c-12.5 12.5-12.5 32.75 0 45.25C239.6 444.9 247.8 448 256 448s16.38-3.125 22.62-9.375l160-160C451.1 266.1 451.1 245.9 438.6 233.4z"
+            />
+          </svg>
           <daliy-hot-charts v-for="hotStock of hotStocks" :key="hotStock" :searchStockNum="hotStock" class="w-full" />
         </div>
       </div>
@@ -47,28 +58,30 @@
 
 <script setup>
 import axios from 'axios'
+
 import { useRoute } from 'vue-router'
 import { onMounted, ref, watchPostEffect, watch } from 'vue'
 import getCurrentTime from '@/utils/getCurrentTime.js'
-import BigMarketChart from '@/components/StockHomeTools/BigMarketChart'
-import StockSearch from '@/components/StockHomeTools/StockSearch'
 import MyStock from '@/components/StockHomeTools/MyStock'
 import HotNews from '@/components/StockHomeTools/HotNews'
 import StockTable from '@/components/StockHomeTools/StockTable'
-import DaliyHotCharts from '@/components/StockHomeTools/DaliyHotCharts'
+import StockSearch from '@/components/StockHomeTools/StockSearch'
 import StockCatagory from '@/components/StockHomeTools/StockCatagory'
-// ================== define let =====================
-
-// ================== define route ===================
+import BigMarketChart from '@/components/StockHomeTools/BigMarketChart'
+import DaliyHotCharts from '@/components/StockHomeTools/DaliyHotCharts'
+// ================== define dom =====================
+const daliyHotChartDom = ref()
+// ================== define route store ===================
 const route = useRoute()
 // ================== define ref =====================
 const next = ref('')
+const hotStocks = ref([])
 const orderColumn = ref('')
-const reverseColumn = ref('')
 const updatedTime = ref('')
 const stockDetails = ref([])
-const hotStocks = ref([])
 const isLoading = ref(false)
+const reverseColumn = ref('')
+const startScroll = ref(false)
 const industrySelectorActive = ref(false)
 const stockTitle = ref({
   price: '股價',
@@ -175,6 +188,10 @@ const scrollLoding = () => {
     }
   }
 }
+const startScrolling = () => {
+  const x = daliyHotChartDom.value.scrollLeft
+  x > 0 ? (startScroll.value = true) : (startScroll.value = false)
+}
 // ================== lifecycle =====================
 onMounted(() => {
   // get initial data
@@ -192,8 +209,10 @@ onMounted(() => {
     const realTimePrice = setInterval(getRealPrice, 60000)
     // scrolling detect to load more data
     window.addEventListener('scroll', scrollLoding)
+    daliyHotChartDom.value.addEventListener('scroll', startScrolling)
     onInvalidate(() => {
       window.removeEventListener('scroll', scrollLoding)
+      daliyHotChartDom.value.removeEventListener('scroll', startScrolling)
       clearInterval(realTimePrice)
     })
   })

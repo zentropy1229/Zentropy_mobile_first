@@ -39,6 +39,24 @@
               </button>
             </div>
           </div>
+          <div class="ml-2 flex flex-wrap gap-1">
+            <div class="flex items-end">
+              <span class="leading-none text-gray-400 after:absolute after:bottom-0 after:bg-rose-400">開盤</span
+              ><span class="ml-1 text-[0.2rem] font-bold leading-none">{{ getStockDetail.open }}</span>
+            </div>
+            <div class="flex items-end">
+              <span class="leading-none text-gray-400">最高</span
+              ><span class="ml-1 text-[0.2rem] font-bold leading-none">{{ getStockDetail.high }}</span>
+            </div>
+            <div class="flex items-end">
+              <span class="leading-none text-gray-400">最低</span
+              ><span class="ml-1 text-[0.2rem] font-bold leading-none">{{ getStockDetail.low }}</span>
+            </div>
+            <div class="flex items-end">
+              <span class="leading-none text-gray-400">昨收</span
+              ><span class="ml-1 text-[0.2rem] font-bold leading-none">{{ getStockDetail.yesterday }}</span>
+            </div>
+          </div>
           <div class="h-28 w-full p-0.5" ref="chartDom"></div>
         </div>
       </div>
@@ -64,11 +82,11 @@ import { useRouter, useRoute } from 'vue-router'
 import { ref, computed, onMounted, watchPostEffect } from 'vue'
 import StockPageNews from '@/components/StockTools/StockPageNews'
 const { DateTime } = require('luxon')
-const chartDom = ref()
 const route = useRoute()
 const router = useRouter()
-const industry = ref('')
+const chartDom = ref()
 const stockData = ref()
+const industry = ref('')
 const option = ref({
   color: 'white',
   tooltip: {

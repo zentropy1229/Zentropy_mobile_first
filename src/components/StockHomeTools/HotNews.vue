@@ -13,21 +13,19 @@
           </p>
         </div>
       </li>
-      <div class="span-text flex-center text-right font-medium" v-show="!newsDetail.length && !isLoading">
+      <div class="span-text flex-center text-right font-medium" v-show="!newsDetail.length">
         <span>暫無資料</span>
       </div>
       <div class="span-text-sm text-right" v-if="newsDetail.length && showSeeAll">
         <router-link :to="{ name: 'news' }" class="hover:text-orange-300">查看全部...</router-link>
       </div>
     </ul>
-    <!-- LOADING -->
-    <loading-icon :isLoading="isLoading" class="mt-1" />
   </div>
 </template>
 <script setup>
-import { ref, defineProps, defineEmits, toRef, watchEffect } from 'vue'
-import LoadingIcon from '@/components/smallComponents/LoadingIcon'
 import axios from 'axios'
+import { useStore } from 'vuex'
+import { ref, defineProps, defineEmits, toRef, watchEffect } from 'vue'
 const emit = defineEmits(['alreadyBottom'])
 const props = defineProps({
   keywords: {
@@ -47,8 +45,8 @@ const props = defineProps({
     default: true
   }
 })
+const store = useStore()
 const newsDetail = ref([])
-const isLoading = ref(false)
 // 傳到後端的關鍵字
 const page = toRef(props, 'page')
 const keywords = toRef(props, 'keywords')
@@ -60,7 +58,7 @@ const alreadyBottom = (value) => {
   emit('alreadyBottom', value)
 }
 const getNewsDetail = (value) => {
-  isLoading.value = true
+  store.commit('setIsLoading', true)
   axios
     .get('/api/news/', {
       params: {
@@ -71,13 +69,13 @@ const getNewsDetail = (value) => {
     .then((res) => {
       newsDetail.value = newsDetail.value.concat(res.data)
       alreadyBottom(false)
-      isLoading.value = false
+      store.commit('setIsLoading', false)
       return res.data
     })
-    .catch(() => {
+    .catch((err) => {
       alreadyBottom(true)
-      isLoading.value = false
-      return 'error happend!!'
+      store.commit('setIsLoading', false)
+      return err
     })
 }
 watchEffect(() => {

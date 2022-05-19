@@ -5,16 +5,17 @@
         <div class="inline-flex">
           <button
             class="span-text h-2.5 w-max border-r-2 border-gray-700 px-1 font-medium hover:bg-orange-400"
-            v-for="i in 4"
-            :key="i"
+            v-for="(bigMarketName, bigMarketId) in allBigMarkets"
+            @click="currentBigMarket = bigMarketId"
+            :key="bigMarketName"
           >
-            台股大盤
+            {{ bigMarketName }}
           </button>
         </div>
       </div>
     </div>
     <div class="flex-center w-full flex-wrap px-1 lg:flex-nowrap">
-      <div class="flex-center w-max flex-col">
+      <div class="flex-center w-16 flex-col">
         <div class="mb-1 w-full pb-0.5 text-center lg:text-left"><h2 class="subtitle-text">台股大盤行情</h2></div>
         <div class="mb-1 flex w-full items-end justify-between">
           <div class="flex flex-col">
@@ -25,12 +26,13 @@
             </div>
           </div>
           <div class="flex flex-col items-end">
-            <span class="mb-0.5 text-[0.3rem] font-bold leading-none text-rose-500">{{
+            <span class="mb-0.5 text-[0.3rem] font-bold leading-none" :class="judgeUpDown">{{
               getStockValueDetail.price
             }}</span>
-            <div class="flex items-center">
+            <div class="flex items-center" :class="judgeUpDown">
               <svg
-                class="h-0.5 w-0.5 rotate-180 text-rose-500"
+                class="h-0.5 w-0.5"
+                :class="{ 'rotate-180': getStockValueDetail.upDown > 0 }"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 320 512"
                 fill="currentColor"
@@ -38,7 +40,7 @@
                 <path
                   d="M310.6 246.6l-127.1 128C176.4 380.9 168.2 384 160 384s-16.38-3.125-22.63-9.375l-127.1-128C.2244 237.5-2.516 223.7 2.438 211.8S19.07 192 32 192h255.1c12.94 0 24.62 7.781 29.58 19.75S319.8 237.5 310.6 246.6z"
                 /></svg
-              ><span class="text-[0.13rem] font-medium leading-none text-rose-500"
+              ><span class="text-[0.13rem] font-medium leading-none"
                 >{{ getStockValueDetail.upDown }} ({{ getStockValueDetail.upDownPercent }}%)</span
               >
             </div>
@@ -69,29 +71,18 @@
 </template>
 
 <script setup>
-import * as echarts from 'echarts'
-import { onMounted, ref, computed, watchEffect } from 'vue'
 import axios from 'axios'
-const { DateTime } = require('luxon')
+import * as echarts from 'echarts'
+import { DateTime } from 'luxon'
+import { onMounted, ref, computed, watchEffect } from 'vue'
 const chartDom = ref()
-const daliyStockValue = ref([])
-const getStockValueDetail = computed(() => {
-  if (daliyStockValue.value.length) {
-    const _data = daliyStockValue.value['0']['TWS:TSE01:INDEX']
-    return {
-      stockName: _data.quote['200009'],
-      price: _data.quote['6'],
-      open: _data.o.slice(-1)[0],
-      high: _data.quote['12'],
-      low: _data.quote['13'],
-      yesterday: _data.quote['21'],
-      upDown: _data.quote['220027'],
-      upDownPercent: _data.quote['56'],
-      volumn: _data.quote['800001'] / 100000000 + '億'
-    }
-  } else {
-    return '-'
-  }
+const daliyStockValue = ref()
+const currentBigMarket = ref('TWS:TSE01:INDEX')
+const allBigMarkets = ref({
+  'TWS:TSE01:INDEX': '加權指數',
+  'TWF:TXF:FUTURES': '台指期',
+  'TWS:TSE27:INDEX': '電子指數',
+  'TWS:TSE31:INDEX': '金融指數'
 })
 const option = ref({
   color: 'white',
@@ -108,15 +99,17 @@ const option = ref({
   },
   grid: [
     {
-      left: '13%',
-      right: '1%'
+      left: computed(() => {
+        return window.innerWidth < 768 ? '5%' : '15%'
+      }),
+      right: '5%'
     }
   ],
   xAxis: [
     {
       type: 'category',
       data: computed(() => {
-        return daliyStockValue.value['0']['TWS:TSE01:INDEX'].t
+        return daliyStockValue.value.t
           .slice(0)
           .reverse()
           .map((items) => {
@@ -141,16 +134,23 @@ const option = ref({
     {
       type: 'value',
       max: computed(() => {
-        return roundTwo(daliyStockValue.value['0']['TWS:TSE01:INDEX'].quote['12'] * 1.003)
+        return roundTwo(
+          (getStockValueDetail.value.high > getStockValueDetail.value.yesterday
+            ? getStockValueDetail.value.high
+            : getStockValueDetail.value.yesterday) * 1.003
+        )
       }),
       min: computed(() => {
-        return roundTwo(daliyStockValue.value['0']['TWS:TSE01:INDEX'].quote['13'] / 1.01)
+        return roundTwo(daliyStockValue.value.quote['13'] / 1.01)
       }),
       axisLabel: {
         formatter: function (value) {
           return parseFloat(value).toFixed(2)
         },
-        fontSize: '0.1rem'
+        fontSize: '0.1rem',
+        show: computed(() => {
+          return !(window.innerWidth < 768)
+        })
       },
       splitLine: {
         lineStyle: {
@@ -164,7 +164,7 @@ const option = ref({
   series: [
     {
       data: computed(() => {
-        return daliyStockValue.value['0']['TWS:TSE01:INDEX'].c.slice(0).reverse()
+        return daliyStockValue.value.c.slice(0).reverse()
       }),
       type: 'line',
       showSymbol: false,
@@ -205,19 +205,24 @@ const option = ref({
       markLine: {
         symbol: 'none',
         label: {
-          show: true,
+          show: computed(() => {
+            return !(window.innerWidth < 768)
+          }),
           position: 'start',
           color: 'white',
-          fontSize: '0.12rem'
+          fontSize: '0.12rem',
+          backgroundColor: 'orange',
+          padding: 4,
+          borderRadius: 5
         },
         lineStyle: {
-          color: '#9CA3AF',
+          color: '#f3f4f6',
           type: 'solid'
         },
         data: [
           {
             yAxis: computed(() => {
-              return daliyStockValue.value['0']['TWS:TSE01:INDEX'].quote['21']
+              return daliyStockValue.value.quote['21']
             })
           }
         ]
@@ -226,14 +231,16 @@ const option = ref({
   ]
 })
 // ================ methods =====================
+// 取小數點兩位數
 const roundTwo = (num) => {
   return +(Math.round(num + 'e-2') + 'e+2')
 }
-const getdaliyStockValue = () => {
+// get stock value - daliy
+const getBigMarketValue = () => {
   return new Promise((resolve, reject) => {
     axios
       .get(
-        'https://ws.api.cnyes.com/ws/api/v1/charting/histories?resolution=1&symbols=TWS:TSE01:INDEX,TWS:OTC01:INDEX&quote=1',
+        `https://ws.api.cnyes.com/ws/api/v1/charting/history?resolution=1&symbol=${currentBigMarket.value}&quote=1`,
         {
           headers: {
             Authorization: ''
@@ -250,25 +257,49 @@ const getdaliyStockValue = () => {
       })
   })
 }
+// ================ computed =====================
+// get stock value - from daliy data
+const getStockValueDetail = computed(() => {
+  if (daliyStockValue.value) {
+    const _data = daliyStockValue.value
+    let volumn = _data.quote['800001'] / 100000000
+    volumn = volumn > 1 ? volumn.toFixed(2) + '億' : (volumn * 10000).toFixed(2) + '萬'
+    return {
+      stockName: _data.quote['200009'],
+      price: _data.quote['6'],
+      open: _data.o.slice(-1)[0],
+      high: _data.quote['12'],
+      low: _data.quote['13'],
+      yesterday: _data.quote['21'],
+      upDown: _data.quote['220027'],
+      upDownPercent: _data.quote['56'],
+      volumn: volumn
+    }
+  } else {
+    return '-'
+  }
+})
+// judge up or down and change color
+const judgeUpDown = computed(() => {
+  return getStockValueDetail.value.upDown > 0 ? { 'text-rose-500': true } : { 'text-green-500': true }
+})
 // ================ life cycle =====================
 onMounted(() => {
   // initial data and echarts logic
-  getdaliyStockValue().then((res) => {
-    const myChart = echarts.init(chartDom.value)
-    const resizeMyChart = () => myChart.resize()
-    watchEffect((onInvalidate) => {
+  const myChart = echarts.init(chartDom.value)
+  const resizeMyChart = () => myChart.resize()
+  watchEffect((onInvalidate) => {
+    getBigMarketValue().then(() => {
       myChart.setOption(option.value)
-      window.addEventListener('resize', resizeMyChart)
-      onInvalidate(() => {
-        window.removeEventListener('resize', resizeMyChart)
-      })
+    })
+    window.addEventListener('resize', resizeMyChart)
+    onInvalidate(() => {
+      window.removeEventListener('resize', resizeMyChart)
     })
   })
   // update data per mins
   watchEffect((onInvalidate) => {
-    const updateData = setInterval(() => {
-      getdaliyStockValue()
-    }, 60000)
+    const updateData = setInterval(getBigMarketValue, 60000)
     onInvalidate(() => {
       clearInterval(updateData)
     })

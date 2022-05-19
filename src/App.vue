@@ -4,11 +4,17 @@
     <router-view></router-view>
   </div>
   <router-view name="Footer"></router-view>
+  <div class="flex-center fixed top-0 left-0 z-[99] h-full w-full bg-gray-700/80" v-if="store.state.isLoading">
+    <loading-icon :isLoading="store.state.isLoading" />
+  </div>
   <ScrollToTop />
 </template>
 
 <script setup>
+import { useStore } from 'vuex'
 import ScrollTop from './components/smallComponents/ScrollTop'
+import LoadingIcon from '@/components/smallComponents/LoadingIcon'
+const store = useStore()
 const ScrollToTop = ScrollTop
 </script>
 

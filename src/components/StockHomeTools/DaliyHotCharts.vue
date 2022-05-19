@@ -1,40 +1,41 @@
 <template>
   <div class="flex flex-col p-1">
-    <div class="ml-0.5 flex flex-col">
+    <div class="span-text ml-1 flex flex-col">
       <router-link
         :to="{ name: 'stock', params: { stockid: searchStockNum } }"
-        class="span-text w-fit rounded-[.05rem] bg-gray-300 px-0.5 font-medium text-gray-800 hover:bg-orange-400 hover:text-white"
+        class="mb-[0.05rem] w-fit rounded-[.05rem] bg-gray-200 px-0.5 font-medium text-gray-800 hover:bg-orange-400 hover:text-white"
         >{{ stockName }}</router-link
       >
-      <div class="span-text-sm flex">
-        <span class="text-gray-400">{{ stockNum }}.TW</span>
-        <span class="ml-auto text-gray-400">{{ volumn }}張</span>
+      <div class="flex flex-wrap items-end text-gray-400">
+        <span class="font-medium leading-none">{{ stockNum }}<span class="text-[0.12rem]"> .TW</span></span>
+        <span class="ml-auto text-[0.12rem] leading-none"
+          >成交量 <span class="span-text font-medium text-gray-300">{{ volumn }}</span></span
+        >
       </div>
     </div>
-    <div class="h-[2rem] w-full" ref="chartDom"></div>
+    <div class="h-[2rem] w-[3.5rem] lg:w-full" ref="chartDom"></div>
   </div>
 </template>
 
 <script setup>
-import * as echarts from 'echarts'
 import axios from 'axios'
+import * as echarts from 'echarts'
 import { computed, onMounted, ref, defineProps, toRef, watchEffect } from 'vue'
 const { DateTime } = require('luxon')
-// ... props ...
+// =================== props ===================
 const props = defineProps({
   searchStockNum: {
     type: String,
     default: undefined
   }
 })
-const searchStockNum = toRef(props, 'searchStockNum')
-// ... variables ...
+// =================== refs ===================
 const volumn = ref('')
 const chartDom = ref()
 const stockNum = ref('')
 const stockName = ref('')
-const isLoading = ref(false)
 const daliyStockValue = ref([])
+const searchStockNum = toRef(props, 'searchStockNum')
 const option = ref({
   tooltip: {
     trigger: 'axis',
@@ -51,7 +52,7 @@ const option = ref({
       show: true,
       borderColor: '#374151',
       top: '8%',
-      left: '20%',
+      left: '18%',
       right: '1%',
       bottom: '10%'
     }
@@ -106,7 +107,8 @@ const option = ref({
       }),
       splitLine: {
         lineStyle: {
-          color: '#374151'
+          color: '#374151',
+          type: 'dashed'
         }
       },
       splitArea: {
@@ -117,7 +119,7 @@ const option = ref({
       },
       axisLabel: {
         showMinLabel: true,
-        fontSize: '0.12rem'
+        fontSize: '0.1rem'
       }
     }
   ],
@@ -167,7 +169,6 @@ const roundTwo = (num) => {
 }
 const getdaliyStockValue = () => {
   return new Promise((resolve, reject) => {
-    isLoading.value = true
     axios
       .get(
         `https://ws.api.cnyes.com/ws/api/v1/charting/history?resolution=1&symbol=TWS:${searchStockNum.value}:STOCK&quote=1`,
@@ -194,21 +195,20 @@ onMounted(() => {
   // updated Data every 1 minutes
   getdaliyStockValue().then((res) => {
     const myChart = echarts.init(chartDom.value)
-    option.value && myChart.setOption(option.value)
     const resizeMyChart = () => myChart.resize()
-    // setTimeout(resizeMyChart, 100)
     watchEffect((onInvalidate) => {
+      myChart.setOption(option.value)
       window.addEventListener('resize', resizeMyChart)
       onInvalidate(() => {
         window.removeEventListener('resize', resizeMyChart)
       })
     })
   })
-  watchEffect((onInvalidate) => {
-    const updateData = setInterval(getdaliyStockValue, 60000)
-    onInvalidate(() => {
-      clearInterval(updateData)
-    })
+})
+watchEffect((onInvalidate) => {
+  const updateData = setInterval(getdaliyStockValue, 60000)
+  onInvalidate(() => {
+    clearInterval(updateData)
   })
 })
 </script>
