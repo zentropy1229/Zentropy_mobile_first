@@ -4,16 +4,16 @@
       <div class="px-0.5">
         <div class="mt-2 rounded-sm bg-gray-900 px-0.5">
           <div class="mb-1 border-b-2 border-gray-600">
-            <div class="span-text flex items-center px-2 py-1">
-              <div class="flex items-end">
-                <div class="flex items-end">
-                  <span class="title-text leading-none">{{ getStockDetail.stockName }}</span>
+            <div class="span-text flex flex-col items-center px-2 py-1 lg:flex-row lg:items-end">
+              <div class="flex flex-col lg:flex-row lg:items-end">
+                <div class="mb-0.5 flex flex-col items-center lg:mb-0 lg:flex-row lg:items-end">
+                  <span class="title-text mb-0.5 leading-none lg:mb-0">{{ getStockDetail.stockName }}</span>
                   <div class="ml-0.5 flex flex-col items-start">
                     <span class="subtitle-text leading-none text-gray-400">{{ route.params.stockid }}.TW</span>
                     <span class="span-text-sm leading-none text-gray-500">產業別：{{ industry }}</span>
                   </div>
                 </div>
-                <div class="ml-1 flex items-end font-medium">
+                <div class="ml-1 mb-1 flex items-end font-medium lg:mb-0">
                   <span class="text-[0.3rem] font-bold leading-none">{{ getStockDetail.price }}</span>
                   <span class="text-[0.13rem] leading-none text-gray-400">.TWD</span>
                   <span class="ml-0.5 text-[0.16rem] leading-none" :class="upOrDown">{{ getStockDetail.upDown }}</span>
@@ -23,7 +23,7 @@
                 </div>
               </div>
               <button
-                class="ml-auto mr-1 flex items-center rounded-sm border px-1 py-0.5 hover:bg-orange-300 hover:text-gray-800"
+                class="flex items-center rounded-sm border px-1 py-0.5 hover:bg-orange-300 hover:text-gray-800 lg:ml-auto lg:mr-1"
               >
                 <svg
                   class="block h-[0.2rem] w-[0.2rem]"
@@ -57,7 +57,7 @@
               ><span class="ml-1 text-[0.2rem] font-bold leading-none">{{ getStockDetail.yesterday }}</span>
             </div>
           </div>
-          <div class="h-28 w-full p-0.5" ref="chartDom"></div>
+          <div class="h-20 w-full p-0.5 lg:h-28" ref="chartDom"></div>
         </div>
       </div>
     </div>
@@ -136,6 +136,9 @@ const option = ref({
   ],
   yAxis: [
     {
+      show: computed(() => {
+        return !(window.innerWidth < 768)
+      }),
       type: 'value',
       max: computed(() => {
         return roundTwo(stockData.value.quote['12'] * 1.03)
@@ -206,7 +209,9 @@ const option = ref({
       markLine: {
         symbol: 'none',
         label: {
-          show: true,
+          show: computed(() => {
+            return !(window.innerWidth < 768)
+          }),
           position: 'start',
           color: '#171717',
           fontSize: '0.12rem',
