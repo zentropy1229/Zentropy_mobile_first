@@ -288,6 +288,9 @@ onMounted(() => {
   // initial data and echarts logic
   const myChart = echarts.init(chartDom.value)
   const resizeMyChart = () => myChart.resize()
+  setTimeout(() => {
+    resizeMyChart()
+  }, 100)
   watchEffect((onInvalidate) => {
     getBigMarketValue().then(() => {
       myChart.setOption(option.value)

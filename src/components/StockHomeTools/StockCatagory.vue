@@ -79,7 +79,7 @@ onMounted(() => {
   getCatagories().then((res) => (catagoryContent.value = res))
   // watch route change and body click
   watchEffect((onInvalidate) => {
-    industryName.value = route.query.industry ? route.query.industry : '全部'
+    industryName.value = route.query.industry ? route.query.industry : '化學工業'
     document.querySelector('body').addEventListener('click', industrySelectorBlur)
     onInvalidate(() => {
       document.querySelector('body').removeEventListener('click', industrySelectorBlur)
