@@ -1,18 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Header from '@/components/HeaderUI.vue'
-import Footer from '@/components/FooterUI.vue'
-import HomePage from '@/views/HomePage.vue'
-import AboutUsPage from '@/views/AboutUsPage.vue'
-import StockPage from '@/views/StockPage.vue'
-import StockHomePage from '@/views/StockHomePage.vue'
-import NewsHomePage from '@/views/NewsHomePage.vue'
-import LoginPage from '@/views/MemberPage/LoginPage.vue'
-import SignUpPage from '@/views/MemberPage/SignUpPage.vue'
+import HomePage from '@/views/HomePage'
 import ChartPage from '@/views/ChartPage'
+import StockPage from '@/views/StockPage'
+import Header from '@/components/HeaderUI'
+import Footer from '@/components/FooterUI'
+import AboutUsPage from '@/views/AboutUsPage'
+import NewsHomePage from '@/views/NewsHomePage'
+import StockHomePage from '@/views/StockHomePage'
+import MemberInfoPage from '@/views/MemberPage/MemberInfoPage'
+import LoginPage from '@/views/MemberPage/LoginPage'
 import NotFound404Page from '@/views/NotFound404Page'
+import SignUpPage from '@/views/MemberPage/SignUpPage'
 import store from '@/store'
-import axios from 'axios'
-
 const routes = [
   {
     path: '/',
@@ -76,6 +75,18 @@ const routes = [
     }
   },
   {
+    path: '/memberinfo',
+    name: 'memberInfo',
+    components: {
+      default: MemberInfoPage,
+      Header: Header,
+      Footer: Footer
+    },
+    meta: {
+      requireAuth: true
+    }
+  },
+  {
     path: '/chart-tools',
     name: 'charttools',
     components: {
@@ -113,19 +124,17 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach(async (to, from) => {
-  await store.dispatch('initialize')
-  if (to.matched.some(record => record.meta.requireAuth)) {
-    if (!store.state.access) {
-      alert('請先登入')
-      return { name: 'login' }
-    } else {
-      axios.defaults.headers.common.Authorization = 'Bearer ' + store.state.access
+router.beforeEach((to, from) => {
+  return store.dispatch('initialize').then((res) => {
+    if (to.matched[0].name === 'login' && store.state.access) {
+      return { name: 'memberInfo' }
     }
-  }
-  if (to.matched[0].name === 'login' && store.state.access) {
-    return { name: 'home' }
-  }
+  }).catch((err) => {
+    if (to.matched.some(record => record.meta.requireAuth)) {
+      alert(err.message)
+      return { name: 'login' }
+    }
+  })
 })
 
 export default router

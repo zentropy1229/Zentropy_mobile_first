@@ -132,7 +132,7 @@ const startFilter = (isUpdate) => {
   if (next.value) {
     axios
       .get(next.value, {
-        params: { col: orderColumn.value, industry: route.query.industry, reverse: reverseColumn.value },
+        params: { col: orderColumn.value, industry: route.query.industry || '化學工業', reverse: reverseColumn.value },
         headers: {
           Authorization: ''
         }
@@ -159,7 +159,7 @@ const getRealPrice = async function () {
       const res = await axios.get('/api/stock_name/orderData', {
         params: {
           col: orderColumn.value,
-          industry: route.query.industry,
+          industry: route.query.industry || '化學工業',
           reverse: reverseColumn.value,
           offset: i * 30
         },
@@ -188,6 +188,7 @@ const scrollLoding = () => {
     }
   }
 }
+// for mobile scrolling X
 const startScrolling = () => {
   const x = daliyHotChartDom.value.scrollLeft
   x > 0 ? (startScroll.value = true) : (startScroll.value = false)

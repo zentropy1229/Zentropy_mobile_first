@@ -3,7 +3,7 @@
     class="sticky top-0 z-50 text-white"
     :class="{
       'overflow-hidden': !active,
-      'border-b border-gray-400 bg-gray-600': !isHomePage
+      'border-b border-gray-400 bg-gray-800': !isHomePage
     }"
   >
     <div
@@ -37,7 +37,9 @@
             <router-link :to="{ name: 'signup' }" class="desktop-member-link" v-if="!store.state.access"
               >註冊</router-link
             >
-            <a href="javascript:" class="desktop-member-link" v-if="store.state.access">會員中心</a>
+            <router-link :to="{ name: 'memberInfo' }" class="desktop-member-link" v-if="store.state.access"
+              >會員中心</router-link
+            >
             <div class="desktop-member-link cursor-pointer" v-if="store.state.access" @click="logOut()">登出</div>
           </div>
         </li>
@@ -132,8 +134,8 @@
           </button>
         </div>
         <div class="mobile-nav-list">
-          <router-link class="mobile-member-btn mb-1 bg-p text-white" :to="{ name: 'login' }">Login</router-link>
-          <a class="mobile-member-btn border-2" href="javascripte:void(0)">Sing up</a>
+          <router-link class="mobile-member-btn mb-1 bg-p text-white" :to="{ name: 'login' }">登入</router-link>
+          <router-link class="mobile-member-btn border-2" :to="{ name: 'signup' }">註冊</router-link>
         </div>
       </div>
     </div>

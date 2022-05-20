@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="lg:flex-center relative h-screen bg-white bg-cover lg:overflow-hidden lg:bg-loginPage"
-  >
+  <div class="lg:flex-center relative h-screen bg-white bg-cover lg:overflow-hidden lg:bg-loginPage">
     <div class="rounded-md bg-white p-2 lg:w-20">
       <div class="slideLeft subtitle-text-lg mb-4 font-bold text-p xs:mb-2">
         <h1>Zentropy帳戶登入</h1>
@@ -10,12 +8,8 @@
         <div
           class="relative mb-2 overflow-hidden pl-[.3rem] after:absolute after:inset-0 after:w-[.1rem] after:bg-gray-600"
         >
-          <span class="slideLeft subtitle-text-sm block text-gray-600"
-            >歡迎回來</span
-          >
-          <span class="slideLeft span-text block text-gray-400"
-            >登入開啟全新的一天 !</span
-          >
+          <span class="slideLeft subtitle-text-sm block text-gray-600">歡迎回來</span>
+          <span class="slideLeft span-text block text-gray-400">登入開啟全新的一天 !</span>
         </div>
         <form class="flex-center flex-col gap-1.5" @submit.prevent="submitForm">
           <div class="field">
@@ -54,9 +48,7 @@
               >請輸入密碼</label
             >
           </div>
-          <button
-            class="span-text-lg w-full bg-slate-600 py-[.2rem] text-white hover:bg-blue-600"
-          >
+          <button class="span-text-lg w-full bg-slate-600 py-[.2rem] text-white hover:bg-blue-600">
             <p>登入</p>
           </button>
         </form>
@@ -65,21 +57,13 @@
       <div class="flex-center span-text flex-col">
         <div class="flex-center mb-1">
           <span>還沒有帳號?</span>
-          <router-link
-            class="ml-[.1rem] text-p hover:text-blue-400"
-            :to="{ name: 'signup' }"
-            >註冊</router-link
-          >
+          <router-link class="ml-[.1rem] text-p hover:text-blue-400" :to="{ name: 'signup' }">註冊</router-link>
         </div>
-        <router-link class="text-p hover:text-blue-400" :to="{ name: 'home' }"
-          >忘記密碼</router-link
-        >
+        <router-link class="text-p hover:text-blue-400" :to="{ name: 'home' }">忘記密碼</router-link>
       </div>
     </div>
     <div class="absolute bottom-4 right-4 hidden lg:block">
-      <router-link
-        :to="{ name: 'home' }"
-        class="subtitle-text-sm cursor-pointer text-white hover:text-p"
+      <router-link :to="{ name: 'home' }" class="subtitle-text-sm cursor-pointer text-white hover:text-p"
         >回首頁</router-link
       >
     </div>
@@ -90,14 +74,8 @@
         style="--circle-item-duration: 2s; --circle-item-rotate: 60deg"
       ></div>
       <div class="circle-item top-10 left-8 h-4 w-4"></div>
-      <div
-        class="circle-item left-4 top-20 h-8 w-4"
-        style="--circle-item-rotate: 30deg"
-      ></div>
-      <div
-        class="circle-item top-20 right-2 h-2 w-2"
-        style="--circle-item-duration: 8s"
-      ></div>
+      <div class="circle-item left-4 top-20 h-8 w-4" style="--circle-item-rotate: 30deg"></div>
+      <div class="circle-item top-20 right-2 h-2 w-2" style="--circle-item-duration: 8s"></div>
     </div>
   </div>
 </template>
@@ -136,7 +114,7 @@ const submitForm = () => {
         store.commit('setToken', { access, refresh })
         axios.defaults.headers.common.Authorization = 'Bearer ' + access
         alert('登入成功！')
-        router.push('/about')
+        router.push({ name: 'stockHome' })
       })
       .catch((err) => {
         if (err.response) {
