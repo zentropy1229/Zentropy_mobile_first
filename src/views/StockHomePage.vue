@@ -60,7 +60,7 @@
 import axios from 'axios'
 
 import { useRoute } from 'vue-router'
-import { onMounted, ref, watchPostEffect, watch } from 'vue'
+import { onMounted, ref, watchPostEffect, watch, computed } from 'vue'
 import getCurrentTime from '@/utils/getCurrentTime.js'
 import MyStock from '@/components/StockHomeTools/MyStock'
 import HotNews from '@/components/StockHomeTools/HotNews'
@@ -83,6 +83,9 @@ const isLoading = ref(false)
 const reverseColumn = ref('')
 const startScroll = ref(false)
 const industrySelectorActive = ref(false)
+const industryFromRoute = computed(() => {
+  return route.query.industry || ''
+})
 const stockTitle = ref({
   price: '股價',
   ud: '漲跌',
@@ -132,7 +135,7 @@ const startFilter = (isUpdate) => {
   if (next.value) {
     axios
       .get(next.value, {
-        params: { col: orderColumn.value, industry: route.query.industry || '化學工業', reverse: reverseColumn.value },
+        params: { col: orderColumn.value, industry: industryFromRoute.value, reverse: reverseColumn.value },
         headers: {
           Authorization: ''
         }
@@ -159,7 +162,7 @@ const getRealPrice = async function () {
       const res = await axios.get('/api/stock_name/orderData', {
         params: {
           col: orderColumn.value,
-          industry: route.query.industry || '化學工業',
+          industry: industryFromRoute.value,
           reverse: reverseColumn.value,
           offset: i * 30
         },
@@ -182,7 +185,7 @@ const scrollLoding = () => {
   const st = window.scrollY
   const wh = document.documentElement.clientHeight
   const dh = document.documentElement.scrollHeight
-  if (!Math.floor(dh - st - wh)) {
+  if (Math.floor(dh - st - wh) <= 0) {
     if (next.value !== null) {
       startFilter(true)
     }
