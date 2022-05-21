@@ -41,20 +41,21 @@
           </div>
           <div class="ml-2 flex flex-wrap gap-1">
             <div class="flex items-end">
-              <span class="leading-none text-gray-400 after:absolute after:bottom-0 after:bg-rose-400">開盤</span
-              ><span class="ml-1 text-[0.2rem] font-bold leading-none">{{ getStockDetail.open }}</span>
+              <span class="stock-info-title">開盤</span><span class="stock-info-data">{{ getStockDetail.open }}</span>
             </div>
             <div class="flex items-end">
-              <span class="leading-none text-gray-400">最高</span
-              ><span class="ml-1 text-[0.2rem] font-bold leading-none">{{ getStockDetail.high }}</span>
+              <span class="stock-info-title">最高</span><span class="stock-info-data">{{ getStockDetail.high }}</span>
             </div>
             <div class="flex items-end">
-              <span class="leading-none text-gray-400">最低</span
-              ><span class="ml-1 text-[0.2rem] font-bold leading-none">{{ getStockDetail.low }}</span>
+              <span class="stock-info-title">最低</span><span class="stock-info-data">{{ getStockDetail.low }}</span>
             </div>
             <div class="flex items-end">
-              <span class="leading-none text-gray-400">昨收</span
-              ><span class="ml-1 text-[0.2rem] font-bold leading-none">{{ getStockDetail.yesterday }}</span>
+              <span class="stock-info-title">昨收</span
+              ><span class="stock-info-data">{{ getStockDetail.yesterday }}</span>
+            </div>
+            <div class="flex items-end">
+              <span class="stock-info-title">成交量</span
+              ><span class="stock-info-data">{{ getStockDetail.volumn }}</span>
             </div>
           </div>
           <div class="h-20 w-full p-0.5 lg:h-28" ref="chartDom"></div>
@@ -62,13 +63,15 @@
       </div>
     </div>
     <div class="container flex w-full flex-col text-white lg:flex-row">
-      <div class="w-full lg:w-[66.666%]">
-        <h2 class="subtitle-text-lg ml-0.5 mb-1">個股新聞</h2>
+      <div class="order-2 w-full lg:order-1 lg:w-[66.666%]">
+        <h2 class="subtitle-text-lg mb-1 ml-0.5">個股新聞</h2>
         <stock-page-news :keyword="route.params.stockid + getStockDetail.stockName" />
       </div>
-      <div class="w-full px-0.5 lg:w-[33.333%]">
+      <div class="order-1 w-full px-0.5 lg:order-2 lg:w-[33.333%]">
         <h2 class="subtitle-text-lg mb-1">AI技術分析</h2>
-        <dash-board />
+        <dash-board-combine class="w-full" />
+        <h2 class="subtitle-text-lg mb-1">產業熱門股</h2>
+        <industry-hot-stock class="mb-1 lg:mb-4" :industry="industry" />
       </div>
     </div>
   </div>
@@ -81,7 +84,8 @@ import { useRoute } from 'vue-router'
 import getCatagories from '@/utils/getCatagories.js'
 import { ref, computed, onMounted, watchPostEffect } from 'vue'
 import StockPageNews from '@/components/StockTools/StockPageNews'
-import DashBoard from '@/components/StockTools/DashBoard'
+import DashBoardCombine from '@/components/StockTools/DashBoardCombine'
+import IndustryHotStock from '@/components/StockTools/IndustryHotStock'
 const { DateTime } = require('luxon')
 const route = useRoute()
 const chartDom = ref()
@@ -141,10 +145,10 @@ const option = ref({
       }),
       type: 'value',
       max: computed(() => {
-        return roundTwo(stockData.value.quote['12'] * 1.03)
+        return roundTwo(Math.max(stockData.value.quote['12'], stockData.value.quote['21']) * 1.03)
       }),
       min: computed(() => {
-        return roundTwo(stockData.value.quote['13'] / 1.02)
+        return roundTwo(Math.min(stockData.value.quote['13'], stockData.value.quote['21']) / 1.02)
       }),
       interval: computed(() => {
         return roundTwo((stockData.value.quote['21'] * 0.1) / 8)
@@ -270,11 +274,11 @@ const getStockDetail = computed(() => {
     const upDownPercent = _data.quote['56'] > 0 ? `+ ${_data.quote['56']}` : _data.quote['56']
     return {
       stockName: _data.quote['200009'],
-      price: _data.quote['6'].toFixed(2),
-      open: _data.o.slice(-1)[0].toFixed(2),
-      high: _data.quote['12'].toFixed(2),
-      low: _data.quote['13'].toFixed(2),
-      yesterday: _data.quote['21'].toFixed(2),
+      price: _data.quote['6'] ? _data.quote['6'].toFixed(2) : '-',
+      open: _data.o.slice(-1)[0] ? _data.o.slice(-1)[0].toFixed(2) : '-',
+      high: _data.quote['12'] ? _data.quote['12'].toFixed(2) : '-',
+      low: _data.quote['13'] ? _data.quote['13'].toFixed(2) : '-',
+      yesterday: _data.quote['21'] ? _data.quote['21'].toFixed(2) : '-',
       upDown: upDown,
       upDownPercent: upDownPercent,
       volumn: Math.round(_data.quote['800001']) + '張',
@@ -284,6 +288,7 @@ const getStockDetail = computed(() => {
     return '-'
   }
 })
+
 // judge data up or down
 const upOrDown = computed(() => {
   return getStockDetail.value.pN > 0
@@ -313,6 +318,7 @@ onMounted(() => {
   })
   // update data
   watchPostEffect((onInvalidate) => {
+    getStockData()
     const updateData = setInterval(getStockData, 60000)
     onInvalidate(() => {
       clearInterval(updateData)
@@ -323,4 +329,11 @@ onMounted(() => {
 // ================ end =====================
 </script>
 
-<style lang="postcss" scoped></style>
+<style lang="postcss" scoped>
+.stock-info-title {
+  @apply leading-none text-gray-400;
+}
+.stock-info-data {
+  @apply ml-1 text-[0.2rem] font-bold leading-none;
+}
+</style>

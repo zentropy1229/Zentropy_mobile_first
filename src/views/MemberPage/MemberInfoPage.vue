@@ -3,7 +3,7 @@
     <div class="span-text container mt-1 mb-4 flex w-full flex-col items-center gap-3 text-white lg:flex-row">
       <div class="flex w-full flex-col items-center lg:w-1/2">
         <div class="mb-1 h-16 w-16 rounded-full bg-white"></div>
-        <h2 class="text-[0.6rem] font-bold">Hello Zen!</h2>
+        <h2 class="text-[0.6rem] font-bold">Hello {{ store.state.userInfo.username }}!</h2>
         <span class="subtitle-text text-gray-400">管理及修改你的使用者資訊</span>
       </div>
       <div class="flex w-full flex-col lg:w-1/2">
@@ -110,6 +110,11 @@ const userInfo = computed(() => {
       text: '生日',
       value: '2021-01-01',
       type: 'date'
+    },
+    phone: {
+      text: '手機',
+      value: '0972931555',
+      type: 'text'
     }
   }
 })

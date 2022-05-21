@@ -1,5 +1,5 @@
 <template>
-  <div class="align-center flex min-h-screen bg-gray-600 text-white">
+  <div class="align-center flex min-h-screen bg-gray-800 text-white">
     <div class="container mx-auto">
       <div class="mt-2 mb-1">
         <h2 class="subtitle-text text-center">註冊</h2>
@@ -8,33 +8,23 @@
         <div class="input-container">
           <div class="label-container">
             <label class="input-label">電子郵件Email</label>
-            <span class="ml-0.5 block text-[0.1rem] text-rose-400">{{
-              showError('email')
-            }}</span>
+            <span class="ml-0.5 block text-[0.1rem] text-rose-400">{{ showError('email') }}</span>
           </div>
           <input type="text" class="input-value" v-model="formData.email" />
         </div>
         <div class="input-container">
           <div class="label-container">
             <label class="input-label">使用者名稱</label>
-            <span class="ml-0.5 block text-[0.1rem] text-rose-400">{{
-              showError('username')
-            }}</span>
+            <span class="ml-0.5 block text-[0.1rem] text-rose-400">{{ showError('username') }}</span>
           </div>
           <input type="text" class="input-value" v-model="formData.username" />
         </div>
         <div class="input-container">
           <div class="label-container">
             <label class="input-label">密碼</label>
-            <span class="ml-0.5 block block text-[0.1rem] text-rose-400">{{
-              showError('password')
-            }}</span>
+            <span class="ml-0.5 block block text-[0.1rem] text-rose-400">{{ showError('password') }}</span>
           </div>
-          <input
-            type="password"
-            class="input-value"
-            v-model="formData.password"
-          />
+          <input type="password" class="input-value" v-model="formData.password" />
           <div class="flex flex-col">
             <span class="passwrod-tips">* 密碼需包含大小寫英文字母及數字</span>
             <span class="passwrod-tips">* 密碼長度需為8-20個字元</span>
@@ -44,22 +34,14 @@
         <div class="input-container">
           <div class="label-container">
             <label class="input-label">確認密碼</label>
-            <span class="ml-0.5 block block text-[0.1rem] text-rose-400">{{
-              showError('password_confirm')
-            }}</span>
+            <span class="ml-0.5 block block text-[0.1rem] text-rose-400">{{ showError('password_confirm') }}</span>
           </div>
-          <input
-            type="password"
-            class="input-value"
-            v-model="passwordConfirm"
-          />
+          <input type="password" class="input-value" v-model="passwordConfirm" />
         </div>
         <div class="input-container">
           <div class="label-container">
             <label class="input-label">性別</label>
-            <span class="ml-0.5 block block text-[0.1rem] text-rose-400">{{
-              showError('gender')
-            }}</span>
+            <span class="ml-0.5 block block text-[0.1rem] text-rose-400">{{ showError('gender') }}</span>
           </div>
           <select class="input-value" v-model="formData.gender">
             <option class="span-text-sm bg-gray-500">男生</option>
@@ -68,12 +50,7 @@
           </select>
         </div>
         <div class="flex justify-end">
-          <button
-            class="rounded-sm bg-white py-0.5 px-2 text-gray-600"
-            @click="submitFrom"
-          >
-            註冊
-          </button>
+          <button class="rounded-sm bg-white py-0.5 px-2 text-gray-600" @click="submitFrom">註冊</button>
         </div>
       </form>
     </div>
@@ -99,8 +76,7 @@ const error = ref({
   password_confirm: [''],
   gender: ['']
 })
-const emailRule =
-  /^\w+((-\w+)|(\.\w+))*@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/
+const emailRule = /^\w+((-\w+)|(\.\w+))*@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/
 const usernameRule = /^.{1,20}$/
 const genderRule = /^((男生)|(女生)|(不分性別))$/
 const passwordCaseRule = /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/

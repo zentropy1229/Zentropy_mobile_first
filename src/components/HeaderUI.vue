@@ -186,7 +186,7 @@ const showNavBar = () => {
 }
 const logOut = () => {
   store.dispatch('logOut').then(() => {
-    window.location.href = '/login'
+    window.location.href = '/'
   })
 }
 watch(route, () => {

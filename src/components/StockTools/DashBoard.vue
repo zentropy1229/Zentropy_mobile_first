@@ -1,12 +1,21 @@
 <template>
-  <div ref="guage" class="relative h-[5rem] basis-full rounded-md lg:basis-[calc(45%)]"></div>
+  <div class="flex-center flex-col">
+    <div ref="guage" class="relative h-[5rem] w-full rounded-md" v-if="!isLoading"></div>
+    <loading-icon :isLoading="isLoading" />
+  </div>
 </template>
 
 <script setup>
 import * as echarts from 'echarts'
 import addAlpha from '@/utils/addAlpha'
-import { computed, onMounted, ref, watchEffect } from 'vue'
+import { computed, onMounted, ref, watchEffect, defineProps, toRef } from 'vue'
+import LoadingIcon from '@/components/smallComponents/LoadingIcon'
+const props = defineProps({
+  perdictResult: String
+})
 const guage = ref()
+const isLoading = ref(false)
+const perdictResult = toRef(props, 'perdictResult')
 const option = ref({
   series: [
     {
@@ -25,13 +34,14 @@ const option = ref({
         lineStyle: {
           width: 2,
           color: [
-            [0.333, 'blue'],
+            [0.333, '#10b981'],
             [0.666, '#fff'],
-            [1, 'red']
+            [1, '#ef4444']
           ]
         }
       },
       axisTick: {
+        show: false,
         lineStyle: {
           color: '#fff'
         }
@@ -58,7 +68,7 @@ const option = ref({
                 },
                 {
                   offset: 1,
-                  color: addAlpha('#f3f4f6', 0.2)
+                  color: addAlpha('#f3f4f6', 0.1)
                 }
               ]
             }
@@ -94,11 +104,11 @@ const option = ref({
         distance: -60,
         formatter: function (value) {
           if (value === 1) {
-            return '賣出'
+            return '買入'
           } else if (value === 0) {
             return '持平'
           } else if (value === -1) {
-            return '買入'
+            return '賣出'
           }
           return ''
         }
@@ -113,7 +123,9 @@ const option = ref({
       },
       data: [
         {
-          value: 1
+          value: computed(() => {
+            return perdictResult.value || 1
+          })
         }
       ]
     }
@@ -122,7 +134,9 @@ const option = ref({
 // ----------------------------------------------lifecycle----------------------------------------------
 onMounted(() => {
   const myChart = echarts.init(guage.value)
-  const resizeHandler = myChart.resize()
+  const resizeHandler = () => {
+    myChart.resize()
+  }
   watchEffect((onInvalidate) => {
     myChart.setOption(option.value)
     window.addEventListener('resize', resizeHandler)

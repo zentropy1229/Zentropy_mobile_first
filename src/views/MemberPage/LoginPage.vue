@@ -6,7 +6,7 @@
       </div>
       <div>
         <div
-          class="relative mb-2 overflow-hidden pl-[.3rem] after:absolute after:inset-0 after:w-[.1rem] after:bg-gray-600"
+          class="relative mb-1.5 overflow-hidden pl-[.3rem] after:absolute after:inset-0 after:w-[.1rem] after:bg-gray-600"
         >
           <span class="slideLeft subtitle-text-sm block text-gray-600">歡迎回來</span>
           <span class="slideLeft span-text block text-gray-400">登入開啟全新的一天 !</span>
@@ -47,6 +47,9 @@
               }"
               >請輸入密碼</label
             >
+          </div>
+          <div class="mb-0.5 mr-auto" v-if="error">
+            <span class="span-text rounded-sm bg-rose-50 px-1 py-[0.1rem] font-medium text-rose-500">{{ error }}</span>
           </div>
           <button class="span-text-lg w-full bg-slate-600 py-[.2rem] text-white hover:bg-blue-600">
             <p>登入</p>
@@ -89,17 +92,14 @@ const router = useRouter()
 const store = useStore()
 const accountFocus = ref(false)
 const passwordFocus = ref(false)
-const errors = ref([])
+const error = ref()
 const email = ref('')
 const password = ref('')
 // ----------------------------------- methods -----------------------------------
 const submitForm = () => {
-  errors.value = []
-  if (email.value === '') {
-    errors.value.push('請輸入Email')
-  }
-  if (password.value === '') errors.value.push('請輸入密碼')
-  if (!errors.value.length) {
+  error.value = ''
+  if (password.value === '' || email.value === '') error.value = '帳號或密碼錯誤'
+  if (!error.value.length) {
     const formData = {
       email: email.value,
       password: password.value
@@ -118,8 +118,8 @@ const submitForm = () => {
       })
       .catch((err) => {
         if (err.response) {
-          alert('帳號密碼錯誤!')
-          errors.value.push('帳號密碼錯誤!')
+          error.value = '帳號或密碼錯誤!'
+          password.value = ''
         }
       })
   }

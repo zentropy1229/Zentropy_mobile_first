@@ -134,14 +134,10 @@ const option = ref({
     {
       type: 'value',
       max: computed(() => {
-        return roundTwo(
-          (getStockValueDetail.value.high > getStockValueDetail.value.yesterday
-            ? getStockValueDetail.value.high
-            : getStockValueDetail.value.yesterday) * 1.003
-        )
+        return roundTwo(Math.max(getStockValueDetail.value.high, getStockValueDetail.value.yesterday) * 1.003)
       }),
       min: computed(() => {
-        return roundTwo(daliyStockValue.value.quote['13'] / 1.01)
+        return roundTwo(Math.min(getStockValueDetail.value.low, getStockValueDetail.value.yesterday) / 1.01)
       }),
       axisLabel: {
         formatter: function (value) {
@@ -231,9 +227,12 @@ const option = ref({
   ]
 })
 // ================ methods =====================
-// 取小數點兩位數
+/**
+ * 取小數點兩位數
+ * @param {Number} num 輸入數字
+ */
 const roundTwo = (num) => {
-  return +(Math.round(num + 'e-2') + 'e+2')
+  return +(Math.round(num + 'e+2') + 'e-2')
 }
 // get stock value - daliy
 const getBigMarketValue = () => {
