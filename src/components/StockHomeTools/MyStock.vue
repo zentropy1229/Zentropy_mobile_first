@@ -41,19 +41,23 @@
 import axios from 'axios'
 import { useStore } from 'vuex'
 import { watch, computed, ref } from '@vue/runtime-core'
+// ================== refs ==========================
 const store = useStore()
-const myFavStock = computed(() => {
-  return store.state.userInfo.favoriteStocks
-})
 const stockInfo = ref()
+// ================== Methods =======================
 const getStockData = () => {
-  const stocks = myFavStock.value.join(',')
+  const stocks = myFavStock.value.slice(-5).join(',')
   return new Promise((resolve, reject) => {
-    axios.get('/api/stock_name/orderData', { params: { stocks } }).then((res) => {
-      stockInfo.value = res.data.results.slice(0, 5)
+    axios.get('/api/stock_name/getmfs/', { params: { stocks, sort: '-stock__favoriteStock__updated' } }).then((res) => {
+      stockInfo.value = res.data
     })
   })
 }
+// ================== computed ======================
+const myFavStock = computed(() => {
+  return store.state.userInfo.favoriteStocks
+})
+// ================== life-cycle ====================
 watch(myFavStock, getStockData)
 </script>
 

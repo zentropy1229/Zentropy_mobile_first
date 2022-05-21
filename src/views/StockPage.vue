@@ -68,7 +68,7 @@
       </div>
       <div class="w-full px-0.5 lg:w-[33.333%]">
         <h2 class="subtitle-text-lg mb-1">AI技術分析</h2>
-        <div class="h-12 bg-white"></div>
+        <dash-board />
       </div>
     </div>
   </div>
@@ -77,13 +77,13 @@
 <script setup>
 import axios from 'axios'
 import * as echarts from 'echarts'
+import { useRoute } from 'vue-router'
 import getCatagories from '@/utils/getCatagories.js'
-import { useRouter, useRoute } from 'vue-router'
 import { ref, computed, onMounted, watchPostEffect } from 'vue'
 import StockPageNews from '@/components/StockTools/StockPageNews'
+import DashBoard from '@/components/StockTools/DashBoard'
 const { DateTime } = require('luxon')
 const route = useRoute()
-const router = useRouter()
 const chartDom = ref()
 const stockData = ref()
 const industry = ref('')
@@ -236,9 +236,12 @@ const option = ref({
   ]
 })
 // ================ methods =====================
+
+// round data
 const roundTwo = (num) => {
   return +(Math.round(num + 'e+1') + 'e-1')
 }
+// get stock data
 const getStockData = () => {
   return new Promise((resolve, reject) => {
     axios
@@ -250,13 +253,16 @@ const getStockData = () => {
           stockData.value = res.data.data
           resolve(res.data.data)
         } else {
-          router.replace({ name: '404' })
-          throw new Error('StockID is not exist')
+          window.location.replace('/404')
+          reject(new Error('StockID is not exist'))
         }
       })
   })
 }
+
 // ================ computed =====================
+
+// normalize stock data
 const getStockDetail = computed(() => {
   if (stockData.value) {
     const _data = stockData.value
@@ -278,6 +284,7 @@ const getStockDetail = computed(() => {
     return '-'
   }
 })
+// judge data up or down
 const upOrDown = computed(() => {
   return getStockDetail.value.pN > 0
     ? { 'text-rose-500': true }
@@ -285,11 +292,14 @@ const upOrDown = computed(() => {
       ? { 'text-green-500': true }
       : { 'text-gray-200': true }
 })
+
 // ================ life cycle =====================
+
 onMounted(() => {
   getCatagories(route.params.stockid).then((res) => {
     industry.value = res[0]
   })
+  // initail data and watch data change
   getStockData().then((res) => {
     const myChart = echarts.init(chartDom.value)
     const resizMyChart = () => myChart.resize()
@@ -301,6 +311,7 @@ onMounted(() => {
       })
     })
   })
+  // update data
   watchPostEffect((onInvalidate) => {
     const updateData = setInterval(getStockData, 60000)
     onInvalidate(() => {
@@ -308,6 +319,7 @@ onMounted(() => {
     })
   })
 })
+
 // ================ end =====================
 </script>
 

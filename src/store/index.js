@@ -32,7 +32,18 @@ export default createStore({
     }
   },
   actions: {
-    initialize ({ dispatch, commit }) {
+    initialize ({ dispatch }) {
+      return new Promise((resolve, reject) => {
+        dispatch('getToken').then(() => {
+          dispatch('getUserInfo')
+        }).then(() => {
+          resolve()
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
+    getToken ({ commit }) {
       return new Promise((resolve, reject) => {
         if (localStorage.getItem('refreshToken')) {
           const refresh = localStorage.getItem('refreshToken')
@@ -42,8 +53,6 @@ export default createStore({
               commit('setToken', { access, refresh })
               axios.defaults.headers.common.Authorization = 'Bearer ' + access
               resolve()
-            }).then(() => {
-              dispatch('getUserInfo')
             }).catch(() => {
               commit('removeToken')
               reject(new Error('尚未登入，請重新登入'))
@@ -56,7 +65,7 @@ export default createStore({
     },
     getUserInfo ({ commit }) {
       return new Promise((resolve, reject) => {
-        axios.get('/api/user').then((res) => {
+        axios.get('/api/user/').then((res) => {
           const userInfo = res.data[0]
           commit('setUserInfo', { userInfo })
           resolve()
@@ -65,8 +74,17 @@ export default createStore({
         })
       })
     },
-    logOut ({ commit }) {
-      commit('removeToken')
+    logOut ({ dispatch, commit }) {
+      return new Promise((resolve, reject) => {
+        dispatch('getToken')
+          .then(() => {
+            axios.post('/api/token/logout/', { refresh: localStorage.getItem('refreshToken') })
+              .then(() => {
+                commit('removeToken')
+                resolve()
+              })
+          })
+      })
     }
   },
   modules: {

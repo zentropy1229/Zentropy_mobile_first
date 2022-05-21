@@ -204,11 +204,11 @@ onMounted(() => {
       })
     })
   })
-})
-watchEffect((onInvalidate) => {
-  const updateData = setInterval(getdaliyStockValue, 60000)
-  onInvalidate(() => {
-    clearInterval(updateData)
+  watchEffect((onInvalidate) => {
+    const updateData = setInterval(getdaliyStockValue, 60000)
+    onInvalidate(() => {
+      clearInterval(updateData)
+    })
   })
 })
 </script>

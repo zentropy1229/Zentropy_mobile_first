@@ -9,6 +9,7 @@
         <thead>
           <!-- table title -->
           <tr class="span-text-sm relative border-b-2 border-gray-400 bg-gray-600">
+            <th class="catagory-stock-detail-th">收藏</th>
             <th class="catagory-stock-detail-th">股票代號 / 名稱</th>
             <th
               v-for="(title, index) in tableTitle"
@@ -42,21 +43,39 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            @mouseenter="isHover"
-            @mouseleave="isHover"
-            v-for="stockList in tableDetail"
-            :key="stockList"
-            class="catagory-stock-detail-tr"
-          >
+          <tr v-for="stockList in tableDetail" :key="stockList" class="catagory-stock-detail-tr hover:bg-gray-700">
             <!-- stockName - first column -->
+            <td class="catagory-stock-detail-td" :class="{ slideLeft: true }">
+              <button
+                class="slideLeft rounded-sm p-0.5 text-p hover:bg-gray-900"
+                @click="modifyFav('add', stockList.stock.stock)"
+                v-if="!checkFavStock(stockList.stock.stock)"
+              >
+                <svg class="h-0.5 w-0.5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 448 512">
+                  <path
+                    d="M432 256c0 17.69-14.33 32.01-32 32.01H256v144c0 17.69-14.33 31.99-32 31.99s-32-14.3-32-31.99v-144H48c-17.67 0-32-14.32-32-32.01s14.33-31.99 32-31.99H192v-144c0-17.69 14.33-32.01 32-32.01s32 14.32 32 32.01v144h144C417.7 224 432 238.3 432 256z"
+                  />
+                </svg>
+              </button>
+              <button
+                class="slideLeft rounded-sm p-0.5 hover:bg-gray-600"
+                @click="modifyFav('remove', stockList.stock.stock)"
+                v-else
+              >
+                <svg class="h-0.5 w-0.5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 448 512">
+                  <path
+                    d="M400 288h-352c-17.69 0-32-14.32-32-32.01s14.31-31.99 32-31.99h352c17.69 0 32 14.3 32 31.99S417.7 288 400 288z"
+                  />
+                </svg>
+              </button>
+            </td>
             <td class="catagory-stock-detail-td">
               <router-link
                 :to="{
                   name: 'stock',
                   params: { stockid: stockList.stock.stock }
                 }"
-                class="span-text block font-medium text-gray-300 hover:text-orange-600"
+                class="span-text block font-medium text-gray-300 hover:text-p"
                 >{{ stockList.stock.stockName }}</router-link
               >
               <span class="rounded-sm text-gray-500">{{ stockList.stock.stock }}.TW</span>
@@ -129,13 +148,17 @@
   </div>
 </template>
 <script setup>
-import { defineProps, ref, toRef, computed, onMounted, watchEffect } from 'vue'
+import Qs from 'qs'
+import axios from 'axios'
+import { useStore } from 'vuex'
 import LoadingIcon from '@/components/smallComponents/LoadingIcon'
+import { defineProps, ref, toRef, computed, onMounted, watchEffect } from 'vue'
+const store = useStore()
 // ================== ref Define =====================
-const stockTableContainer = ref()
 const stockTable = ref()
 const nowColumnIndex = ref('')
 const showOverflowX = ref(false)
+const stockTableContainer = ref()
 // ================== Props Define =====================
 const props = defineProps({
   tableDetail: {
@@ -153,16 +176,27 @@ const tableTitle = toRef(props, 'tableTitle')
 const tableDetail = toRef(props, 'tableDetail')
 const isLoading = toRef(props, 'isLoading')
 // ================== Methods =====================
-const isHover = (e) => {
-  const _ = ['text-orange-400', 'text-orange-300']
-  e.target.classList.toggle('bg-gray-700')
-  _.map((el) => e.target.querySelector('td a').classList.toggle(el))
-}
-
 const showTableScrollX = () => {
   stockTableContainer.value.offsetWidth < stockTable.value.offsetWidth
     ? (showOverflowX.value = true)
     : (showOverflowX.value = false)
+}
+/**
+ * @param {String} action 要執行的動做 'remove' or 'add'
+ * @param {String} stock stockid
+ */
+const modifyFav = (action, stock, event) => {
+  store
+    .dispatch('getToken')
+    .then(() => {
+      axios.post('/api/user/mfs/', Qs.stringify({ [action]: stock })).then(() => {
+        store.dispatch('getUserInfo')
+      })
+    })
+    .catch((err) => {
+      alert(err.message)
+      window.location.href = '/login'
+    })
 }
 // ================== computed =====================
 // 顯示每筆的股票資料，判斷是否為空值
@@ -205,6 +239,13 @@ const rotateIcon = computed(() => {
     }
   }
 })
+// check fav stocks
+const checkFavStock = computed(() => {
+  return function (stock) {
+    const favStocks = store.state.userInfo.favoriteStocks || []
+    return favStocks.includes(stock)
+  }
+})
 // ================== lifeCycle =====================
 onMounted(() => {
   // table overflowx action
@@ -228,10 +269,10 @@ onMounted(() => {
 .catagory-stock-detail-th {
   @apply h-3 px-0.5 text-center font-light;
 }
-.catagory-stock-detail-th:nth-child(1) {
+.catagory-stock-detail-th:nth-child(2) {
   @apply text-left;
 }
-.catagory-stock-detail-td:nth-child(1) {
+.catagory-stock-detail-td:nth-child(2) {
   @apply text-left;
 }
 tbody .catagory-stock-detail-tr:nth-last-child(1) {

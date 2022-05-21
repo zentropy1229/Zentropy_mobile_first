@@ -144,10 +144,9 @@
 
 <script setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 const route = useRoute()
-const router = useRouter()
 const store = useStore()
 const active = ref(false)
 const isHomePage = ref(false)
@@ -186,8 +185,9 @@ const showNavBar = () => {
   } else active.value = false
 }
 const logOut = () => {
-  store.dispatch('logOut')
-  router.push({ name: 'home' })
+  store.dispatch('logOut').then(() => {
+    window.location.href = '/login'
+  })
 }
 watch(route, () => {
   isHomePage.value = route.name === 'home'

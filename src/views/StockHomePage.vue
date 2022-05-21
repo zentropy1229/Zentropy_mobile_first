@@ -103,7 +103,7 @@ const stockTitle = ref({
 const getHotStocks = (limit) => {
   return new Promise((resolve, reject) => {
     axios
-      .get(`/api/stock_name/orderData?col=volumn&offset=0&limit=${limit}&reverse=-`, {
+      .get(`/api/stock_name/orderData/?col=volumn&offset=0&limit=${limit}&reverse=-`, {
         headers: {
           Authorization: ''
         }
@@ -126,28 +126,38 @@ const orderList = (index) => {
 }
 // start filter stock by catagory
 const startFilter = (isUpdate) => {
+  // prevent double start
+  startScroll.value = true
+  setTimeout(() => {
+    startScroll.value = false
+  }, 500)
   // if not update clear stockDetail, else keep stockDetail
   if (!isUpdate) {
     stockDetails.value = []
-    next.value = '/api/stock_name/orderData?offset=0'
+    next.value = '/api/stock_name/orderData/?offset=0'
   }
   isLoading.value = true
   if (next.value) {
     axios
       .get(next.value, {
-        params: { col: orderColumn.value, industry: industryFromRoute.value, reverse: reverseColumn.value },
+        params: { col: orderColumn.value, industry: route.query.industry || '', reverse: reverseColumn.value },
         headers: {
           Authorization: ''
         }
       })
       .then((res) => {
-        stockDetails.value = stockDetails.value.concat(res.data.results)
-        next.value = res.data.next
-        updatedTime.value = getCurrentTime()
-        isLoading.value = false
+        if (res.data.results.length) {
+          stockDetails.value = stockDetails.value.concat(res.data.results)
+          next.value = res.data.next
+          updatedTime.value = getCurrentTime()
+          isLoading.value = false
+        } else {
+          stockDetails.value = []
+          isLoading.value = false
+          window.location.href = '/404'
+        }
       })
       .catch(() => {
-        stockDetails.value = []
         isLoading.value = false
         window.location.href = '/404'
       })
@@ -185,7 +195,7 @@ const scrollLoding = () => {
   const st = window.scrollY
   const wh = document.documentElement.clientHeight
   const dh = document.documentElement.scrollHeight
-  if (Math.floor(dh - st - wh) <= 0) {
+  if (!Math.floor(dh - st - wh) && !startScroll.value) {
     if (next.value !== null) {
       startFilter(true)
     }
@@ -207,7 +217,6 @@ onMounted(() => {
     },
     { immediate: true }
   )
-  // click to hide industry selector
   watchPostEffect((onInvalidate) => {
     // get lastest updated price (per minutes)
     const realTimePrice = setInterval(getRealPrice, 60000)

@@ -6,7 +6,7 @@ import axios from 'axios'
 export default function (stockId = '') {
   return new Promise((resolve, reject) => {
     axios
-      .get('/api/stock_name/industry', {
+      .get('/api/stock_name/industry/', {
         headers: {
           Authorization: ''
         },
