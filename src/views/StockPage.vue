@@ -24,6 +24,7 @@
               </div>
               <button
                 class="flex items-center rounded-sm border px-1 py-0.5 hover:bg-orange-300 hover:text-gray-800 lg:ml-auto lg:mr-1"
+                @click="changeBlock()"
               >
                 <svg
                   class="block h-[0.2rem] w-[0.2rem]"
@@ -35,30 +36,49 @@
                     d="M64 400C64 408.8 71.16 416 80 416H480C497.7 416 512 430.3 512 448C512 465.7 497.7 480 480 480H80C35.82 480 0 444.2 0 400V64C0 46.33 14.33 32 32 32C49.67 32 64 46.33 64 64V400zM342.6 278.6C330.1 291.1 309.9 291.1 297.4 278.6L240 221.3L150.6 310.6C138.1 323.1 117.9 323.1 105.4 310.6C92.88 298.1 92.88 277.9 105.4 265.4L217.4 153.4C229.9 140.9 250.1 140.9 262.6 153.4L320 210.7L425.4 105.4C437.9 92.88 458.1 92.88 470.6 105.4C483.1 117.9 483.1 138.1 470.6 150.6L342.6 278.6z"
                   />
                 </svg>
-                <span class="subtitle-text-sm ml-0.5">技術圖表</span>
+                <span class="subtitle-text-sm ml-0.5" v-if="chartBlock === 'chart'">技術圖表</span>
+                <span class="subtitle-text-sm ml-0.5" v-else>基本線圖</span>
               </button>
             </div>
           </div>
-          <div class="ml-2 flex flex-wrap gap-1">
-            <div class="flex items-end">
-              <span class="stock-info-title">開盤</span><span class="stock-info-data">{{ getStockDetail.open }}</span>
+          <div v-show="chartBlock === 'chart'">
+            <!-- stock detail text -->
+            <div class="ml-2 mr-3 flex flex-wrap gap-1">
+              <div class="flex items-end">
+                <span class="stock-info-title">開盤</span><span class="stock-info-data">{{ getStockDetail.open }}</span>
+              </div>
+              <div class="flex items-end">
+                <span class="stock-info-title">最高</span><span class="stock-info-data">{{ getStockDetail.high }}</span>
+              </div>
+              <div class="flex items-end">
+                <span class="stock-info-title">最低</span><span class="stock-info-data">{{ getStockDetail.low }}</span>
+              </div>
+              <div class="flex items-end">
+                <span class="stock-info-title">昨收</span
+                ><span class="stock-info-data">{{ getStockDetail.yesterday }}</span>
+              </div>
+              <div class="flex items-end">
+                <span class="stock-info-title">成交量</span
+                ><span class="stock-info-data">{{ getStockDetail.volumn }}</span>
+              </div>
+              <div class="ml-auto">
+                <button
+                  class="fav-btn text-p"
+                  @click="modifyFavStocks('add', route.params.stockid)"
+                  v-if="!checkFavStock"
+                >
+                  加入自選股
+                </button>
+                <button class="fav-btn text-rose-400" @click="modifyFavStocks('remove', route.params.stockid)" v-else>
+                  移除自選股
+                </button>
+              </div>
             </div>
-            <div class="flex items-end">
-              <span class="stock-info-title">最高</span><span class="stock-info-data">{{ getStockDetail.high }}</span>
-            </div>
-            <div class="flex items-end">
-              <span class="stock-info-title">最低</span><span class="stock-info-data">{{ getStockDetail.low }}</span>
-            </div>
-            <div class="flex items-end">
-              <span class="stock-info-title">昨收</span
-              ><span class="stock-info-data">{{ getStockDetail.yesterday }}</span>
-            </div>
-            <div class="flex items-end">
-              <span class="stock-info-title">成交量</span
-              ><span class="stock-info-data">{{ getStockDetail.volumn }}</span>
-            </div>
+            <!-- charts dom -->
+            <div class="h-20 w-full p-0.5 lg:h-28" ref="chartDom"></div>
           </div>
-          <div class="h-20 w-full p-0.5 lg:h-28" ref="chartDom"></div>
+          <!-- kbar component -->
+          <k-bar v-if="chartBlock === 'kBar'" />
         </div>
       </div>
     </div>
@@ -81,28 +101,31 @@
 import axios from 'axios'
 import * as echarts from 'echarts'
 import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
 import getCatagories from '@/utils/getCatagories.js'
-import { ref, computed, onMounted, watchPostEffect } from 'vue'
+import modifyFavStocks from '@/utils/modifyFavStocks'
+import { ref, computed, onMounted, watchEffect } from 'vue'
+// ================ components =====================
+
+import KBar from '@/components/StockTools/KBar'
 import StockPageNews from '@/components/StockTools/StockPageNews'
 import DashBoardCombine from '@/components/StockTools/DashBoardCombine'
 import IndustryHotStock from '@/components/StockTools/IndustryHotStock'
+
+// ================ refs =====================
+
 const { DateTime } = require('luxon')
+const store = useStore()
 const route = useRoute()
 const chartDom = ref()
 const stockData = ref()
 const industry = ref('')
+const chartBlock = ref('chart')
 const option = ref({
   color: 'white',
   tooltip: {
     trigger: 'axis',
     backgroundColor: 'rgba(255, 255, 255, 0.8)'
-  },
-  axisPointer: {
-    link: { xAxisIndex: 'all' },
-    snap: true,
-    label: {
-      backgroundColor: '#777'
-    }
   },
   grid: [
     {
@@ -171,6 +194,7 @@ const option = ref({
   ],
   series: [
     {
+      name: '成交價',
       data: computed(() => {
         return stockData.value.c.slice(0).reverse()
       }),
@@ -236,9 +260,22 @@ const option = ref({
           }
         ]
       }
+    },
+    {
+      name: '交易量',
+      type: 'line',
+      color: 'rgb(64, 124, 255)',
+      showSymbol: false,
+      data: computed(() => {
+        return stockData.value.v.slice(0).reverse()
+      }),
+      lineStyle: {
+        opacity: 0
+      }
     }
   ]
 })
+
 // ================ methods =====================
 
 // round data
@@ -263,7 +300,13 @@ const getStockData = () => {
       })
   })
 }
-
+// change chart block
+/**
+ * @param {String} type chart type 'chart', 'kBar'
+ */
+const changeBlock = () => {
+  chartBlock.value = chartBlock.value === 'chart' ? 'kBar' : 'chart'
+}
 // ================ computed =====================
 
 // normalize stock data
@@ -298,6 +341,12 @@ const upOrDown = computed(() => {
       : { 'text-gray-200': true }
 })
 
+// check if stock in favstock list
+const checkFavStock = computed(() => {
+  const favStocks = store.state.userInfo?.favoriteStocks
+  return favStocks?.includes(route.params.stockid)
+})
+
 // ================ life cycle =====================
 
 onMounted(() => {
@@ -308,7 +357,7 @@ onMounted(() => {
   getStockData().then((res) => {
     const myChart = echarts.init(chartDom.value)
     const resizMyChart = () => myChart.resize()
-    watchPostEffect((onInvalidate) => {
+    watchEffect((onInvalidate) => {
       myChart.setOption(option.value)
       window.addEventListener('resize', resizMyChart)
       onInvalidate(() => {
@@ -317,8 +366,7 @@ onMounted(() => {
     })
   })
   // update data
-  watchPostEffect((onInvalidate) => {
-    getStockData()
+  watchEffect((onInvalidate) => {
     const updateData = setInterval(getStockData, 60000)
     onInvalidate(() => {
       clearInterval(updateData)
@@ -335,5 +383,8 @@ onMounted(() => {
 }
 .stock-info-data {
   @apply ml-1 text-[0.2rem] font-bold leading-none;
+}
+.fav-btn {
+  @apply rounded-sm px-1 py-0.5 font-medium hover:bg-gray-800;
 }
 </style>

@@ -1,93 +1,60 @@
 <template>
-  <div class="flex-center h-screen w-screen flex-col bg-slate-100">
-    <div class="mb-1">
-      <button class="chart-page-btn" @click="showSearchbox = true">查詢</button>
-    </div>
-    <div class="h-[75vh] w-full" ref="chartDom"></div>
-    <div
-      class="absolute z-50 m-1 h-full w-full bg-black/80"
-      v-if="showSearchbox"
-    >
-      <div
-        class="y-center shadow-set relative mx-auto h-max w-max rounded p-1.5"
-      >
-        <div class="mb-1 text-right">
-          <button class="hover:scale-90" @click="showSearchbox = false">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-1 w-1 text-black hover:text-p"
-              fill="currentColor"
-              viewBox="0 0 16 16"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
-              />
-              <path
-                fill-rule="evenodd"
-                d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
-              />
-            </svg>
-          </button>
+  <div class="p-1 text-p">
+    <div class="flex-center h-full w-full flex-col rounded-sm bg-gray-50 py-0.5">
+      <div class="mb-1">
+        <button class="chart-page-btn" @click="showSearchbox = true">查詢</button>
+      </div>
+      <div class="h-[75vh] w-full" ref="chartDom"></div>
+      <div class="fixed top-0 z-50 h-screen w-full bg-gray-900/60" v-if="showSearchbox">
+        <div class="y-center shadow-set relative mx-auto h-max w-max rounded p-1.5">
+          <div class="mb-1 text-right">
+            <button class="hover:scale-90" @click="showSearchbox = false">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-1 w-1 text-black hover:text-p"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z"
+                />
+                <path
+                  fill-rule="evenodd"
+                  d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z"
+                />
+              </svg>
+            </button>
+          </div>
+          <form @submit.prevent="submitForm" class="flex flex-col items-end gap-1">
+            <div class="searchbox-container">
+              <label>起始日期</label><input class="chart-searchbox shadow-set" type="date" v-model="start" />
+            </div>
+            <div class="searchbox-container">
+              <label>結束日期</label><input class="chart-searchbox shadow-set" type="date" v-model="end" />
+            </div>
+
+            <button class="chart-page-btn">Submit</button>
+          </form>
         </div>
-
-        <form
-          @submit.prevent="submitForm"
-          class="flex flex-col items-end gap-1"
-        >
-          <div class="searchbox-container">
-            <label>股票代號</label
-            ><input
-              class="chart-searchbox shadow-set"
-              type="text"
-              v-model="code"
-            />
-          </div>
-          <div class="searchbox-container">
-            <label>起始日期</label
-            ><input
-              class="chart-searchbox shadow-set"
-              type="date"
-              v-model="start"
-            />
-          </div>
-          <div class="searchbox-container">
-            <label>結束日期</label
-            ><input
-              class="chart-searchbox shadow-set"
-              type="date"
-              v-model="end"
-            />
-          </div>
-
-          <button class="chart-page-btn">Submit</button>
-        </form>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import * as echarts from 'echarts'
 import axios from 'axios'
-import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-const router = useRouter()
+import * as echarts from 'echarts'
+import { useRoute } from 'vue-router'
+import { onMounted, onUnmounted, ref } from 'vue'
+import getCurrentTime from '@/utils/getCurrentTime'
 const route = useRoute()
 const showSearchbox = ref(false)
-const code = ref('')
 const start = ref('')
 const end = ref('')
 const submitForm = () => {
-  router.push({
-    name: 'charttools',
-    query: {
-      code: code.value,
-      start: start.value,
-      end: end.value
-    }
-  })
   showSearchbox.value = false
+  initialFrom()
 }
 // here is Chart show
 let myChart
@@ -125,14 +92,11 @@ const splitData = (rawData) => {
   }
 }
 const initialFrom = async () => {
-  code.value = route.query.code
-  start.value = route.query.start
-  end.value = route.query.end
   const formData = {
     params: {
-      code: route.query.code || '1219',
-      start: route.query.start || '2010-1-1',
-      end: route.query.end || '2021-1-1'
+      code: route.params.stockid,
+      start: start.value || '2010-1-1',
+      end: end.value || getCurrentTime('simple')
     }
   }
   myChart.showLoading()
@@ -145,7 +109,7 @@ const initialFrom = async () => {
       textStyle: {
         fontSize: '.2rem'
       },
-      text: '股票代號: ' + (route.query.code || '1219'),
+      text: '股票代號: ' + route.params.stockid,
       left: '10%',
       top: '10%'
     },
@@ -330,9 +294,6 @@ const initialFrom = async () => {
   })
   option.value && myChart.setOption(option.value)
 }
-watch(route, (nV, oV) => {
-  initialFrom()
-})
 onMounted(async () => {
   myChart = echarts.init(chartDom.value)
   await initialFrom()
@@ -352,6 +313,6 @@ onUnmounted(() => {
   @apply w-3/4 rounded-sm p-[.18rem] text-center font-medium text-p;
 }
 .chart-page-btn {
-  @apply shadow-set w-max rounded-sm py-[0.15rem] px-2 text-[length:var(--span-text)] hover:scale-105 hover:text-p;
+  @apply shadow-set w-max rounded-sm py-[0.15rem] px-2 text-[length:var(--span-text)] hover:scale-105;
 }
 </style>

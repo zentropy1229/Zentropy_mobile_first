@@ -1,14 +1,14 @@
 <template>
   <div class="relative">
     <div
-      class="relative rounded-sm bg-gray-800 xl:overflow-x-hidden"
+      class="relative rounded-sm bg-gray-900 xl:overflow-x-hidden"
       :class="{ 'overflow-x-scroll': showOverflowX }"
       ref="stockTableContainer"
     >
       <table class="w-full" ref="stockTable">
         <thead>
           <!-- table title -->
-          <tr class="span-text-sm relative border-b-2 border-gray-400 bg-gray-600">
+          <tr class="span-text-sm relative border-b-2 border-gray-400">
             <th class="catagory-stock-detail-th">收藏</th>
             <th class="catagory-stock-detail-th">股票代號 / 名稱</th>
             <th
@@ -44,11 +44,11 @@
         </thead>
         <tbody>
           <tr v-for="stockList in tableDetail" :key="stockList" class="catagory-stock-detail-tr hover:bg-gray-700">
-            <!-- stockName - first column -->
+            <!-- collect - first column -->
             <td class="catagory-stock-detail-td" :class="{ slideLeft: true }">
               <button
                 class="slideLeft rounded-sm p-0.5 text-p hover:bg-gray-900"
-                @click="modifyFav('add', stockList.stock.stock)"
+                @click="modifyFavStocks('add', stockList.stock.stock)"
                 v-if="!checkFavStock(stockList.stock.stock)"
               >
                 <svg class="h-0.5 w-0.5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 448 512">
@@ -59,7 +59,7 @@
               </button>
               <button
                 class="slideLeft rounded-sm p-0.5 hover:bg-gray-600"
-                @click="modifyFav('remove', stockList.stock.stock)"
+                @click="modifyFavStocks('remove', stockList.stock.stock)"
                 v-else
               >
                 <svg class="h-0.5 w-0.5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 448 512">
@@ -69,6 +69,7 @@
                 </svg>
               </button>
             </td>
+            <!-- stockName  -->
             <td class="catagory-stock-detail-td">
               <router-link
                 :to="{
@@ -148,10 +149,9 @@
   </div>
 </template>
 <script setup>
-import Qs from 'qs'
-import axios from 'axios'
 import { useStore } from 'vuex'
 import LoadingIcon from '@/components/smallComponents/LoadingIcon'
+import modifyFavStocks from '@/utils/modifyFavStocks'
 import { defineProps, ref, toRef, computed, onMounted, watchEffect } from 'vue'
 const store = useStore()
 // ================== ref Define =====================
@@ -180,23 +180,6 @@ const showTableScrollX = () => {
   stockTableContainer.value.offsetWidth < stockTable.value.offsetWidth
     ? (showOverflowX.value = true)
     : (showOverflowX.value = false)
-}
-/**
- * @param {String} action 要執行的動做 'remove' or 'add'
- * @param {String} stock stockid
- */
-const modifyFav = (action, stock, event) => {
-  store
-    .dispatch('getToken')
-    .then(() => {
-      axios.post('/api/user/mfs/', Qs.stringify({ [action]: stock })).then(() => {
-        store.dispatch('getUserInfo')
-      })
-    })
-    .catch((err) => {
-      alert(err.message)
-      window.location.href = '/login'
-    })
 }
 // ================== computed =====================
 // 顯示每筆的股票資料，判斷是否為空值

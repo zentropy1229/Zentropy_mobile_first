@@ -25,7 +25,7 @@
         </tr>
       </tbody>
     </table>
-    <div class="w-full p-0.5 text-right">
+    <div class="w-full p-0.5 text-right" v-show="props.routerInfo">
       <router-link
         :to="{ name: props.routerInfo.name, query: props.routerInfo.query }"
         class="span-text-sm hover:text-orange-300"
@@ -44,8 +44,8 @@ const props = defineProps({
     default: undefined
   },
   routerInfo: {
-    typer: Object,
-    defalut: 'home'
+    type: Object,
+    defalut: undefined
   }
 })
 const stockInfo = toRef(props, 'stockInfo')

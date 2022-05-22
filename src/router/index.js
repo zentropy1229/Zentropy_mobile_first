@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/views/HomePage'
-import ChartPage from '@/views/ChartPage'
 import StockPage from '@/views/StockPage'
 import Header from '@/components/HeaderUI'
 import Footer from '@/components/FooterUI'
@@ -81,16 +80,6 @@ const routes = [
       default: MemberInfoPage,
       Header: Header,
       Footer: Footer
-    },
-    meta: {
-      requireAuth: true
-    }
-  },
-  {
-    path: '/chart-tools',
-    name: 'charttools',
-    components: {
-      default: ChartPage
     },
     meta: {
       requireAuth: true

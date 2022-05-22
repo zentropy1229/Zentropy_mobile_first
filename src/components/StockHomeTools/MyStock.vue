@@ -17,7 +17,8 @@ import SlimStockTable from '@/components/StockTools/SlimStockTable'
 const store = useStore()
 const stockInfo = ref()
 const routerInfo = ref({
-  name: 'memberInfo'
+  name: 'memberInfo',
+  query: { anchorId: 'myStock' }
 })
 // ================== Methods =======================
 const getStockData = () => {
