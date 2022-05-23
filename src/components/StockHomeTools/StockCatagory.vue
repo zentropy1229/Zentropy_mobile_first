@@ -1,6 +1,6 @@
 <template>
   <h2 class="subtitle-text mb-0.5">上市{{ industryName }}分類行情</h2>
-  <div class="relative z-30 mb-0.5 w-max rounded-sm bg-gray-600">
+  <div class="relative z-30 mb-0.5 w-max rounded-sm bg-gray-900">
     <div
       class="flex-center flex h-2.5 cursor-pointer px-1"
       id="industrySelector"
@@ -16,7 +16,7 @@
       </button>
     </div>
     <div
-      class="industry-filter absolute h-16 w-16 origin-top overflow-y-scroll rounded-sm border border-gray-400 bg-gray-600 p-1 shadow-lg transition-all lg:h-max lg:w-32 lg:overflow-y-hidden"
+      class="industry-filter absolute h-16 w-16 origin-top overflow-y-scroll rounded-sm border border-gray-400 bg-gray-900 p-1 shadow-lg transition-all lg:h-max lg:w-32 lg:overflow-y-hidden"
       :class="{
         'scale-y-1 opacity-1': industrySelectorActive,
         'scale-y-0 opacity-0': !industrySelectorActive
@@ -27,7 +27,7 @@
           <a
             href="javascript:void(0)"
             @click.prevent="pushRouter(catagory)"
-            class="block rounded-sm bg-gray-200 px-1 py-0.5 text-center text-gray-900 hover:bg-orange-300"
+            class="block rounded-sm bg-gray-200 px-1 py-0.5 text-center text-gray-900 hover:bg-amber-500 hover:text-white"
             >{{ catagory }}</a
           >
         </li>

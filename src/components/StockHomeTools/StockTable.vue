@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div class="span-text relative">
     <div
       class="relative rounded-sm bg-gray-900 xl:overflow-x-hidden"
       :class="{ 'overflow-x-scroll': showOverflowX }"
@@ -23,8 +23,8 @@
               "
             >
               <div
-                class="flex-center h-2 cursor-pointer rounded-sm hover:bg-gray-400"
-                :class="{ 'bg-gray-700 font-medium': index === nowColumnIndex }"
+                class="flex-center h-2 cursor-pointer rounded-sm hover:bg-sky-400/80"
+                :class="{ 'bg-[#13273e] font-medium': index === nowColumnIndex }"
               >
                 <span>{{ title }}</span>
                 <svg
@@ -43,11 +43,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="stockList in tableDetail" :key="stockList" class="catagory-stock-detail-tr hover:bg-gray-700">
+          <tr v-for="stockList in tableDetail" :key="stockList" class="catagory-stock-detail-tr hover:bg-[#13273e]">
             <!-- collect - first column -->
             <td class="catagory-stock-detail-td" :class="{ slideLeft: true }">
               <button
-                class="slideLeft rounded-sm p-0.5 text-p hover:bg-gray-900"
+                class="slideLeft rounded-sm p-0.5 text-sky-500 hover:bg-sky-900"
                 @click="modifyFavStocks('add', stockList.stock.stock)"
                 v-if="!checkFavStock(stockList.stock.stock)"
               >
@@ -76,10 +76,10 @@
                   name: 'stock',
                   params: { stockid: stockList.stock.stock }
                 }"
-                class="span-text block font-medium text-gray-300 hover:text-p"
+                class="span-text stock-name-td block font-medium text-white"
                 >{{ stockList.stock.stockName }}</router-link
               >
-              <span class="rounded-sm text-gray-500">{{ stockList.stock.stock }}.TW</span>
+              <span class="rounded-sm text-slate-400">{{ stockList.stock.stock }}.TW</span>
             </td>
             <!-- stock info start -->
             <td class="catagory-stock-detail-td font-bold">
@@ -245,6 +245,9 @@ onMounted(() => {
 <style lang="postcss" scoped>
 .catagory-stock-detail-tr {
   @apply border-b border-gray-500;
+}
+.catagory-stock-detail-tr:hover .stock-name-td {
+  @apply text-sky-500;
 }
 .catagory-stock-detail-td {
   @apply h-[0.55rem] px-0.5 text-center;

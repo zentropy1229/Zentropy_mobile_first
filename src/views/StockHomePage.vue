@@ -28,10 +28,10 @@
         <!-- left container -->
         <div class="w-full lg:w-[30%]">
           <h2 class="subtitle-text mb-0.5">台股搜尋</h2>
-          <stock-search class="mb-1" />
+          <stock-search class="mb-1.5" />
           <my-stock class="mb-1" />
           <h2 class="subtitle-text mb-0.5">熱門新聞</h2>
-          <hot-news class="mb-1 bg-gray-600 px-0.5 py-1.5" :showSeeAll="true" />
+          <hot-news class="mb-1 bg-gray-900 px-0.5 py-1.5" :showSeeAll="true" />
         </div>
         <!-- right container -->
         <div class="ml-0 w-full lg:ml-2 lg:w-[70%]">

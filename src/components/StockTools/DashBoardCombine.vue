@@ -25,7 +25,7 @@ import axios from 'axios'
 import { useStore } from 'vuex'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import DashBoard from '@/components/StockTools/DashBoard'
+import DashBoard from '@/components/smallComponents/DashBoard'
 const store = useStore()
 const route = useRoute()
 const showError = ref(false)
@@ -55,7 +55,9 @@ const predict = () => {
 
 // ================ life cycle =====================
 onMounted(() => {
-  predict()
+  if (store.state.access) {
+    predict()
+  }
 })
 </script>
 
@@ -64,6 +66,6 @@ onMounted(() => {
   @apply mb-1 h-[4rem] overflow-hidden;
 }
 .predict-title {
-  @apply subtitle-text-sm w-fit border-l-4 border-p bg-gray-900 px-0.5;
+  @apply subtitle-text-sm w-fit border-l-4 border-sky-500 bg-gray-900 px-0.5;
 }
 </style>

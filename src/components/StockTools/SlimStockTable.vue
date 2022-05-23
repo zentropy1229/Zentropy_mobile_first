@@ -10,14 +10,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="stock in stockInfo" :key="stock" class="border-b border-gray-500">
+        <tr v-for="stock in stockInfo" :key="stock" class="tr-container">
           <td class="h-2.5 w-4 px-0.5 text-left">
-            <router-link
-              :to="{ name: 'stock', params: { stockid: stock.stock.stock } }"
-              class="block font-medium text-p hover:text-white"
-              >{{ stock.stock.stockName }}</router-link
-            >
-            <span class="span-text-sm text-gray-300">{{ stock.stock.stock }}.TW</span>
+            <router-link :to="{ name: 'stock', params: { stockid: stock.stock.stock } }" class="block font-medium">{{
+              stock.stock.stockName
+            }}</router-link>
+            <span class="span-text-sm text-slate-400">{{ stock.stock.stock }}.TW</span>
           </td>
           <td class="h-2 px-0.5 text-right font-bold">{{ stock.price }}</td>
           <td class="h-2 px-0.5 text-right font-bold">{{ stock.ud }}</td>
@@ -25,10 +23,10 @@
         </tr>
       </tbody>
     </table>
-    <div class="w-full p-0.5 text-right" v-show="props.routerInfo">
+    <div class="w-full p-0.5 text-right" v-show="routerInfo">
       <router-link
-        :to="{ name: props.routerInfo.name, query: props.routerInfo.query }"
-        class="span-text-sm hover:text-orange-300"
+        :to="{ name: routerInfo.name, query: routerInfo.query }"
+        class="span-text-sm hover:text-sky-500"
         href="javascript:"
         >查看全部...</router-link
       >
@@ -37,7 +35,7 @@
 </template>
 
 <script setup>
-import { defineProps, toRef } from 'vue'
+import { computed, defineProps, toRef } from 'vue'
 const props = defineProps({
   stockInfo: {
     type: Array,
@@ -48,5 +46,17 @@ const props = defineProps({
     defalut: undefined
   }
 })
+const routerInfo = computed(() => {
+  return props.routerInfo
+})
 const stockInfo = toRef(props, 'stockInfo')
 </script>
+
+<style lang="postcss" scoped>
+.tr-container {
+  @apply border-b border-gray-500 hover:bg-[#13273e];
+}
+.tr-container:hover a {
+  @apply text-sky-500;
+}
+</style>

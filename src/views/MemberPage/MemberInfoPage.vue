@@ -1,13 +1,23 @@
 <template>
   <div class="flex min-h-screen flex-col bg-gray-800 text-white">
     <div class="container mt-2 w-full">
-      <h2 class="subtitle-text mb-1 border-b-4 border-gray-500 pb-1 text-center">會員資訊</h2>
+      <h2 class="title-text">會員資訊</h2>
       <div class="span-text mb-2 flex w-full flex-col items-center gap-3 lg:flex-row">
         <div class="flex w-full flex-col lg:w-1/2">
           <div class="flex-center mb-2 flex-col">
-            <div class="mb-1 h-8 w-8 rounded-full bg-white"></div>
+            <div class="flex-center mb-1 flex-col">
+              <img
+                :src="store.state.userInfo.profile_image"
+                class="mb-1 h-6 w-6 rounded-full border-4 border-slate-400 object-fill shadow-lg"
+                alt=""
+              />
+              <form @submit.prevent="changeImage($event)" class="flex-center">
+                <input type="file" accept="image/*" class="mb-1 w-8" />
+                <button class="block rounded-sm bg-sky-500 px-1 py-0.5">送出</button>
+              </form>
+            </div>
             <h2 class="subtitle-text-lg">Hello {{ store.state.userInfo.username }}!</h2>
-            <span class="span-text font-medium text-gray-400">管理及修改你的使用者資訊</span>
+            <span class="span-text font-medium text-slate-400">管理及修改你的使用者資訊</span>
           </div>
         </div>
         <div class="flex w-full flex-col lg:w-1/2">
@@ -68,12 +78,16 @@
               }}</span>
             </div>
             <div class="ml-auto">
-              <button class="span-text rounded-sm bg-gray-50 px-1 py-0.5 font-medium text-gray-900">重設密碼</button>
+              <button
+                class="span-text rounded-sm bg-gray-50 px-1 py-0.5 font-medium text-gray-900 hover:bg-sky-500 hover:text-white"
+              >
+                重設密碼
+              </button>
             </div>
           </form>
         </div>
       </div>
-      <h2 class="subtitle-text mb-1 border-b-4 border-gray-500 pb-1 text-center">我的自選股</h2>
+      <h2 class="title-text">我的自選股</h2>
       <full-my-stock class="mb-4 flex flex-col" id="myStock" />
     </div>
   </div>
@@ -109,14 +123,9 @@ const userInfo = computed(() => {
       value: store.state.userInfo.gender,
       type: 'select'
     },
-    birthday: {
-      text: '生日',
-      value: '2021-01-01',
-      type: 'date'
-    },
     phone: {
       text: '手機',
-      value: '0972931555',
+      value: store.state.userInfo.phone,
       type: 'text'
     }
   }
@@ -125,13 +134,16 @@ const startEditing = (text, value) => {
   isEditing.value = text
   editingInput.value = value
 }
-const updateUserInfo = (key) => {
+const updateUserInfo = (key, value = editingInput.value) => {
   errors.value = ''
+  const form = new FormData()
+  form.append(key, value)
   store
     .dispatch('getToken')
     .then(() => {
+      console.log(value)
       axios
-        .patch(`/api/user/${store.state.userInfo.id}/`, { [key]: editingInput.value })
+        .patch(`/api/user/${store.state.userInfo.id}/`, form)
         .then(() => {
           store.dispatch('getUserInfo')
         })
@@ -151,12 +163,22 @@ const cancelEditing = () => {
   isEditing.value = ''
   errors.value = ''
 }
+const changeImage = (e) => {
+  const renamedFile = new File([e.target[0].files[0]], store.state.userInfo.id + '.jpg', {
+    type: e.target[0].files[0].type,
+    lastModified: e.target[0].files[0].lastModified
+  })
+  updateUserInfo('profile_image', renamedFile)
+}
 onMounted(() => {
   goAnchor(route.query.anchorId)
 })
 </script>
 
 <style lang="postcss" scoped>
+.title-text {
+  @apply subtitle-text-lg mb-1 border-b-2 border-gray-500 pb-1 text-left;
+}
 .input-frame {
   @apply w-full rounded-sm bg-gray-50 p-0.5 py-[0.1rem] text-gray-900 lg:w-12;
 }

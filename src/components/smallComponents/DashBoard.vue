@@ -8,7 +8,7 @@
 <script setup>
 import * as echarts from 'echarts'
 import addAlpha from '@/utils/addAlpha'
-import { computed, onMounted, ref, watchEffect, defineProps, toRef } from 'vue'
+import { computed, onMounted, ref, watchEffect, defineProps, toRef, defineExpose } from 'vue'
 import LoadingIcon from '@/components/smallComponents/LoadingIcon'
 const props = defineProps({
   perdictResult: String
@@ -116,7 +116,6 @@ const option = ref({
       title: {
         show: false,
         color: '#fff'
-        // offsetCenter: [0, 0],
       },
       detail: {
         show: false
@@ -145,4 +144,6 @@ onMounted(() => {
     })
   })
 })
+
+defineExpose({ option })
 </script>

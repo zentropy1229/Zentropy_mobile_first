@@ -1,11 +1,7 @@
 <template>
-  <div
-    class="flex flex-col gap-2 md:flex-row"
-    :class="{ animation: active }"
-    ref="list"
-  >
+  <div class="flex flex-col gap-2 text-white md:flex-row" :class="{ animation: active }" ref="list">
     <div
-      class="span-text-lg flex flex-col justify-between rounded-md border-2 bg-white p-1 shadow-lg"
+      class="span-text-lg flex flex-col justify-between rounded-md bg-gray-900 p-1"
       v-for="list in priceList"
       :key="list.name"
     >

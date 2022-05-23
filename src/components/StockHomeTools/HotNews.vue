@@ -2,12 +2,12 @@
   <div class="rounded-sm font-medium">
     <ul>
       <li
-        class="mb-1 flex items-center border-b border-gray-400 py-0.5 hover:rounded-sm hover:bg-gray-700"
+        class="mb-1 flex items-center border-b border-gray-400 py-0.5 hover:rounded-sm hover:bg-[#13273e]"
         v-for="news in newsDetail"
         :key="news"
       >
         <div class="mx-0.5">
-          <a :href="news.url" class="span-text font-medium hover:text-orange-300" target="_blank">{{ news.title }}</a>
+          <a :href="news.url" class="span-text font-medium hover:text-sky-500" target="_blank">{{ news.title }}</a>
           <p class="span-text-sm font-light text-gray-300">
             {{ news.source + news.publish }}
           </p>
@@ -17,7 +17,7 @@
         <span>暫無資料</span>
       </div>
       <div class="span-text-sm text-right" v-if="newsDetail.length && showSeeAll">
-        <router-link :to="{ name: 'news' }" class="hover:text-orange-300">查看全部...</router-link>
+        <router-link :to="{ name: 'news' }" class="hover:text-sky-500">查看全部...</router-link>
       </div>
     </ul>
   </div>

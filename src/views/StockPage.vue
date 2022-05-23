@@ -16,15 +16,15 @@
                 <div class="ml-1 mb-1 flex items-end font-medium lg:mb-0">
                   <span class="text-[0.3rem] font-bold leading-none">{{ getStockDetail.price }}</span>
                   <span class="text-[0.13rem] leading-none text-gray-400">.TWD</span>
-                  <span class="ml-0.5 text-[0.16rem] leading-none" :class="upOrDown">{{ getStockDetail.upDown }}</span>
-                  <span class="ml-[0.05rem] text-[0.16rem] leading-none" :class="upOrDown"
+                  <span class="ml-0.5 text-[0.15rem] leading-none" :class="upOrDown">{{ getStockDetail.upDown }}</span>
+                  <span class="ml-[0.05rem] text-[0.15rem] leading-none" :class="upOrDown"
                     >({{ getStockDetail.upDownPercent }}%)</span
                   >
                 </div>
               </div>
               <button
-                class="flex items-center rounded-sm border px-1 py-0.5 hover:bg-orange-300 hover:text-gray-800 lg:ml-auto lg:mr-1"
-                @click="changeBlock()"
+                class="flex items-center rounded-sm border px-1 py-0.5 hover:bg-amber-400 hover:text-gray-800 lg:ml-auto lg:mr-1"
+                @click="changeBlock"
               >
                 <svg
                   class="block h-[0.2rem] w-[0.2rem]"
@@ -61,9 +61,9 @@
                 <span class="stock-info-title">成交量</span
                 ><span class="stock-info-data">{{ getStockDetail.volumn }}</span>
               </div>
-              <div class="ml-auto">
+              <div class="rounded-sm bg-gray-800 lg:ml-auto lg:bg-transparent">
                 <button
-                  class="fav-btn text-p"
+                  class="fav-btn text-sky-500"
                   @click="modifyFavStocks('add', route.params.stockid)"
                   v-if="!checkFavStock"
                 >
@@ -78,7 +78,7 @@
             <div class="h-20 w-full p-0.5 lg:h-28" ref="chartDom"></div>
           </div>
           <!-- kbar component -->
-          <k-bar v-if="chartBlock === 'kBar'" />
+          <router-view v-if="chartBlock === 'kBar'"></router-view>
         </div>
       </div>
     </div>
@@ -100,14 +100,13 @@
 <script setup>
 import axios from 'axios'
 import * as echarts from 'echarts'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import getCatagories from '@/utils/getCatagories.js'
 import modifyFavStocks from '@/utils/modifyFavStocks'
-import { ref, computed, onMounted, watchEffect } from 'vue'
+import { ref, computed, onMounted, watchEffect, watch } from 'vue'
 // ================ components =====================
 
-import KBar from '@/components/StockTools/KBar'
 import StockPageNews from '@/components/StockTools/StockPageNews'
 import DashBoardCombine from '@/components/StockTools/DashBoardCombine'
 import IndustryHotStock from '@/components/StockTools/IndustryHotStock'
@@ -117,6 +116,7 @@ import IndustryHotStock from '@/components/StockTools/IndustryHotStock'
 const { DateTime } = require('luxon')
 const store = useStore()
 const route = useRoute()
+const router = useRouter()
 const chartDom = ref()
 const stockData = ref()
 const industry = ref('')
@@ -173,9 +173,6 @@ const option = ref({
       min: computed(() => {
         return roundTwo(Math.min(stockData.value.quote['13'], stockData.value.quote['21']) / 1.02)
       }),
-      interval: computed(() => {
-        return roundTwo((stockData.value.quote['21'] * 0.1) / 8)
-      }),
       axisLabel: {
         formatter: function (value) {
           return value.toFixed(2)
@@ -189,7 +186,7 @@ const option = ref({
         }
       },
       scale: true,
-      splitNumber: 3
+      splitNumber: 8
     }
   ],
   series: [
@@ -266,6 +263,12 @@ const option = ref({
       type: 'line',
       color: 'rgb(64, 124, 255)',
       showSymbol: false,
+      emphasis: {
+        itemStyle: {
+          color: 'transparent',
+          borderColor: 'transparent'
+        }
+      },
       data: computed(() => {
         return stockData.value.v.slice(0).reverse()
       }),
@@ -290,11 +293,10 @@ const getStockData = () => {
         `https://ws.api.cnyes.com/ws/api/v1/charting/history?resolution=1&symbol=TWS:${route.params.stockid}:STOCK&quote=1`
       )
       .then((res) => {
-        if (res.data.data.o.length) {
+        if (res.data.data?.quote) {
           stockData.value = res.data.data
           resolve(res.data.data)
         } else {
-          window.location.replace('/404')
           reject(new Error('StockID is not exist'))
         }
       })
@@ -306,6 +308,34 @@ const getStockData = () => {
  */
 const changeBlock = () => {
   chartBlock.value = chartBlock.value === 'chart' ? 'kBar' : 'chart'
+  router.push({ name: 'kbar' })
+}
+// initail
+const initializeData = () => {
+  getCatagories(route.params.stockid)
+    .then((res) => {
+      store.commit('setIsLoading', true)
+      industry.value = res[0]
+    })
+    .then(getStockData)
+    .then(() => {
+      const myChart = echarts.init(chartDom.value)
+      const resizMyChart = () => myChart.resize()
+      watchEffect((onInvalidate) => {
+        myChart.setOption(option.value)
+        window.addEventListener('resize', resizMyChart)
+        onInvalidate(() => {
+          window.removeEventListener('resize', resizMyChart)
+        })
+      })
+      store.commit('setIsLoading', false)
+    })
+    .catch(() => {
+      if (route.name === 'stock') {
+        window.location.href = '/404'
+      }
+      store.commit('setIsLoading', false)
+    })
 }
 // ================ computed =====================
 
@@ -350,21 +380,16 @@ const checkFavStock = computed(() => {
 // ================ life cycle =====================
 
 onMounted(() => {
-  getCatagories(route.params.stockid).then((res) => {
-    industry.value = res[0]
-  })
-  // initail data and watch data change
-  getStockData().then((res) => {
-    const myChart = echarts.init(chartDom.value)
-    const resizMyChart = () => myChart.resize()
-    watchEffect((onInvalidate) => {
-      myChart.setOption(option.value)
-      window.addEventListener('resize', resizMyChart)
-      onInvalidate(() => {
-        window.removeEventListener('resize', resizMyChart)
-      })
-    })
-  })
+  watch(
+    route,
+    () => {
+      initializeData()
+      if (route.name === 'stock') {
+        chartBlock.value = 'chart'
+      }
+    },
+    { immediate: true }
+  )
   // update data
   watchEffect((onInvalidate) => {
     const updateData = setInterval(getStockData, 60000)

@@ -1,16 +1,18 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import store from '@/store'
 import HomePage from '@/views/HomePage'
 import StockPage from '@/views/StockPage'
 import Header from '@/components/HeaderUI'
 import Footer from '@/components/FooterUI'
 import AboutUsPage from '@/views/AboutUsPage'
+import KBar from '@/components/StockTools/KBar'
 import NewsHomePage from '@/views/NewsHomePage'
 import StockHomePage from '@/views/StockHomePage'
-import MemberInfoPage from '@/views/MemberPage/MemberInfoPage'
 import LoginPage from '@/views/MemberPage/LoginPage'
 import NotFound404Page from '@/views/NotFound404Page'
 import SignUpPage from '@/views/MemberPage/SignUpPage'
-import store from '@/store'
+import { createRouter, createWebHistory } from 'vue-router'
+import MemberInfoPage from '@/views/MemberPage/MemberInfoPage'
+
 const routes = [
   {
     path: '/',
@@ -55,7 +57,17 @@ const routes = [
       default: StockPage,
       Header: Header,
       Footer: Footer
-    }
+    },
+    children: [
+      {
+        path: 'kbar',
+        name: 'kbar',
+        component: KBar,
+        meta: {
+          requireAuth: true
+        }
+      }
+    ]
   },
   {
     path: '/login',

@@ -1,6 +1,6 @@
 <template>
   <router-view name="Header"></router-view>
-  <div class="min-h-screen">
+  <div class="min-h-screen bg-gray-800 text-white">
     <router-view></router-view>
   </div>
   <router-view name="Footer"></router-view>

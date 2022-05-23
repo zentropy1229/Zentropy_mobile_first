@@ -20,9 +20,7 @@ const stockInfo = ref()
 const industry = toRef(props, 'industry')
 const routerInfo = ref({
   name: 'stockHome',
-  query: {
-    industry: industry.value
-  }
+  query: industry.value
 })
 const getStockData = () => {
   const queryData = {

@@ -1,5 +1,5 @@
 <template>
-  <div class="text-white">
+  <div>
     <!-- table -->
     <stock-table
       class="mb-0.5 w-full"

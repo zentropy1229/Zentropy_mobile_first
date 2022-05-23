@@ -20,7 +20,7 @@ module.exports = {
         phover: 'rgba(54, 140, 253, 0.808)'
       },
       backgroundImage: {
-        loginPage: "url('@/assets/loginBackground.png')"
+        loginPage: "url('https://zentropy.s3.ap-northeast-1.amazonaws.com/img/loginBackground.png')"
       }
     }
   },

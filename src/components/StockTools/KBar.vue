@@ -1,17 +1,17 @@
 <template>
-  <div class="p-1 text-p">
+  <div class="w-full p-1 text-gray-900">
     <div class="flex-center h-full w-full flex-col rounded-sm bg-gray-50 py-0.5">
       <div class="mb-1">
-        <button class="chart-page-btn" @click="showSearchbox = true">查詢</button>
+        <button class="chart-page-btn" @click="showSearchbox = true">區段查詢</button>
       </div>
-      <div class="h-[75vh] w-full" ref="chartDom"></div>
+      <div class="h-[65vh] w-full" ref="chartDom"></div>
       <div class="fixed top-0 z-50 h-screen w-full bg-gray-900/60" v-if="showSearchbox">
         <div class="y-center shadow-set relative mx-auto h-max w-max rounded p-1.5">
           <div class="mb-1 text-right">
             <button class="hover:scale-90" @click="showSearchbox = false">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-1 w-1 text-black hover:text-p"
+                class="h-1 w-1 text-black hover:text-gray-900"
                 fill="currentColor"
                 viewBox="0 0 16 16"
               >
@@ -26,7 +26,7 @@
               </svg>
             </button>
           </div>
-          <form @submit.prevent="submitForm" class="flex flex-col items-end gap-1">
+          <form @submit.prevent="submitForm" class="flex w-[4rem] flex-col items-end gap-1">
             <div class="searchbox-container">
               <label>起始日期</label><input class="chart-searchbox shadow-set" type="date" v-model="start" />
             </div>
@@ -34,7 +34,7 @@
               <label>結束日期</label><input class="chart-searchbox shadow-set" type="date" v-model="end" />
             </div>
 
-            <button class="chart-page-btn">Submit</button>
+            <button class="chart-page-btn">查詢</button>
           </form>
         </div>
       </div>
@@ -95,7 +95,7 @@ const initialFrom = async () => {
   const formData = {
     params: {
       code: route.params.stockid,
-      start: start.value || '2010-1-1',
+      start: start.value || '2016-01-01',
       end: end.value || getCurrentTime('simple')
     }
   }
@@ -310,7 +310,7 @@ onUnmounted(() => {
   @apply span-text flex w-full items-center justify-between font-medium;
 }
 .chart-searchbox {
-  @apply w-3/4 rounded-sm p-[.18rem] text-center font-medium text-p;
+  @apply w-3/4 rounded-sm p-[.18rem] text-center font-medium text-gray-900;
 }
 .chart-page-btn {
   @apply shadow-set w-max rounded-sm py-[0.15rem] px-2 text-[length:var(--span-text)] hover:scale-105;

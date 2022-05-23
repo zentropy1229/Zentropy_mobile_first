@@ -28,5 +28,8 @@ export default function modifyFavStocks (action, stock, event) {
     } else {
       send()
     }
+  }).catch((err) => {
+    alert(err.message)
+    window.location.href = '/login'
   })
 }

@@ -4,7 +4,8 @@
       <div class="overflow-x-auto">
         <div class="inline-flex">
           <button
-            class="span-text h-2.5 w-max border-r-2 border-gray-700 px-1 font-medium hover:bg-orange-400"
+            class="span-text h-2.5 w-max border-r-2 border-gray-700 px-1 font-medium text-slate-400 hover:bg-[#1c2538] hover:text-white"
+            :class="{ highlight: currentBigMarket === bigMarketId }"
             v-for="(bigMarketName, bigMarketId) in allBigMarkets"
             @click="currentBigMarket = bigMarketId"
             :key="bigMarketName"
@@ -19,9 +20,9 @@
         <div class="mb-1 w-full pb-0.5 text-center lg:text-left"><h2 class="subtitle-text">台股大盤行情</h2></div>
         <div class="mb-1 flex w-full items-end justify-between">
           <div class="flex flex-col">
-            <span class="subtitle-text-sm mb-0.5 text-gray-500">{{ getStockValueDetail.stockName }}</span>
+            <span class="subtitle-text-sm mb-0.5 text-slate-400">{{ getStockValueDetail.stockName }}</span>
             <div class="flex items-end leading-none">
-              <span class="subtitle-text-sm block leading-none text-gray-500">成交</span>
+              <span class="subtitle-text-sm block leading-none text-slate-400">成交</span>
               <span class="subtitle-text-sm ml-0.5 block font-bold leading-none">{{ getStockValueDetail.volumn }}</span>
             </div>
           </div>
@@ -320,9 +321,12 @@ span {
   @apply border-r-0;
 }
 .trade-info-index {
-  @apply block border-b border-dashed border-gray-600 py-0.5 text-gray-600;
+  @apply block border-b border-dashed border-gray-600 py-0.5 text-slate-400;
 }
 .trade-info-text {
-  @apply block py-0.5 text-gray-200;
+  @apply block py-0.5 font-bold text-white;
+}
+.highlight {
+  @apply bg-[#1c2538] text-white;
 }
 </style>

@@ -3,7 +3,7 @@
     <div class="span-text ml-1 flex flex-col">
       <router-link
         :to="{ name: 'stock', params: { stockid: searchStockNum } }"
-        class="mb-[0.05rem] w-fit rounded-[.05rem] bg-gray-200 px-0.5 font-medium text-gray-800 hover:bg-orange-400 hover:text-white"
+        class="mb-[0.05rem] w-fit rounded-[.05rem] bg-gray-200 px-0.5 font-medium text-gray-800 hover:bg-amber-400 hover:text-white"
         >{{ stockName }}</router-link
       >
       <div class="flex flex-wrap items-end text-gray-400">

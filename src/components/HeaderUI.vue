@@ -3,42 +3,76 @@
     class="sticky top-0 z-50 text-white"
     :class="{
       'overflow-hidden': !active,
-      'border-b border-gray-400 bg-gray-800': !isHomePage
+      'border-b-2 border-gray-400 bg-gray-800': !isHomePage
     }"
   >
     <div
-      class="flex h-[var(--navbar-height)] items-center justify-between px-2 transition duration-500 ease-in-out lg:scale-105"
+      class="flex h-[var(--navbar-height)] items-center justify-between px-3 transition duration-500 ease-in-out lg:scale-105"
       :class="{
-        'bg-gray-50 text-gray-600 shadow-xl lg:scale-100': active && isHomePage,
+        'border-b-2 border-gray-400 bg-gray-800 shadow-xl lg:scale-100': active && isHomePage,
         'lg:scale-100': !isHomePage
       }"
       @mouseenter="active = true"
       @mouseleave="showNavBar"
     >
+      <!-- logo here!!!!!!!!!!!!!!!!!!!!!!!! -->
       <div class="order-2 m-0 p-0 lg:order-none">
-        <a href="/" class="logo desktop-nav-link">this is logo</a>
+        <a href="/" class="flex-center logo">
+          <svg class="h-2 w-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+            <path
+              class="cls-1 text-[#393332] transition-all duration-700"
+              fill="currentColor"
+              d="M186.77,223.93l-4.9-1a95,95,0,1,1,85.81-26l-94.39,94.39Z"
+            />
+            <path
+              class="cls-2"
+              fill="#fff"
+              d="M200.5,39.79a90,90,0,0,1,63.64,153.64l-82.71,82.71,9.27-46.32,2-9.82-9.82-1.95A90,90,0,0,1,200.5,39.79m0-10a100,100,0,0,0-19.61,198.07l-15.74,78.71L271.21,200.5A100,100,0,0,0,200.5,29.79Z"
+            />
+            <path
+              class="cls-2"
+              fill="#fff"
+              d="M299.5,465.21a95,95,0,0,1-67.38-162l.18-.14.19-.22,94.22-94.23-13.48,67.43,4.9,1A95,95,0,0,1,299.5,465.21Z"
+            />
+            <path
+              class="cls-2"
+              fill="#fff"
+              d="M318.57,223.86l-9.27,46.32-2,9.82,9.82,1.95a90,90,0,1,1-81.36,24.68l0-.05.07-.06,82.66-82.66m16.28-30.43L228.79,299.49h0a100,100,0,1,0,90.32-27.36l15.74-78.71Z"
+            />
+          </svg>
+          <span class="block hidden text-[0.22rem] font-bold lg:block">Zentropy</span>
+        </a>
       </div>
       <ul class="hidden flex-1 lg:flex">
+        <!-- v-for for nav link desktop -->
         <li v-for="nav in navList" :key="nav.linkName" class="first:ml-auto">
-          <router-link :to="{ name: nav.linkName }" class="desktop-nav-link hover:text-p">{{
+          <router-link :to="{ name: nav.linkName }" class="desktop-nav-link hover:text-sky-500">{{
             nav.content
           }}</router-link>
         </li>
+        <!-- hover show for member -->
         <li class="relative ml-auto" @mouseenter="showMemberLink = true" @mouseleave="showMemberLink = false">
-          <a href="javascript:" class="desktop-nav-link hover:text-p">會員</a>
+          <a href="javascript:void(0)" class="desktop-nav-link hover:text-sky-500">會員</a>
           <div
-            class="span-text shadow-set absolute top-2 -left-2.5 h-0 overflow-hidden rounded transition-all"
+            class="span-text absolute top-2 -left-2.5 origin-top scale-y-0 overflow-hidden rounded-sm bg-gray-800 transition-all"
             :class="{
-              'show-member-link': showMemberLink,
-              'text-gray-600': !isHomePage
+              'show-member-link': showMemberLink
             }"
           >
-            <a href="/login" class="desktop-member-link" v-if="!store.state.access">登入</a>
+            <router-link :to="{ name: 'login' }" class="desktop-member-link" v-if="!store.state.access"
+              >登入</router-link
+            >
             <router-link :to="{ name: 'signup' }" class="desktop-member-link" v-if="!store.state.access"
               >註冊</router-link
             >
             <router-link :to="{ name: 'memberInfo' }" class="desktop-member-link" v-if="store.state.access"
               >會員中心</router-link
+            >
+            <router-link
+              :to="{ name: 'memberInfo', query: { anchorId: 'myStock' } }"
+              class="desktop-member-link"
+              v-if="store.state.access"
+              >我的自選股</router-link
             >
             <div class="desktop-member-link cursor-pointer" v-if="store.state.access" @click="logOut()">登出</div>
           </div>
@@ -80,7 +114,7 @@
           </button>
         </div>
         <ul class="mobile-nav-list">
-          <li v-for="nav in navList" :key="nav.linkName" class="mb-1 border-b border-slate-100 last:border-none">
+          <li v-for="nav in navList" :key="nav.linkName" class="mb-1 border-b border-slate-600 last:border-none">
             <router-link :to="{ name: nav.linkName }" class="mobile-nav-link" @click="showMobileNav">
               <span>{{ nav.content }}</span>
               <svg
@@ -107,20 +141,15 @@
           'left-full': !mobileMemberActive
         }"
       >
-        <div class="mobile-nav-header">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="mobile-icon ml-auto text-p"
-            fill="currentColor"
-            viewBox="0 0 16 16"
-          >
+        <div class="mobile-nav-header text-sky-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="mobile-icon ml-auto" fill="currentColor" viewBox="0 0 16 16">
             <path d="M10 9.05a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
             <path
               d="M2 1a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2ZM1 3a1 1 0 0 1 1-1h2v2H1V3Zm4 10V2h9a1 1 0 0 1 1 1v9c0 .285-.12.543-.31.725C14.15 11.494 12.822 10 10 10c-3.037 0-4.345 1.73-4.798 3H5Zm-4-2h3v2H2a1 1 0 0 1-1-1v-1Zm3-1H1V8h3v2Zm0-3H1V5h3v2Z"
             />
           </svg>
-          <span class="ml-1 text-[length:var(--mobile-navlink-text)] text-p">會員中心</span>
-          <button class="mobile-cancel-btn" @click="showMobileMember">
+          <span class="ml-1 text-[length:var(--mobile-navlink-text)]">會員中心</span>
+          <button class="mobile-cancel-btn text-white" @click="showMobileMember">
             <svg xmlns="http://www.w3.org/2000/svg" class="mobile-icon" fill="currentColor" viewBox="0 0 16 16">
               <path
                 fill-rule="evenodd"
@@ -134,8 +163,35 @@
           </button>
         </div>
         <div class="mobile-nav-list">
-          <router-link class="mobile-member-btn mb-1 bg-p text-white" :to="{ name: 'login' }">登入</router-link>
-          <router-link class="mobile-member-btn border-2" :to="{ name: 'signup' }">註冊</router-link>
+          <router-link
+            :to="{ name: 'login' }"
+            class="mobile-member-btn"
+            v-if="!store.state.access"
+            @click="showMobileMember"
+            >登入</router-link
+          >
+          <router-link
+            :to="{ name: 'signup' }"
+            class="mobile-member-btn"
+            v-if="!store.state.access"
+            @click="showMobileMember"
+            >註冊</router-link
+          >
+          <router-link
+            :to="{ name: 'memberInfo' }"
+            class="mobile-member-btn"
+            v-if="store.state.access"
+            @click="showMobileMember"
+            >會員中心</router-link
+          >
+          <router-link
+            :to="{ name: 'memberInfo', query: { anchorId: 'myStock' } }"
+            class="mobile-member-btn"
+            v-if="store.state.access"
+            @click="showMobileMember"
+            >我的自選股</router-link
+          >
+          <div class="mobile-member-btn cursor-pointer" v-if="store.state.access" @click="logOut()">登出</div>
         </div>
       </div>
     </div>
@@ -207,6 +263,12 @@ onUnmounted(() => {
 </script>
 
 <style lang="postcss" scoped>
+.logo:hover .cls-1 {
+  @apply text-sky-500;
+}
+.logo span {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
 .desktop-nav-link {
   @apply relative block overflow-hidden px-[.3rem] py-[.2rem] text-[length:var(--navlink-text)] font-light;
 }
@@ -217,17 +279,16 @@ onUnmounted(() => {
   @apply left-1/2 opacity-100 transition-all duration-500 ease-in-out;
 }
 .desktop-member-link {
-  @apply block w-6 py-0.5 text-center hover:bg-slate-100;
+  @apply block h-max w-6 border-b border-gray-600 py-0.5 text-center hover:bg-gray-700;
 }
 .show-member-link {
-  height: 1rem;
+  @apply scale-y-100 border border-gray-600;
 }
 .mobile-nav {
-  @apply fixed top-0 z-50 h-screen w-screen bg-white text-black lg:hidden;
-  transition: left 1s ease;
+  @apply fixed top-0 z-50 h-screen w-screen bg-gray-800 transition-all duration-1000 lg:hidden;
 }
 .mobile-nav-header {
-  @apply flex items-center border-b p-2;
+  @apply flex items-center border-b-2 border-slate-600 p-2;
 }
 .mobile-nav-list {
   @apply flex flex-col p-2;
@@ -238,13 +299,16 @@ onUnmounted(() => {
 .mobile-cancel-btn {
   @apply ml-auto h-fit;
 }
-.router-link-exact-active {
-  @apply font-medium text-p;
+.router-link-exact-active:nth-child(1) {
+  @apply font-medium text-sky-500;
 }
 .mobile-icon {
   @apply h-[0.4rem] w-[0.4rem];
 }
 .mobile-member-btn {
-  @apply block rounded-sm py-1 text-center text-[length:var(--mobile-navlink-text)];
+  @apply block border-b border-slate-600 py-1 text-center text-[length:var(--mobile-navlink-text)];
+}
+.mobile-member-btn:nth-last-child(1) {
+  @apply border-0;
 }
 </style>

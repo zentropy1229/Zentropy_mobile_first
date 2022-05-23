@@ -93,7 +93,7 @@ const searchMark = computed(() => {
   return function (stockList) {
     const stockFull = stockList.stock + ' ' + stockList.stockName
     const index = stockFull.indexOf(inputStockName.value)
-    return `${stockFull.substring(0, index)}<span class="text-orange-400 font-bold">${stockFull.substring(
+    return `${stockFull.substring(0, index)}<span class="text-amber-500 font-bold">${stockFull.substring(
       index,
       index + inputStockName.value.length
     )}</span>${stockFull.substring(index + inputStockName.value.length)}`
