@@ -59,7 +59,7 @@
       <div class="my-1 h-px w-full bg-slate-200"></div>
       <div class="flex-center span-text flex-col">
         <div class="flex-center mb-1">
-          <span>還沒有帳號?</span>
+          <span class="text-gray-900">還沒有帳號?</span>
           <router-link class="ml-[.1rem] text-p hover:text-blue-400" :to="{ name: 'signup' }">註冊</router-link>
         </div>
         <router-link class="text-p hover:text-blue-400" :to="{ name: 'home' }">忘記密碼</router-link>

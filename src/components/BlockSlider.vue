@@ -2,8 +2,8 @@
   <div class="relative flex flex-col">
     <div class="flex-center container mb-2.5 flex-col">
       <div class="flex-center mb-2 flex-col">
-        <router-link :to="{ name: 'stockHome' }" class="mb-0.5 hover:text-gray-600">
-          <span class="title-text text-white">Market Show市場趨勢</span>
+        <router-link :to="{ name: 'stockHome' }" class="title-text mb-0.5 text-white hover:text-sky-400">
+          Market Show市場趨勢
         </router-link>
         <div class="subtitle-text-sm text-slate-400">
           <span>以各式各樣的圖表，視覺化呈現市場走向</span>

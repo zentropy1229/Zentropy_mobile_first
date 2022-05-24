@@ -4,19 +4,18 @@
       <h2 class="title-text">會員資訊</h2>
       <div class="span-text mb-2 flex w-full flex-col items-center gap-3 lg:flex-row">
         <div class="flex w-full flex-col lg:w-1/2">
-          <div class="flex-center mb-2 flex-col">
+          <div class="flex-center flex-col lg:mb-2">
             <div class="flex-center mb-1 flex-col">
               <img
                 :src="store.state.userInfo.profile_image"
-                class="mb-1 h-6 w-6 rounded-full border-4 border-slate-400 object-fill shadow-lg"
-                alt=""
+                class="mb-1 h-8 w-8 rounded-full border-4 border-slate-400 object-fill shadow-lg"
+                alt="大頭照"
               />
-              <form @submit.prevent="changeImage($event)" class="flex-center">
-                <input type="file" accept="image/*" class="mb-1 w-8" />
-                <button class="block rounded-sm bg-sky-500 px-1 py-0.5">送出</button>
-              </form>
+              <upload-image @updateImage="updateImage" />
             </div>
-            <h2 class="subtitle-text-lg">Hello {{ store.state.userInfo.username }}!</h2>
+            <h2 class="subtitle-text-lg">
+              嗨!<span class="ml-0.5 text-[0.5rem] font-bold text-sky-400">{{ store.state.userInfo.username }}</span>
+            </h2>
             <span class="span-text font-medium text-slate-400">管理及修改你的使用者資訊</span>
           </div>
         </div>
@@ -24,7 +23,7 @@
           <form class="flex flex-col gap-1">
             <div class="flex flex-col" v-for="(info, key) in userInfo" :key="info">
               <span class="mb-0.5 w-5 text-gray-200">{{ info.text }}</span>
-              <div class="span-text flex flex-wrap items-center rounded-sm bg-gray-900 p-[0.05rem] font-medium">
+              <div class="flex flex-wrap items-center rounded-sm bg-gray-900 p-[0.05rem] font-medium">
                 <div class="p-[0.1rem] text-gray-400" v-if="isEditing !== info.text">
                   <span>{{ info.value }}</span>
                 </div>
@@ -51,11 +50,11 @@
                   </svg>
                 </button>
                 <!-- ok or cancel button -->
-                <div class="ml-auto" v-if="isEditing === info.text">
+                <div class="ml-auto mr-0.5" v-if="isEditing === info.text">
                   <button @click.prevent="updateUserInfo(key)">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-1 w-1 text-green-400"
+                      class="h-1 w-1 text-sky-400"
                       fill="currentColor"
                       viewBox="0 0 16 16"
                     >
@@ -77,13 +76,15 @@
                 errors[key][0]
               }}</span>
             </div>
-            <div class="ml-auto">
-              <button
-                class="span-text rounded-sm bg-gray-50 px-1 py-0.5 font-medium text-gray-900 hover:bg-sky-500 hover:text-white"
-              >
-                重設密碼
-              </button>
-            </div>
+            <!-- reset password start -->
+            <button
+              class="span-text ml-auto rounded-sm bg-gray-50 px-1 py-0.5 font-medium text-gray-900 hover:bg-sky-500 hover:text-white"
+              @click.prevent="showChangePassword = true"
+            >
+              重設密碼
+            </button>
+            <change-password v-if="showChangePassword" @abort="showChangePassword = $event" />
+            <!-- reset password end -->
           </form>
         </div>
       </div>
@@ -99,13 +100,16 @@ import { useStore } from 'vuex'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import goAnchor from '@/utils/goAnchor'
+import ChangePassword from '@/components/smallComponents/ChangePassword'
+import UploadImage from '@/components/smallComponents/UploadImage'
 import FullMyStock from '@/components/StockHomeTools/FullMyStock'
+const errors = ref('')
 const store = useStore()
 const route = useRoute()
-const router = useRouter()
 const isEditing = ref('')
+const router = useRouter()
 const editingInput = ref('')
-const errors = ref('')
+const showChangePassword = ref(false)
 const userInfo = computed(() => {
   return {
     email: {
@@ -138,37 +142,42 @@ const updateUserInfo = (key, value = editingInput.value) => {
   errors.value = ''
   const form = new FormData()
   form.append(key, value)
-  store
-    .dispatch('getToken')
-    .then(() => {
-      console.log(value)
-      axios
-        .patch(`/api/user/${store.state.userInfo.id}/`, form)
-        .then(() => {
-          store.dispatch('getUserInfo')
-        })
-        .catch((err) => {
-          errors.value = err.response.data
-        })
-        .then(() => {
-          isEditing.value = errors.value ? isEditing.value : ''
-        })
-    })
-    .catch((err) => {
-      alert(err.message)
-      router.replace({ name: 'login' })
-    })
+  return new Promise((resolve, reject) => {
+    store
+      .dispatch('getToken')
+      .then(() => {
+        axios
+          .patch(`/api/user/${store.state.userInfo.id}/`, form)
+          .then(() => {
+            store.dispatch('getUserInfo')
+            resolve()
+          })
+          .catch((err) => {
+            errors.value = err.response.data
+            reject(new Error(err.response.data))
+          })
+          .then(() => {
+            isEditing.value = errors.value ? isEditing.value : ''
+          })
+      })
+      .catch((err) => {
+        alert(err.message)
+        router.replace({ name: 'login' })
+      })
+  })
+}
+const updateImage = (file) => {
+  const renamedFile = new File([file], store.state.userInfo.id + '.jpg', {
+    type: file.type,
+    lastModified: file.lastModified
+  })
+  updateUserInfo('profile_image', renamedFile).then(() => {
+    location.reload()
+  })
 }
 const cancelEditing = () => {
   isEditing.value = ''
   errors.value = ''
-}
-const changeImage = (e) => {
-  const renamedFile = new File([e.target[0].files[0]], store.state.userInfo.id + '.jpg', {
-    type: e.target[0].files[0].type,
-    lastModified: e.target[0].files[0].lastModified
-  })
-  updateUserInfo('profile_image', renamedFile)
 }
 onMounted(() => {
   goAnchor(route.query.anchorId)

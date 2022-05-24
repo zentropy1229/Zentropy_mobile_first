@@ -23,7 +23,7 @@
     <!-- no content -->
     <div class="rounded-sm bg-gray-900 py-2 text-center" v-if="!getPaginator">
       <span>沒有自選股! 趕快來選股去</span>
-      <a href="/stock" class="rounded-sm px-1 py-0.5 text-p hover:bg-gray-800">股票首頁</a>
+      <a href="/stock" class="rounded-sm px-1 py-0.5 text-sky-400 hover:bg-gray-800">股票首頁</a>
     </div>
   </div>
 </template>
