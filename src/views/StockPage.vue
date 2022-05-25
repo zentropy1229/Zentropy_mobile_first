@@ -85,7 +85,7 @@
     <div class="container flex w-full flex-col text-white lg:flex-row">
       <div class="order-2 w-full lg:order-1 lg:w-[66.666%]">
         <h2 class="subtitle-text-lg mb-1 ml-0.5">個股新聞</h2>
-        <stock-page-news :keyword="route.params.stockid + getStockDetail.stockName" />
+        <stock-page-news ref="news" />
       </div>
       <div class="order-1 w-full px-0.5 lg:order-2 lg:w-[33.333%]">
         <h2 class="subtitle-text-lg mb-1">AI技術分析</h2>
@@ -99,9 +99,9 @@
 
 <script setup>
 import axios from 'axios'
+import { useStore } from 'vuex'
 import * as echarts from 'echarts'
 import { useRoute, useRouter } from 'vue-router'
-import { useStore } from 'vuex'
 import getCatagories from '@/utils/getCatagories.js'
 import modifyFavStocks from '@/utils/modifyFavStocks'
 import { ref, computed, onMounted, watchEffect, watch } from 'vue'
@@ -117,6 +117,7 @@ const { DateTime } = require('luxon')
 const store = useStore()
 const route = useRoute()
 const router = useRouter()
+const news = ref()
 const chartDom = ref()
 const stockData = ref()
 const industry = ref('')
@@ -312,12 +313,16 @@ const changeBlock = () => {
 }
 // initail
 const initializeData = () => {
+  store.commit('setIsLoading', true)
   getCatagories(route.params.stockid)
     .then((res) => {
-      store.commit('setIsLoading', true)
       industry.value = res[0]
     })
     .then(getStockData)
+    .then(() => {
+      document.title = `${getStockDetail.value.stockName} - ${route.params.stockid}.TW - Zentropy`
+      news.value.getNews(route.params.stockid + getStockDetail.value.stockName)
+    })
     .then(() => {
       const myChart = echarts.init(chartDom.value)
       const resizMyChart = () => myChart.resize()

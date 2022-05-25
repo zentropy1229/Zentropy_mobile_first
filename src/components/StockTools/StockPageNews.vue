@@ -29,36 +29,28 @@
 </template>
 <script setup>
 import axios from 'axios'
-import { onMounted, ref, defineProps, toRef, watch } from 'vue'
-const props = defineProps({
-  keyword: {
-    type: String,
-    default: undefined
-  }
-})
+import { ref, defineExpose } from 'vue'
 const newsDetail = ref('')
-const keyword = toRef(props, 'keyword')
-const getNews = () => {
-  axios
-    .get('/api/news/', {
-      headers: {
-        Authorization: ''
-      },
-      params: {
-        keyword: keyword.value
-      }
-    })
-    .then((res) => {
-      newsDetail.value = res.data
-    })
-    .catch(() => {
-      console('錯誤發生')
-    })
-}
-onMounted(() => {
-  watch(keyword, () => {
-    getNews()
+const getNews = (keyword) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get('/api/news/', {
+        headers: {
+          Authorization: ''
+        },
+        params: {
+          keyword: keyword
+        }
+      })
+      .then((res) => {
+        newsDetail.value = res.data
+      })
+      .catch((err) => {
+        reject(new Error(err))
+      })
   })
-})
+}
+
+defineExpose({ getNews })
 </script>
 <style lang="postcss" scoped></style>

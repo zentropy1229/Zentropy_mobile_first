@@ -31,7 +31,7 @@
           <stock-search class="mb-1.5" />
           <my-stock class="mb-1" />
           <h2 class="subtitle-text mb-0.5">熱門新聞</h2>
-          <hot-news class="mb-1 bg-gray-900 px-0.5 py-1.5" :showSeeAll="true" />
+          <hot-news class="mb-1 bg-gray-900 px-0.5 py-1.5" ref="news" :showSeeAll="true" />
         </div>
         <!-- right container -->
         <div class="ml-0 w-full lg:ml-2 lg:w-[70%]">
@@ -43,13 +43,7 @@
             <p class="text-gray-400">更新時間：每分鐘更新一次</p>
             <p class="text-gray-400">資料更新時間：{{ updatedTime }}</p>
           </div>
-          <stock-table
-            :tableTitle="stockTitle"
-            :tableDetail="stockDetails"
-            :isLoading="isLoading"
-            @orderList="orderList"
-            class="mb-4"
-          />
+          <stock-table :tableTitle="stockTitle" :tableDetail="stockDetails" @orderList="orderList" class="mb-4" />
         </div>
       </div>
     </div>
@@ -60,8 +54,10 @@
 import axios from 'axios'
 
 import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
 import { onMounted, ref, watchPostEffect, watch, computed } from 'vue'
-import getCurrentTime from '@/utils/getCurrentTime.js'
+import quickSort from '@/utils/quickSort'
+import getCurrentTime from '@/utils/getCurrentTime'
 import MyStock from '@/components/StockHomeTools/MyStock'
 import HotNews from '@/components/StockHomeTools/HotNews'
 import StockTable from '@/components/StockHomeTools/StockTable'
@@ -74,12 +70,13 @@ const daliyHotChartDom = ref()
 // ================== define route store ===================
 const route = useRoute()
 // ================== define ref =====================
+const news = ref()
 const next = ref('')
+const store = useStore()
 const hotStocks = ref([])
 const orderColumn = ref('')
 const updatedTime = ref('')
 const stockDetails = ref([])
-const isLoading = ref(false)
 const reverseColumn = ref('')
 const startScroll = ref(false)
 const industrySelectorActive = ref(false)
@@ -103,22 +100,43 @@ const stockTitle = ref({
 const getHotStocks = (limit) => {
   return new Promise((resolve, reject) => {
     axios
-      .get(`/api/stock_name/orderData/?col=volumn&offset=0&limit=${limit}&reverse=-`, {
+      .get('/api/stock_name/volumn', {
         headers: {
           Authorization: ''
         }
       })
       .then((res) => {
-        for (const stockSerise of res.data.results) {
-          hotStocks.value.push(stockSerise.stock.stock)
+        const sortArray = quickSort(res.data, 'volumn')
+        for (const stockSerise of sortArray.splice(0, 4)) {
+          hotStocks.value.push(stockSerise.stock)
         }
         resolve()
       })
       .catch(() => {
         window.location.href = '/404'
+        reject(new Error('not Found'))
       })
   })
 }
+// const getHotStocks = (limit) => {
+//   return new Promise((resolve, reject) => {
+//     axios
+//       .get(`/api/stock_name/orderData/?col=volumn&offset=0&limit=${limit}&reverse=-`, {
+//         headers: {
+//           Authorization: ''
+//         }
+//       })
+//       .then((res) => {
+//         for (const stockSerise of res.data.results) {
+//           hotStocks.value.push(stockSerise.stock.stock)
+//         }
+//         resolve()
+//       })
+//       .catch(() => {
+//         window.location.href = '/404'
+//       })
+//   })
+// }
 // order list
 const orderList = (index) => {
   orderColumn.value = index
@@ -136,31 +154,30 @@ const startFilter = (isUpdate) => {
     stockDetails.value = []
     next.value = '/api/stock_name/orderData/?offset=0'
   }
-  isLoading.value = true
   if (next.value) {
-    axios
-      .get(next.value, {
-        params: { col: orderColumn.value, industry: route.query.industry || '', reverse: reverseColumn.value },
-        headers: {
-          Authorization: ''
-        }
-      })
-      .then((res) => {
-        if (res.data.results.length) {
-          stockDetails.value = stockDetails.value.concat(res.data.results)
-          next.value = res.data.next
-          updatedTime.value = getCurrentTime()
-          isLoading.value = false
-        } else {
-          stockDetails.value = []
-          isLoading.value = false
-          window.location.href = '/404'
-        }
-      })
-      .catch(() => {
-        isLoading.value = false
-        window.location.href = '/404'
-      })
+    return new Promise((resolve, reject) => {
+      axios
+        .get(next.value, {
+          params: { col: orderColumn.value, industry: route.query.industry || '', reverse: reverseColumn.value },
+          headers: {
+            Authorization: ''
+          }
+        })
+        .then((res) => {
+          if (res.data.results.length) {
+            stockDetails.value = stockDetails.value.concat(res.data.results)
+            next.value = res.data.next
+            updatedTime.value = getCurrentTime()
+            resolve()
+          } else {
+            stockDetails.value = []
+            window.location.replace = '/404'
+          }
+        })
+        .catch(() => {
+          window.location.replace = '/404'
+        })
+    })
   }
 }
 // get real and now price
@@ -209,14 +226,19 @@ const startScrolling = () => {
 // ================== lifecycle =====================
 onMounted(() => {
   // get initial data
-  getHotStocks(4)
-  watch(
-    [route, orderColumn, reverseColumn],
-    () => {
-      startFilter(false)
-    },
-    { immediate: true }
-  )
+  store.commit('setIsLoading', true)
+  Promise.all([startFilter(false), news.value.getNewsDetail(), getHotStocks(4)])
+    .then(() => {
+      store.commit('setIsLoading', false)
+    })
+    .catch(() => {
+      store.commit('setIsLoading', false)
+    })
+  // watch change
+  watch([route, orderColumn, reverseColumn], () => {
+    startFilter(false)
+  })
+  // scroll update and minutes updated
   watchPostEffect((onInvalidate) => {
     // get lastest updated price (per minutes)
     const realTimePrice = setInterval(getRealPrice, 60000)

@@ -19,7 +19,7 @@ export default function modifyFavStocks (action, stock, event) {
       })
   }
   store.dispatch('getToken').then(() => {
-    if (store.state.userInfo.favoriteStocks.length > 50) {
+    if (store.state.userInfo.favoriteStocks.length >= 50) {
       if (action === 'add') {
         alert('自選股數量已達上限！')
         return

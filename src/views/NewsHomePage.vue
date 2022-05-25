@@ -6,7 +6,7 @@
         <span class="span-text text-gray-300">台股通吃大小事，一眼看近天下事</span>
       </div>
       <news-search class="mb-1 w-3/4 lg:w-1/3" @startSearch="startSearch" />
-      <hot-news :keywords="keywords" :page="page" :isUpdate="isUpdate" @alreadyBottom="alreadyBottom = $event" />
+      <hot-news ref="news" @alreadyBottom="alreadyBottom = $event" />
       <button
         class="span-text mb-1 rounded-sm bg-gray-300 py-0.5 px-1 font-medium text-gray-800 hover:bg-gray-900 hover:text-gray-300"
         @click="loadMore"
@@ -20,10 +20,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+import { useStore } from 'vuex'
 import NewsSearch from '@/components/NewsSearch'
 import HotNews from '@/components/StockHomeTools/HotNews'
+const news = ref()
 const page = ref(0)
+const store = useStore()
 const keywords = ref('台股')
 const isUpdate = ref(true)
 const alreadyBottom = ref(false)
@@ -36,4 +39,21 @@ const loadMore = () => {
   isUpdate.value = true
   page.value++
 }
+onMounted(() => {
+  watch(
+    [keywords, page, isUpdate],
+    () => {
+      store.commit('setIsLoading', true)
+      news.value
+        .getNewsDetail(keywords.value, isUpdate.value, page.value)
+        .then(() => {
+          store.commit('setIsLoading', false)
+        })
+        .catch(() => {
+          store.commit('setIsLoading', false)
+        })
+    },
+    { immediate: true }
+  )
+})
 </script>

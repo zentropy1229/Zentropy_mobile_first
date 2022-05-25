@@ -21,6 +21,9 @@ const routes = [
       default: HomePage,
       Header: Header,
       Footer: Footer
+    },
+    meta: {
+      title: 'Zentropy'
     }
   },
   {
@@ -30,6 +33,9 @@ const routes = [
       default: NewsHomePage,
       Header: Header,
       Footer: Footer
+    },
+    meta: {
+      title: '新聞 - Zentropy'
     }
   },
   {
@@ -39,6 +45,9 @@ const routes = [
       default: AboutUsPage,
       Header: Header,
       Footer: Footer
+    },
+    meta: {
+      title: '關於我們 - Zentropy'
     }
   },
   {
@@ -48,6 +57,9 @@ const routes = [
       default: StockHomePage,
       Header: Header,
       Footer: Footer
+    },
+    meta: {
+      title: '股市 - Zentropy'
     }
   },
   {
@@ -67,13 +79,19 @@ const routes = [
           requireAuth: true
         }
       }
-    ]
+    ],
+    meta: {
+      title: '個股頁面 - Zentropy'
+    }
   },
   {
     path: '/login',
     name: 'login',
     components: {
       default: LoginPage
+    },
+    meta: {
+      title: '登入 - Zentropy'
     }
   },
   {
@@ -83,6 +101,9 @@ const routes = [
       default: SignUpPage,
       Header: Header,
       Footer: Footer
+    },
+    meta: {
+      title: '註冊 成為我們的一員 - Zentropy'
     }
   },
   {
@@ -94,7 +115,8 @@ const routes = [
       Footer: Footer
     },
     meta: {
-      requireAuth: true
+      requireAuth: true,
+      title: '會員資訊 - Zentropy'
     }
   },
   {
@@ -102,6 +124,9 @@ const routes = [
     name: '404',
     components: {
       default: NotFound404Page
+    },
+    meta: {
+      title: '404 - Zentropy'
     }
   },
   {
@@ -126,6 +151,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from) => {
+  document.title = to.meta.title ? to.meta.title : 'Zentropy'
   return store.dispatch('initialize').then((res) => {
     if (to.matched[0].name === 'login' && store.state.access) {
       return { name: 'memberInfo' }

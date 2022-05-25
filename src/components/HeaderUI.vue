@@ -211,7 +211,7 @@ const mobileNavActive = ref(false)
 const mobileMemberActive = ref(false)
 const navList = [
   {
-    content: '股票',
+    content: '股市',
     linkName: 'stockHome'
   },
   {

@@ -24,66 +24,45 @@
 </template>
 <script setup>
 import axios from 'axios'
-import { useStore } from 'vuex'
-import { ref, defineProps, defineEmits, toRef, watchEffect } from 'vue'
+import { ref, defineProps, defineEmits, toRef, defineExpose } from 'vue'
 const emit = defineEmits(['alreadyBottom'])
 const props = defineProps({
-  keywords: {
-    type: String,
-    default: '台股'
-  },
-  page: {
-    type: Number,
-    default: 0
-  },
   showSeeAll: {
     type: Boolean,
     default: false
-  },
-  isUpdate: {
-    type: Boolean,
-    default: true
   }
 })
-const store = useStore()
 const newsDetail = ref([])
-// 傳到後端的關鍵字
-const page = toRef(props, 'page')
-const keywords = toRef(props, 'keywords')
-const isUpdate = toRef(props, 'isUpdate')
 // 是否顯示查看全部
 const showSeeAll = toRef(props, 'showSeeAll')
 // 是否到底
 const alreadyBottom = (value) => {
   emit('alreadyBottom', value)
 }
-const getNewsDetail = (value) => {
-  store.commit('setIsLoading', true)
-  axios
-    .get('/api/news/', {
-      params: {
-        keyword: keywords.value,
-        page: page.value
-      }
-    })
-    .then((res) => {
-      newsDetail.value = newsDetail.value.concat(res.data)
-      alreadyBottom(false)
-      store.commit('setIsLoading', false)
-      return res.data
-    })
-    .catch((err) => {
-      alreadyBottom(true)
-      store.commit('setIsLoading', false)
-      return err
-    })
+const getNewsDetail = (keywords, isUpdate, page) => {
+  return new Promise((resolve, reject) => {
+    if (!isUpdate) {
+      newsDetail.value = []
+    }
+    axios
+      .get('/api/news/', {
+        params: {
+          keyword: keywords,
+          page: page
+        }
+      })
+      .then((res) => {
+        newsDetail.value = newsDetail.value.concat(res.data)
+        alreadyBottom(false)
+        resolve(res.data)
+      })
+      .catch((err) => {
+        alreadyBottom(true)
+        reject(new Error(err))
+      })
+  })
 }
-watchEffect(() => {
-  if (!isUpdate.value) {
-    newsDetail.value = []
-  }
-  getNewsDetail()
-})
+defineExpose({ getNewsDetail })
 </script>
 
 <style lang="postcss" scoped></style>
