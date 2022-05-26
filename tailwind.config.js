@@ -33,8 +33,8 @@ module.exports = {
       addComponents({
         '.container': {
           margin: '0 auto',
-          'padding-left': '.15rem',
-          'padding-right': '.15rem',
+          'padding-left': '.2rem',
+          'padding-right': '.2rem',
           '@screen lg': {
             'padding-left': '1.2rem',
             'padding-right': '1.2rem'

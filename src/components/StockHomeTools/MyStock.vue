@@ -8,12 +8,14 @@
         >登入</router-link
       >
     </div>
+    <loading-icon :isLoading="isLoading" />
   </div>
 </template>
 <script setup>
 import axios from 'axios'
 import { useStore } from 'vuex'
-import { watch, computed, ref } from '@vue/runtime-core'
+import { watch, computed, ref, defineExpose } from '@vue/runtime-core'
+import LoadingIcon from '@/components/smallComponents/LoadingIcon'
 import SlimStockTable from '@/components/StockTools/SlimStockTable'
 // ================== refs ==========================
 const store = useStore()
@@ -22,21 +24,30 @@ const routerInfo = ref({
   name: 'memberInfo',
   query: { anchorId: 'myStock' }
 })
+const isLoading = ref(false)
 // ================== Methods =======================
 const getStockData = () => {
+  isLoading.value = true
   const stocks = myFavStock.value.slice(-5).join(',')
   return new Promise((resolve, reject) => {
     axios.get('/api/stock_name/getmfs/', { params: { stocks, sort: '-stock__favoriteStock__updated' } }).then((res) => {
       stockInfo.value = res.data
+      resolve()
     })
+  }).then(() => {
+    isLoading.value = false
   })
+}
+const updateStock = () => {
+  watch(myFavStock, getStockData)
 }
 // ================== computed ======================
 const myFavStock = computed(() => {
   return store.state.userInfo.favoriteStocks
 })
 // ================== life-cycle ====================
-watch(myFavStock, getStockData)
+
+defineExpose({ updateStock })
 </script>
 
 <style lang="postcss" scoped></style>

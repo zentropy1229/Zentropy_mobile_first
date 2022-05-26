@@ -100,8 +100,8 @@ const option = ref({
       },
       axisLabel: {
         color: '#fff',
-        fontSize: '0.15rem',
-        distance: -60,
+        fontSize: '1em',
+        distance: -58,
         formatter: function (value) {
           if (value === 1) {
             return '買入'

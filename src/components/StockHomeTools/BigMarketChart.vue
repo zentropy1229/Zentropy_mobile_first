@@ -75,7 +75,8 @@
 import axios from 'axios'
 import * as echarts from 'echarts'
 import { DateTime } from 'luxon'
-import { onMounted, ref, computed, watchEffect } from 'vue'
+import { onMounted, ref, computed, watchEffect, onUpdated } from 'vue'
+let resizeMyChart
 const chartDom = ref()
 const daliyStockValue = ref()
 const currentBigMarket = ref('TWS:TSE01:INDEX')
@@ -287,10 +288,7 @@ const judgeUpDown = computed(() => {
 onMounted(() => {
   // initial data and echarts logic
   const myChart = echarts.init(chartDom.value)
-  const resizeMyChart = () => myChart.resize()
-  setTimeout(() => {
-    resizeMyChart()
-  }, 100)
+  resizeMyChart = () => myChart.resize()
   watchEffect((onInvalidate) => {
     getBigMarketValue().then(() => {
       myChart.setOption(option.value)
@@ -307,6 +305,9 @@ onMounted(() => {
       clearInterval(updateData)
     })
   })
+})
+onUpdated(() => {
+  resizeMyChart()
 })
 </script>
 

@@ -30,12 +30,12 @@
         <div class="w-full lg:w-[30%]">
           <h2 class="subtitle-text mb-0.5">台股搜尋</h2>
           <stock-search class="mb-1.5" />
-          <my-stock class="mb-1" />
+          <my-stock class="mb-1" ref="myStockDom" />
           <h2 class="subtitle-text mb-0.5">熱門新聞</h2>
           <hot-news class="mb-1 bg-gray-900 px-0.5 py-1.5" ref="news" :showSeeAll="true" />
         </div>
         <!-- right container -->
-        <div class="ml-0 w-full lg:ml-2 lg:w-[70%]">
+        <div class="ml-0 w-full lg:ml-auto lg:max-w-[68%]">
           <stock-catagory
             :industrySelectorActive="industrySelectorActive"
             @changeSelectorState="industrySelectorActive = $event"
@@ -61,7 +61,6 @@
 import axios from 'axios'
 import { useRoute } from 'vue-router'
 import { onMounted, ref, watchPostEffect, watch, computed } from 'vue'
-import quickSort from '@/utils/quickSort'
 import getCurrentTime from '@/utils/getCurrentTime'
 import MyStock from '@/components/StockHomeTools/MyStock'
 import HotNews from '@/components/StockHomeTools/HotNews'
@@ -78,6 +77,7 @@ const route = useRoute()
 // ================== define ref =====================
 const news = ref()
 const next = ref('')
+const myStockDom = ref()
 const hotStocks = ref([])
 const orderColumn = ref('')
 const updatedTime = ref('')
@@ -111,12 +111,14 @@ const getHotStocks = (limit) => {
       .get('/api/stock_name/volumn', {
         headers: {
           Authorization: ''
+        },
+        params: {
+          limit: limit
         }
       })
       .then((res) => {
-        const sortArray = quickSort(res.data, 'volumn')
-        for (const stockSerise of sortArray.splice(0, 4)) {
-          hotStocks.value.push(stockSerise.stock)
+        for (const stockSerise of res.data.results) {
+          hotStocks.value.push(stockSerise.stockId)
         }
         resolve()
       })
@@ -241,7 +243,7 @@ const startScrolling = () => {
 onMounted(() => {
   // get initial data
   getHotStocks(4)
-  Promise.all([startFilter(false), news.value.getNewsDetail()])
+  Promise.all([startFilter(false), news.value.getNewsDetail(), myStockDom.value.updateStock()])
   // watch change
   watch([route, orderColumn, reverseColumn], () => {
     if (route.name === 'stockHome') {

@@ -1,8 +1,8 @@
 <template>
-  <div class="span-text w-full rounded-sm bg-gray-900 font-medium">
+  <div class="span-text w-full overflow-x-auto rounded-sm bg-gray-900 font-medium">
     <table class="w-full">
       <thead>
-        <tr class="span-text-sm border-b-2 border-gray-400">
+        <tr class="span-text-sm whitespace-nowrap border-b-2 border-gray-400">
           <th class="h-2 w-6 px-0.5 text-left">股名 / 代號</th>
           <th class="h-2 px-0.5 text-right">股價</th>
           <th class="h-2 px-0.5 text-right">漲跌</th>

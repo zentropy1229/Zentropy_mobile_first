@@ -106,9 +106,6 @@ const initialFrom = async () => {
   const data0 = splitData(result)
   const option = ref({
     title: {
-      textStyle: {
-        fontSize: '.2rem'
-      },
       text: '股票代號: ' + route.params.stockid,
       left: '10%',
       top: '10%'
@@ -120,9 +117,6 @@ const initialFrom = async () => {
       }
     },
     legend: {
-      textStyle: {
-        fontSize: '.1rem'
-      },
       data: ['日K', 'MA5', 'MA10', 'MA20', 'MA30']
     },
     grid: {

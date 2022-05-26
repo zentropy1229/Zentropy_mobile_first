@@ -5,7 +5,7 @@
       :class="{ 'overflow-x-scroll': showOverflowX }"
       ref="stockTableContainer"
     >
-      <table class="w-full" ref="stockTable">
+      <table class="w-full whitespace-nowrap" ref="stockTable">
         <thead>
           <!-- table title -->
           <tr class="span-text-sm relative border-b-2 border-gray-400">
@@ -152,7 +152,7 @@
 import { useStore } from 'vuex'
 import LoadingIcon from '@/components/smallComponents/LoadingIcon'
 import modifyFavStocks from '@/utils/modifyFavStocks'
-import { defineProps, ref, toRef, computed, onMounted, watchEffect, defineExpose } from 'vue'
+import { defineProps, ref, toRef, computed, onMounted, watchEffect, defineExpose, onUpdated } from 'vue'
 const store = useStore()
 // ================== ref Define =====================
 const stockTable = ref()
@@ -229,12 +229,14 @@ const checkFavStock = computed(() => {
 onMounted(() => {
   // table overflowx action
   watchEffect((onInvalidate) => {
-    showTableScrollX()
     window.addEventListener('resize', showTableScrollX)
     onInvalidate(() => {
       window.removeEventListener('resize', showTableScrollX)
     })
   })
+})
+onUpdated(() => {
+  showTableScrollX()
 })
 defineExpose({ isLoading })
 </script>

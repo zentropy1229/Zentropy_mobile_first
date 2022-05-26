@@ -17,7 +17,7 @@
     >
       <!-- logo here!!!!!!!!!!!!!!!!!!!!!!!! -->
       <div class="order-2 m-0 p-0 xl:order-none">
-        <a href="/" class="flex-center logo">
+        <router-link :to="{ name: 'home' }" class="flex-center logo">
           <svg class="h-2 w-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
             <path
               class="cls-1 text-[#393332] transition-all duration-700"
@@ -41,20 +41,33 @@
             />
           </svg>
           <span class="block hidden text-[0.22rem] font-bold lg:block">Zentropy</span>
-        </a>
+        </router-link>
       </div>
       <ul class="hidden flex-1 xl:flex">
         <!-- v-for for nav link desktop -->
-        <li v-for="nav in navList" :key="nav.linkName" class="first:ml-auto">
+        <li v-for="nav in navList" :key="nav.linkName" class="flex-center first:ml-auto">
           <router-link :to="{ name: nav.linkName }" class="desktop-nav-link hover:text-sky-500">{{
             nav.content
           }}</router-link>
         </li>
         <!-- hover show for member -->
-        <li class="relative ml-auto" @mouseenter="showMemberLink = true" @mouseleave="showMemberLink = false">
-          <a href="javascript:void(0)" class="desktop-nav-link hover:text-sky-500">會員</a>
+        <li
+          class="relative ml-auto cursor-pointer first:ml-auto"
+          @mouseenter="showMemberLink = true"
+          @mouseleave="showMemberLink = false"
+        >
+          <div class="desktop-nav-link hover:text-sky-500">
+            <span v-if="!store.state.access">會員</span>
+            <div class="flex-center flex-col" v-else>
+              <img
+                :src="store.state.userInfo.profile_image"
+                class="h-[0.45rem] w-[0.45rem] rounded-full border-2 border-white object-fill"
+                alt=""
+              />
+            </div>
+          </div>
           <div
-            class="span-text absolute top-2 -left-2.5 origin-top scale-y-0 overflow-hidden rounded-sm bg-gray-800 transition-all"
+            class="span-text absolute right-0 origin-top scale-y-0 overflow-hidden rounded-sm bg-gray-800 transition-all"
             :class="{
               'show-member-link': showMemberLink
             }"
@@ -263,12 +276,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="postcss" scoped>
-.logo:hover .cls-1 {
-  @apply text-sky-500;
-}
-.logo span {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
 .desktop-nav-link {
   @apply relative block overflow-hidden px-[.3rem] py-[.2rem] text-[length:var(--navlink-text)] font-light;
 }
@@ -310,5 +317,12 @@ onUnmounted(() => {
 }
 .mobile-member-btn:nth-last-child(1) {
   @apply border-0;
+}
+.logo:hover .cls-1 {
+  @apply text-sky-500;
+}
+.logo span {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: white;
 }
 </style>
