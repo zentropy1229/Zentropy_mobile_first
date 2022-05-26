@@ -152,13 +152,14 @@
 import { useStore } from 'vuex'
 import LoadingIcon from '@/components/smallComponents/LoadingIcon'
 import modifyFavStocks from '@/utils/modifyFavStocks'
-import { defineProps, ref, toRef, computed, onMounted, watchEffect } from 'vue'
+import { defineProps, ref, toRef, computed, onMounted, watchEffect, defineExpose } from 'vue'
 const store = useStore()
 // ================== ref Define =====================
 const stockTable = ref()
 const nowColumnIndex = ref('')
 const showOverflowX = ref(false)
 const stockTableContainer = ref()
+const isLoading = ref(false)
 // ================== Props Define =====================
 const props = defineProps({
   tableDetail: {
@@ -166,15 +167,10 @@ const props = defineProps({
   },
   tableTitle: {
     type: Object
-  },
-  isLoading: {
-    type: Boolean,
-    default: false
   }
 })
 const tableTitle = toRef(props, 'tableTitle')
 const tableDetail = toRef(props, 'tableDetail')
-const isLoading = toRef(props, 'isLoading')
 // ================== Methods =====================
 const showTableScrollX = () => {
   stockTableContainer.value.offsetWidth < stockTable.value.offsetWidth
@@ -240,6 +236,7 @@ onMounted(() => {
     })
   })
 })
+defineExpose({ isLoading })
 </script>
 
 <style lang="postcss" scoped>

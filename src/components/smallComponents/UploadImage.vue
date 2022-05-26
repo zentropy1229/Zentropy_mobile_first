@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="$emit('updateImage', file.files[0])" class="flex-center">
-    <div class="relative h-max rounded-sm bg-gray-900 active:bg-gray-700">
+    <div class="relative h-max rounded-sm bg-gray-900 p-[0.05rem] active:bg-gray-700">
       <div class="x-center y-center absolute text-center" v-html="nowUploadStatus"></div>
       <input type="file" accept="image/*" class="h-2 w-10 cursor-pointer opacity-0" @change="changeStatus" ref="file" />
     </div>

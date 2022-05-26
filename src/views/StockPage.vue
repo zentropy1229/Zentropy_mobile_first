@@ -337,7 +337,7 @@ const initializeData = () => {
     })
     .catch(() => {
       if (route.name === 'stock') {
-        window.location.href = '/404'
+        window.location.replace('/404')
       }
       store.commit('setIsLoading', false)
     })

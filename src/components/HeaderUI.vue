@@ -7,16 +7,16 @@
     }"
   >
     <div
-      class="flex h-[var(--navbar-height)] items-center justify-between px-3 transition duration-500 ease-in-out lg:scale-105"
+      class="flex h-[var(--navbar-height)] items-center justify-between px-3 transition duration-500 ease-in-out xl:scale-105"
       :class="{
-        'border-b-2 border-gray-400 bg-gray-800 shadow-xl lg:scale-100': active && isHomePage,
-        'lg:scale-100': !isHomePage
+        'border-b-2 border-gray-400 bg-gray-800 shadow-xl xl:scale-100': active && isHomePage,
+        'xl:scale-100': !isHomePage
       }"
       @mouseenter="active = true"
       @mouseleave="showNavBar"
     >
       <!-- logo here!!!!!!!!!!!!!!!!!!!!!!!! -->
-      <div class="order-2 m-0 p-0 lg:order-none">
+      <div class="order-2 m-0 p-0 xl:order-none">
         <a href="/" class="flex-center logo">
           <svg class="h-2 w-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
             <path
@@ -43,7 +43,7 @@
           <span class="block hidden text-[0.22rem] font-bold lg:block">Zentropy</span>
         </a>
       </div>
-      <ul class="hidden flex-1 lg:flex">
+      <ul class="hidden flex-1 xl:flex">
         <!-- v-for for nav link desktop -->
         <li v-for="nav in navList" :key="nav.linkName" class="first:ml-auto">
           <router-link :to="{ name: nav.linkName }" class="desktop-nav-link hover:text-sky-500">{{
@@ -79,7 +79,7 @@
         </li>
       </ul>
       <!--mobile display-->
-      <button class="order-1 h-min lg:hidden" @click="showMobileNav">
+      <button class="order-1 h-min xl:hidden" @click="showMobileNav">
         <svg xmlns="http://www.w3.org/2000/svg" class="mobile-icon" fill="currentColor" viewBox="0 0 16 16">
           <path
             fill-rule="evenodd"
@@ -87,7 +87,7 @@
           />
         </svg>
       </button>
-      <button class="order-3 lg:hidden" @click="showMobileMember">
+      <button class="order-3 xl:hidden" @click="showMobileMember">
         <svg xmlns="http://www.w3.org/2000/svg" class="mobile-icon" fill="currentColor" viewBox="0 0 16 16">
           <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
           <path
@@ -285,7 +285,7 @@ onUnmounted(() => {
   @apply scale-y-100 border border-gray-600;
 }
 .mobile-nav {
-  @apply fixed top-0 z-50 h-screen w-screen bg-gray-800 transition-all duration-1000 lg:hidden;
+  @apply fixed top-0 z-50 h-screen w-screen bg-gray-800 transition-all duration-1000 xl:hidden;
 }
 .mobile-nav-header {
   @apply flex items-center border-b-2 border-slate-600 p-2;

@@ -22,7 +22,7 @@
         <div class="flex w-full flex-col lg:w-1/2">
           <form class="flex flex-col gap-1">
             <div class="flex flex-col" v-for="(info, key) in userInfo" :key="info">
-              <span class="mb-0.5 w-5 text-gray-200">{{ info.text }}</span>
+              <span class="mb-0.5 w-max text-gray-200">{{ info.text }}</span>
               <div class="flex flex-wrap items-center rounded-sm bg-gray-900 p-[0.05rem] font-medium">
                 <div class="p-[0.1rem] text-gray-400" v-if="isEditing !== info.text">
                   <span>{{ info.value }}</span>

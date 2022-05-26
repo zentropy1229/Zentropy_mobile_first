@@ -302,6 +302,7 @@ onMounted(async () => {
 })
 onUnmounted(() => {
   window.removeEventListener('resize', resizeMyChart)
+  myChart.dispose()
 })
 </script>
 

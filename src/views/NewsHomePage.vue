@@ -21,12 +21,10 @@
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { useStore } from 'vuex'
 import NewsSearch from '@/components/NewsSearch'
 import HotNews from '@/components/StockHomeTools/HotNews'
 const news = ref()
 const page = ref(0)
-const store = useStore()
 const keywords = ref('台股')
 const isUpdate = ref(true)
 const alreadyBottom = ref(false)
@@ -43,15 +41,7 @@ onMounted(() => {
   watch(
     [keywords, page, isUpdate],
     () => {
-      store.commit('setIsLoading', true)
-      news.value
-        .getNewsDetail(keywords.value, isUpdate.value, page.value)
-        .then(() => {
-          store.commit('setIsLoading', false)
-        })
-        .catch(() => {
-          store.commit('setIsLoading', false)
-        })
+      news.value.getNewsDetail(keywords.value, isUpdate.value, page.value)
     },
     { immediate: true }
   )

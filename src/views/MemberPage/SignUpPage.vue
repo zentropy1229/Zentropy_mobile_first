@@ -128,7 +128,7 @@ const submitFrom = () => {
   @apply span-text-sm text-gray-400;
 }
 .input-value {
-  @apply span-text-lg mb-0.5 w-16 border-b border-slate-400 bg-transparent py-[0.05rem] font-medium tracking-widest outline-none;
+  @apply span-text-lg mb-0.5 w-16 rounded-[0.08rem] border border-slate-600 bg-gray-900 px-0.5 py-[0.08rem] font-medium tracking-widest outline-none;
 }
 .passwrod-tips {
   @apply mb-0.5 text-[.1rem] text-gray-300;

@@ -20,10 +20,12 @@
         <router-link :to="{ name: 'news' }" class="hover:text-sky-500">查看全部...</router-link>
       </div>
     </ul>
+    <loading-icon :isLoading="isLoading" />
   </div>
 </template>
 <script setup>
 import axios from 'axios'
+import LoadingIcon from '@/components/smallComponents/LoadingIcon'
 import { ref, defineProps, defineEmits, toRef, defineExpose } from 'vue'
 const emit = defineEmits(['alreadyBottom'])
 const props = defineProps({
@@ -33,6 +35,7 @@ const props = defineProps({
   }
 })
 const newsDetail = ref([])
+const isLoading = ref(false)
 // 是否顯示查看全部
 const showSeeAll = toRef(props, 'showSeeAll')
 // 是否到底
@@ -41,6 +44,7 @@ const alreadyBottom = (value) => {
 }
 const getNewsDetail = (keywords, isUpdate, page) => {
   return new Promise((resolve, reject) => {
+    isLoading.value = true
     if (!isUpdate) {
       newsDetail.value = []
     }
@@ -54,15 +58,17 @@ const getNewsDetail = (keywords, isUpdate, page) => {
       .then((res) => {
         newsDetail.value = newsDetail.value.concat(res.data)
         alreadyBottom(false)
+        isLoading.value = false
         resolve(res.data)
       })
       .catch((err) => {
+        isLoading.value = false
         alreadyBottom(true)
         reject(new Error(err))
       })
   })
 }
-defineExpose({ getNewsDetail })
+defineExpose({ getNewsDetail, isLoading })
 </script>
 
 <style lang="postcss" scoped></style>

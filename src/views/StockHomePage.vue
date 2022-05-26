@@ -17,6 +17,7 @@
             />
           </svg>
           <daliy-hot-charts v-for="hotStock of hotStocks" :key="hotStock" :searchStockNum="hotStock" class="w-full" />
+          <loading-icon class="mx-auto p-1" :isLoading="isLoading" />
         </div>
       </div>
       <!-- big market -->
@@ -43,7 +44,13 @@
             <p class="text-gray-400">更新時間：每分鐘更新一次</p>
             <p class="text-gray-400">資料更新時間：{{ updatedTime }}</p>
           </div>
-          <stock-table :tableTitle="stockTitle" :tableDetail="stockDetails" @orderList="orderList" class="mb-4" />
+          <stock-table
+            :tableTitle="stockTitle"
+            :tableDetail="stockDetails"
+            ref="stockTables"
+            @orderList="orderList"
+            class="mb-4"
+          />
         </div>
       </div>
     </div>
@@ -52,9 +59,7 @@
 
 <script setup>
 import axios from 'axios'
-
 import { useRoute } from 'vue-router'
-import { useStore } from 'vuex'
 import { onMounted, ref, watchPostEffect, watch, computed } from 'vue'
 import quickSort from '@/utils/quickSort'
 import getCurrentTime from '@/utils/getCurrentTime'
@@ -62,6 +67,7 @@ import MyStock from '@/components/StockHomeTools/MyStock'
 import HotNews from '@/components/StockHomeTools/HotNews'
 import StockTable from '@/components/StockHomeTools/StockTable'
 import StockSearch from '@/components/StockHomeTools/StockSearch'
+import LoadingIcon from '@/components/smallComponents/LoadingIcon'
 import StockCatagory from '@/components/StockHomeTools/StockCatagory'
 import BigMarketChart from '@/components/StockHomeTools/BigMarketChart'
 import DaliyHotCharts from '@/components/StockHomeTools/DaliyHotCharts'
@@ -72,13 +78,14 @@ const route = useRoute()
 // ================== define ref =====================
 const news = ref()
 const next = ref('')
-const store = useStore()
 const hotStocks = ref([])
 const orderColumn = ref('')
 const updatedTime = ref('')
+const isLoading = ref(false)
 const stockDetails = ref([])
 const reverseColumn = ref('')
 const startScroll = ref(false)
+const stockTables = ref()
 const industrySelectorActive = ref(false)
 const industryFromRoute = computed(() => {
   return route.query.industry || ''
@@ -99,6 +106,7 @@ const stockTitle = ref({
  */
 const getHotStocks = (limit) => {
   return new Promise((resolve, reject) => {
+    isLoading.value = true
     axios
       .get('/api/stock_name/volumn', {
         headers: {
@@ -112,7 +120,11 @@ const getHotStocks = (limit) => {
         }
         resolve()
       })
+      .then(() => {
+        isLoading.value = false
+      })
       .catch(() => {
+        isLoading.value = false
         window.location.href = '/404'
         reject(new Error('not Found'))
       })
@@ -155,6 +167,7 @@ const startFilter = (isUpdate) => {
     next.value = '/api/stock_name/orderData/?offset=0'
   }
   if (next.value) {
+    stockTables.value.isLoading = true
     return new Promise((resolve, reject) => {
       axios
         .get(next.value, {
@@ -168,14 +181,15 @@ const startFilter = (isUpdate) => {
             stockDetails.value = stockDetails.value.concat(res.data.results)
             next.value = res.data.next
             updatedTime.value = getCurrentTime()
+            stockTables.value.isLoading = false
             resolve()
           } else {
             stockDetails.value = []
-            window.location.replace = '/404'
+            window.location.replace('/404')
           }
         })
         .catch(() => {
-          window.location.replace = '/404'
+          window.location.replace('/404')
         })
     })
   }
@@ -226,17 +240,13 @@ const startScrolling = () => {
 // ================== lifecycle =====================
 onMounted(() => {
   // get initial data
-  store.commit('setIsLoading', true)
-  Promise.all([startFilter(false), news.value.getNewsDetail(), getHotStocks(4)])
-    .then(() => {
-      store.commit('setIsLoading', false)
-    })
-    .catch(() => {
-      store.commit('setIsLoading', false)
-    })
+  getHotStocks(4)
+  Promise.all([startFilter(false), news.value.getNewsDetail()])
   // watch change
   watch([route, orderColumn, reverseColumn], () => {
-    startFilter(false)
+    if (route.name === 'stockHome') {
+      startFilter(false)
+    }
   })
   // scroll update and minutes updated
   watchPostEffect((onInvalidate) => {
