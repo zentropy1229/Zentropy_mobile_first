@@ -9,12 +9,15 @@ import store from '@/store/index.js'
  */
 export default function modifyFavStocks (action, stock, event) {
   const send = () => {
+    store.commit('setIsLoading', true)
     axios.post('/api/user/mfs/', Qs.stringify({ [action]: stock }))
       .then(() => {
         store.dispatch('getUserInfo')
+        store.commit('setIsLoading', false)
       })
       .catch((err) => {
         alert(err.message)
+        store.commit('setIsLoading', false)
         window.location.href = '/login'
       })
   }

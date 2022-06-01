@@ -49,8 +49,12 @@
             :tableDetail="stockDetails"
             ref="stockTables"
             @orderList="orderList"
-            class="mb-4"
+            class="mb-1"
           />
+          <div class="span-text mb-3 text-center tracking-wider text-slate-400">
+            <span v-show="next">滾到底以加載更多</span>
+            <span v-show="!next">已經到底了</span>
+          </div>
         </div>
       </div>
     </div>
@@ -132,25 +136,6 @@ const getHotStocks = (limit) => {
       })
   })
 }
-// const getHotStocks = (limit) => {
-//   return new Promise((resolve, reject) => {
-//     axios
-//       .get(`/api/stock_name/orderData/?col=volumn&offset=0&limit=${limit}&reverse=-`, {
-//         headers: {
-//           Authorization: ''
-//         }
-//       })
-//       .then((res) => {
-//         for (const stockSerise of res.data.results) {
-//           hotStocks.value.push(stockSerise.stock.stock)
-//         }
-//         resolve()
-//       })
-//       .catch(() => {
-//         window.location.href = '/404'
-//       })
-//   })
-// }
 // order list
 const orderList = (index) => {
   orderColumn.value = index
@@ -242,8 +227,7 @@ const startScrolling = () => {
 // ================== lifecycle =====================
 onMounted(() => {
   // get initial data
-  getHotStocks(4)
-  Promise.all([startFilter(false), news.value.getNewsDetail(), myStockDom.value.updateStock()])
+  Promise.all([getHotStocks(4), startFilter(false), news.value.getNewsDetail(), myStockDom.value.updateStock()])
   // watch change
   watch([route, orderColumn, reverseColumn], () => {
     if (route.name === 'stockHome') {

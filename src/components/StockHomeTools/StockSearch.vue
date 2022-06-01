@@ -51,8 +51,8 @@
           class="search-items flex cursor-pointer items-center justify-between border-b border-gray-400 px-0.5 py-1 hover:bg-gray-400 focus:bg-gray-400"
           v-for="stockDetail of getStockName"
           :key="stockDetail"
-          @keyup.enter="goStockPage(stockDetail.stock.stock, stockDetail.stock.industry)"
           tabindex="0"
+          @keyup.enter="goStockPage(stockDetail.stock.stock, stockDetail.stock.industry)"
           @click.stop.prevent="goStockPage(stockDetail.stock.stock, stockDetail.stock.industry)"
         >
           <!-- highlight your input text -->
@@ -100,25 +100,27 @@ const searchMark = computed(() => {
   }
 })
 const detectInput = () => {
-  axios
-    .get('api/stock_name/search', {
-      headers: {
-        Authorization: ''
-      },
-      params: { search: inputStockName.value }
-    })
-    .then((res) => {
-      getStockName.value = res.data
-      showPreviewKeyWord.value = true
-      firstStock = {
-        stock: res.data[0].stock.stock,
-        industry: res.data[0].stock.industry
-      }
-      return res.data
-    })
-    .catch(() => {
-      getStockName.value = []
-    })
+  if (inputStockName.value) {
+    axios
+      .get('api/stock_name/search', {
+        headers: {
+          Authorization: ''
+        },
+        params: { search: inputStockName.value }
+      })
+      .then((res) => {
+        getStockName.value = res.data
+        showPreviewKeyWord.value = true
+        firstStock = {
+          stock: res.data[0].stock.stock,
+          industry: res.data[0].stock.industry
+        }
+        return res.data
+      })
+      .catch(() => {
+        getStockName.value = []
+      })
+  }
 }
 onMounted(() => {
   document.querySelector('form').addEventListener('keyup', (e) => {

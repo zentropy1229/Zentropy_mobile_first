@@ -1,6 +1,6 @@
 <template>
-  <footer class="flex w-full flex-col border-t-2 border-gray-500 bg-gray-900 p-2 text-white lg:p-4">
-    <div class="flex-center w-full flex-col flex-wrap gap-3 lg:flex-row lg:px-4">
+  <footer class="flex w-full flex-col border-t-2 border-gray-500 bg-gray-900 py-2 text-white">
+    <div class="flex-center w-full flex-col flex-wrap gap-2.5 lg:flex-row">
       <router-link :to="{ name: 'home' }" class="flex-center block flex w-max">
         <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
           <path
@@ -25,7 +25,7 @@
       </router-link>
       <div>
         <span class="span-text block text-center text-slate-400">技術支援</span>
-        <div class="flex-center gap-1 lg:gap-2">
+        <div class="flex-center gap-1 lg:gap-1.5">
           <div>
             <svg version="1.1" class="icon-style" viewBox="0 0 261.76 226.69" xmlns="http://www.w3.org/2000/svg">
               <g transform="matrix(1.3333 0 0 -1.3333 -76.311 313.34)">
@@ -141,8 +141,8 @@
       </div>
     </div>
 
-    <div class="flex-center mx-auto mt-4 w-full flex-col">
-      <div class="mb-2 h-[1.5px] w-full bg-slate-600"></div>
+    <div class="flex-center mx-auto mt-2 w-full flex-col">
+      <div class="mb-2 h-[1.5px] w-3/4 bg-slate-600"></div>
       <div class="span-text-sm">&copy; 2022&nbsp;&nbsp;Zentropy&nbsp;&nbsp;&nbsp;禪熵股份有限公司 版權所有</div>
     </div>
   </footer>

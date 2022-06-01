@@ -15,7 +15,7 @@
       </transition>
     </div>
     <div
-      class="x-center absolute top-[3rem] text-[length:var(--home-slogan-text)] lg:top-[4rem] lg:left-[15%] lg:-translate-x-0 lg:font-bold"
+      class="x-center absolute top-[3rem] text-[length:var(--home-slogan-text)] lg:left-[15%] lg:-translate-x-0 lg:font-bold"
     >
       <div class="flex-center relative w-16 flex-col" :class="showAnimationClass">
         <svg

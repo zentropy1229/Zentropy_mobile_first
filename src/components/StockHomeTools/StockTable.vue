@@ -1,7 +1,7 @@
 <template>
   <div class="span-text relative">
     <div
-      class="relative rounded-sm bg-gray-900 xl:overflow-x-hidden"
+      class="relative rounded-sm bg-gray-900"
       :class="{ 'overflow-x-scroll': showOverflowX }"
       ref="stockTableContainer"
     >
@@ -45,9 +45,9 @@
         <tbody>
           <tr v-for="stockList in tableDetail" :key="stockList" class="catagory-stock-detail-tr hover:bg-[#13273e]">
             <!-- collect - first column -->
-            <td class="catagory-stock-detail-td" :class="{ slideLeft: true }">
+            <td class="catagory-stock-detail-td">
               <button
-                class="slideLeft rounded-sm p-0.5 text-sky-500 hover:bg-sky-900"
+                class="rounded-sm p-0.5 text-sky-500 hover:bg-sky-900"
                 @click="modifyFavStocks('add', stockList.stock.stock)"
                 v-if="!checkFavStock(stockList.stock.stock)"
               >
@@ -58,7 +58,7 @@
                 </svg>
               </button>
               <button
-                class="slideLeft rounded-sm p-0.5 hover:bg-gray-600"
+                class="rounded-sm p-0.5 hover:bg-gray-600"
                 @click="modifyFavStocks('remove', stockList.stock.stock)"
                 v-else
               >
