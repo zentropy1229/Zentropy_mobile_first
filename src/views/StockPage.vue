@@ -89,7 +89,7 @@
       </div>
       <div class="order-1 w-full px-0.5 lg:order-2 lg:w-[33.333%]">
         <h2 class="subtitle-text-lg mb-1">AI技術分析</h2>
-        <dash-board-combine class="w-full" />
+        <dash-board-combine class="w-full" ref="predict" />
         <h2 class="subtitle-text-lg mb-1">產業熱門股</h2>
         <industry-hot-stock class="mb-1 lg:mb-4" :industry="industry" />
       </div>
@@ -118,6 +118,7 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 const news = ref()
+const predict = ref()
 const chartDom = ref()
 const stockData = ref()
 const industry = ref('')
@@ -294,7 +295,7 @@ const getStockData = () => {
         `https://ws.api.cnyes.com/ws/api/v1/charting/history?resolution=1&symbol=TWS:${route.params.stockid}:STOCK&quote=1`
       )
       .then((res) => {
-        if (res.data.data?.quote) {
+        if (res.data.data.quote) {
           stockData.value = res.data.data
           resolve(res.data.data)
         } else {
@@ -309,7 +310,7 @@ const getStockData = () => {
  */
 const changeBlock = () => {
   chartBlock.value = chartBlock.value === 'chart' ? 'kBar' : 'chart'
-  router.push({ name: 'kbar' })
+  router.replace({ name: 'kbar' })
 }
 // initail
 const initializeData = () => {
@@ -335,6 +336,7 @@ const initializeData = () => {
       })
       store.commit('setIsLoading', false)
     })
+    .then(predict.value.predict)
     .catch(() => {
       if (route.name === 'stock') {
         window.location.replace('/404')
@@ -387,10 +389,9 @@ const checkFavStock = computed(() => {
 onMounted(() => {
   watch(
     route,
-    () => {
-      initializeData()
-      if (route.name === 'stock') {
-        chartBlock.value = 'chart'
+    (nV, oV) => {
+      if (nV.name === 'stock') {
+        initializeData()
       }
     },
     { immediate: true }

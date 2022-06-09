@@ -10,11 +10,12 @@
       v-if="getPaginator"
     />
     <!-- page -->
-    <div class="ml-auto flex">
+    <div class="ml-auto flex gap-[0.05rem] rounded-sm bg-gray-900 p-[0.05rem]">
       <button
         v-for="page of getPaginator"
         :key="page"
-        class="flex-center h-2 w-2 border bg-gray-900 text-white"
+        class="flex-center h-2 w-2 rounded-sm text-white"
+        :class="{ 'bg-sky-400': nowPage === page }"
         @click="nowPage = page"
       >
         {{ page }}

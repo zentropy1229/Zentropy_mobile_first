@@ -23,7 +23,7 @@
 <script setup>
 import axios from 'axios'
 import { useStore } from 'vuex'
-import { ref, onMounted } from 'vue'
+import { ref, defineExpose } from 'vue'
 import { useRoute } from 'vue-router'
 import DashBoard from '@/components/smallComponents/DashBoard'
 const store = useStore()
@@ -39,7 +39,7 @@ const predict = () => {
     axios
       .get('/api/predict/', {
         params: {
-          stock: route.params.stockid || '1219'
+          stock: route.params.stockid
         }
       })
       .then((res) => {
@@ -54,11 +54,7 @@ const predict = () => {
 }
 
 // ================ life cycle =====================
-onMounted(() => {
-  if (store.state.access) {
-    predict()
-  }
-})
+defineExpose({ predict })
 </script>
 
 <style lang="postcss" scoped>

@@ -4,6 +4,7 @@ import { createStore } from 'vuex'
 export default createStore({
   state: {
     isLoading: false,
+    errorCounting: 0,
     access: '',
     userInfo: {}
   },
@@ -22,6 +23,9 @@ export default createStore({
       localStorage.clear()
       sessionStorage.clear()
       axios.defaults.headers.common.Authorization = ''
+    },
+    setErrorCounting (state, count) {
+      state.errorCounting = count
     },
     /**
      * @param {Object} state state in vuex
@@ -53,9 +57,11 @@ export default createStore({
               commit('setToken', { access, refresh })
               axios.defaults.headers.common.Authorization = 'Bearer ' + access
               resolve()
-            }).catch(() => {
-              commit('removeToken')
-              reject(new Error('尚未登入，請重新登入'))
+            }).catch((err) => {
+              if (err.response.status === 401) {
+                commit('removeToken')
+                reject(new Error('尚未登入，請重新登入'))
+              }
             })
         } else {
           commit('removeToken')

@@ -63,6 +63,7 @@
 
 <script setup>
 import axios from 'axios'
+import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import { onMounted, ref, watchPostEffect, watch, computed } from 'vue'
 import getCurrentTime from '@/utils/getCurrentTime'
@@ -78,6 +79,7 @@ import DaliyHotCharts from '@/components/StockHomeTools/DaliyHotCharts'
 const daliyHotChartDom = ref()
 // ================== define route store ===================
 const route = useRoute()
+const store = useStore()
 // ================== define ref =====================
 const news = ref()
 const next = ref('')
@@ -147,7 +149,7 @@ const startFilter = (isUpdate) => {
   startScroll.value = true
   setTimeout(() => {
     startScroll.value = false
-  }, 500)
+  }, 1000)
   // if not update clear stockDetail, else keep stockDetail
   if (!isUpdate) {
     stockDetails.value = []
@@ -213,7 +215,7 @@ const scrollLoding = () => {
   const st = window.scrollY
   const wh = document.documentElement.clientHeight
   const dh = document.documentElement.scrollHeight
-  if (!Math.floor(dh - st - wh) && !startScroll.value) {
+  if (Math.floor(dh - st - wh) < 100 && !startScroll.value) {
     if (next.value !== null) {
       startFilter(true)
     }
@@ -227,7 +229,13 @@ const startScrolling = () => {
 // ================== lifecycle =====================
 onMounted(() => {
   // get initial data
-  Promise.all([getHotStocks(4), startFilter(false), news.value.getNewsDetail(), myStockDom.value.updateStock()])
+  store.commit('setIsLoading', true)
+  Promise.all([getHotStocks(4), startFilter(false), news.value.getNewsDetail(), myStockDom.value.updateStock()]).then(
+    () => {
+      store.commit('setIsLoading', false)
+    }
+  )
+
   // watch change
   watch([route, orderColumn, reverseColumn], () => {
     if (route.name === 'stockHome') {

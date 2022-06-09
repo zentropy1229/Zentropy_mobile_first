@@ -4,8 +4,11 @@
     <router-view></router-view>
   </div>
   <router-view name="Footer"></router-view>
-  <div class="flex-center fixed top-0 left-0 z-[99] h-full w-full" v-if="store.state.isLoading">
-    <loading-icon :isLoading="store.state.isLoading" />
+  <div class="flex-center fixed top-0 left-0 z-[99] h-full w-full flex-col bg-gray-900/60" v-if="store.state.isLoading">
+    <loading-icon :isLoading="store.state.isLoading" class="mb-1" />
+    <span class="span-text-sm font-bold tracking-wide text-gray-200" v-show="store.state.errorCounting >= 8"
+      >頁面好像卡住了，可以重新整理試試看！</span
+    >
   </div>
   <ScrollToTop />
 </template>
